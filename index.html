@@ -182,8 +182,33 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   .fg3,.fg2{grid-template-columns:1fr}
   .cgrid{grid-template-columns:1fr}
   .scores{grid-template-columns:repeat(2,1fr)}
-  .ptabs{display:none}
-  .kwrap{max-width:160px}
+  .ptabs{
+  display:flex;
+  width:100%;
+  justify-content:space-between;
+}
+
+.ptab{
+  flex:1;
+  text-align:center;
+}
+
+.header-inner{
+  height:auto;
+  padding:10px 24px;
+  flex-wrap:wrap;
+}
+
+.hright{
+  width:100%;
+  flex-wrap:wrap;
+}
+
+.kwrap{
+  flex:1;
+  max-width:none;
+}
+  
   .modal-opts{grid-template-columns:1fr}
 }
 </style>
@@ -397,7 +422,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 const PROVS = {
   anthropic:{ph:'sk-ant-api03-…',val:k=>k.startsWith('sk-ant'),models:[{id:'claude-sonnet-4-20250514',l:'Claude Sonnet 4'},{id:'claude-opus-4-5',l:'Claude Opus 4.5'},{id:'claude-haiku-4-5-20251001',l:'Claude Haiku 4.5'}]},
   openai:   {ph:'sk-proj-…',     val:k=>k.startsWith('sk-'),   models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'},{id:'o3-mini',l:'o3-mini'}]},
-  gemini:   {ph:'AIzaSy…',       val:k=>k.length>20,           models:[{id:'gemini-2.0-flash',l:'Gemini 2.0 Flash'},{id:'gemini-2.5-pro-preview-05-06',l:'Gemini 2.5 Pro'},{id:'gemini-1.5-flash',l:'Gemini 1.5 Flash'}]},
+ gemini:{
+  ph:'AIzaSy…',
+  val:k=>k.startsWith('AIza'),
+  models:[
+    {id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},
+    {id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}
+  ]
+},
+  // gemini:   {ph:'AIzaSy…',       val:k=>k.length>20,           models:[{id:'gemini-2.0-flash',l:'Gemini 2.0 Flash'},{id:'gemini-2.5-pro-preview-05-06',l:'Gemini 2.5 Pro'},{id:'gemini-1.5-flash',l:'Gemini 1.5 Flash'}]},
 };
 
 // Expanded TLD config with NameBio/GoDaddy priority ordering [[34]][[17]]
@@ -422,6 +455,10 @@ const WC_LABELS={1:'1-word',2:'2-word',3:'3-word',any:'Any'};
 let prov=localStorage.getItem('bl_p')||'anthropic';
 let key=localStorage.getItem('bl_k_'+prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
+if(!PROVS[prov].models.find(m=>m.id===mdl)){
+  mdl=PROVS[prov].models[0].id;
+  localStorage.setItem('bl_m_'+prov,mdl);
+}
 let busy=false,domC={},pill='all',helpOn=false,language='global',wordCount='any';
 let lastGeneratedNames=[]; // For export functionality
 
@@ -445,6 +482,10 @@ function switchProv(p,el){
   prov=p;localStorage.setItem('bl_p',p);
   key=localStorage.getItem('bl_k_'+p)||'';
   mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
+  if(!PROVS[p].models.find(m=>m.id===mdl)){
+  mdl=PROVS[p].models[0].id;
+  localStorage.setItem('bl_m_'+p,mdl);
+}
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   document.getElementById('akey').value=key;
   document.getElementById('akey').placeholder=PROVS[p].ph;
@@ -495,7 +536,54 @@ Output Format (exactly 10 objects):
   "language_suitability":["en","es","de","ja"],
   "word_count":1
 }`;
+const GEMINI_SYS = `
+You are a world-class startup naming strategist trained on:
+- a16z portfolio naming patterns
+- YC alumni naming structures
+- TechCrunch startup trends
+- Crunchbase funding-stage naming
+- NameBio domain sales
+- GoDaddy Auctions aftermarket trends
 
+Return ONLY valid JSON array.
+
+Rules:
+- No markdown
+- No explanation
+- No code fences
+- Exactly 6 objects
+- Compact JSON only
+- Complete full JSON
+- No trailing commas
+
+Naming principles:
+- VC-backable names
+- Globally pronounceable
+- Strong domain potential
+- Modern 2026 startup style
+- Avoid overused suffixes
+
+Format:
+[
+{
+"name":"Velo",
+"tagline":"Fast workflows",
+"naming_pattern":"Minimal",
+"vc_signal":"VC-ready",
+"why_it_works":"Short memorable",
+"score":{
+"brand_strength":88,
+"memorability":90,
+"global_fit":85,
+"trend_alignment":87
+},
+"colors":["#c8f04a","#09090b"],
+"avoid_reason":"velo.com taken",
+"language_suitability":["en"],
+"word_count":1
+}
+]
+`;
 function USR(industry,style,aud,kw,tlds,lang,wc){
   const langInstructions={
     'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.',
@@ -511,7 +599,9 @@ function USR(industry,style,aud,kw,tlds,lang,wc){
     'any':'Mix of lengths; prioritize memorability over strict count.'
   };
 
-  return `Create 10 brand names for a "${industry}" startup.
+  return `Create ${
+  prov==='gemini' ? 6 : 10
+} brand names for a "${industry}" startup.
 Language: ${lang} — ${langInstructions[lang]}
 Name Length: ${wc} words — ${wordInstructions[wc]}
 Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
@@ -523,9 +613,17 @@ Data-Driven Rules:
 • YC naming heuristic: "Could this be a verb?" test for consumer products
 • Avoid: -ify/-ly suffixes, nova/apex/nexus overuse, trademark-conflicting terms
 • Prioritize: 4-8 chars, globally pronounceable, strong DNS profile
-${lang!=='en'?'• CRITICAL: Verify no negative connotations in Spanish, German, Japanese, Arabic per language_suitability field.':''}
+${lang!=='en'
+  ? '• CRITICAL: Verify no negative connotations in Spanish, German, Japanese, Arabic per language_suitability field.'
+  : ''
+}
 
-Return JSON array of exactly 10 objects. Raw JSON only.`;
+${prov==='gemini'
+  ? 'Return compact JSON array of exactly 6 objects.'
+  : 'Return JSON array of exactly 10 objects.'
+}
+
+Raw JSON only.`;
 }
 
 // ── API callers with rate limiting ─────────────────────────────────
@@ -550,18 +648,53 @@ async function callOpenAI(sys,usr,cb){
 }
 
 async function callGemini(sys,usr,cb){
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:streamGenerateContent?key=${key}&alt=sse`;
-  const r=await fetch(url,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      system_instruction:{parts:[{text:sys}]},
-      contents:[{role:'user',parts:[{text:usr}]}],
-      generationConfig:{maxOutputTokens:4000}
-    })
-  });
-  if(!r.ok)throw new Error(`Gemini ${r.status}: ${await r.text()}`);
-  return readSSE(r,ev=>{const t=ev.candidates?.[0]?.content?.parts?.[0]?.text;if(t)cb(t);return t||'';});
+
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,
+    {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        system_instruction:{
+          parts:[{text:sys}]
+        },
+
+        contents:[{
+          role:'user',
+          parts:[{text:usr}]
+        }],
+
+        generationConfig:{
+          temperature:0.1,
+          topP:0.7,
+          maxOutputTokens:900
+        }
+      })
+    }
+  );
+
+  const data = await r.json();
+
+  if(!r.ok){
+    throw new Error(
+      `Gemini ${r.status}: ${
+        data.error?.message || 'Unknown error'
+      }`
+    );
+  }
+
+  const parts =
+    data.candidates?.[0]?.content?.parts || [];
+
+  const text = parts
+    .map(p => p.text || '')
+    .join('');
+
+  cb(text);
+
+  return text;
 }
 
 async function readSSE(resp,extract){
@@ -608,8 +741,21 @@ async function go(){
   const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
   
   const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix;
-  const sys=SYS,usr=USR(ind,document.getElementById('style').value,document.getElementById('aud').value,document.getElementById('kw').value,tlds,language,wordCount);
-  
+  // const sys=SYS,usr=USR(ind,document.getElementById('style').value,document.getElementById('aud').value,document.getElementById('kw').value,tlds,language,wordCount);
+  const sys =
+  prov === 'gemini'
+    ? GEMINI_SYS
+    : SYS;
+
+const usr = USR(
+  ind,
+  document.getElementById('style').value,
+  document.getElementById('aud').value,
+  document.getElementById('kw').value,
+  tlds,
+  language,
+  wordCount
+);
   let sbuf='';
   const onChunk=t=>{sbuf+=t;ps.textContent=sbuf.slice(-160);};
   
@@ -623,9 +769,49 @@ async function go(){
     setTimeout(()=>pw.classList.remove('on'),2200);
     
     // Parse and sanitize JSON
-    const clean=full.replace(/```json|```/g,'').trim();
-    const names=JSON.parse(clean);
-    
+    //const clean=full.replace(/```json|```/g,'').trim();
+    //const names=JSON.parse(clean);
+    let clean = String(full || '')
+  .replace(/```json/gi,'')
+  .replace(/```/g,'')
+  .trim();
+
+let names=null;
+
+try{
+  names=JSON.parse(clean);
+}catch(e){}
+
+if(!names){
+
+  const match=clean.match(/\[[\s\S]*\]/);
+
+  if(match){
+
+    clean=match[0]
+      .replace(/,\s*}/g,'}')
+      .replace(/,\s*]/g,']')
+      .replace(/\n/g,' ')
+      .replace(/\r/g,' ')
+      .trim();
+
+    try{
+      names=JSON.parse(clean);
+    }catch(e){}
+  }
+}
+
+if(
+  Array.isArray(names) &&
+  prov==='gemini'
+){
+  names=names.slice(0,6);
+}
+
+if(!Array.isArray(names)){
+  console.error(full);
+  throw new Error('AI returned invalid JSON');
+}
     // Store for export
     lastGeneratedNames=names.map(n=>({
       ...n,
