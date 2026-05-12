@@ -77,6 +77,20 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px}
 .flbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
 .fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
+.fg4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+  margin-bottom:13px;
+}
+
+@media(max-width:800px){
+
+  .fg4{
+    grid-template-columns:1fr;
+  }
+
+}
 .fg2{display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:18px}
 .field label{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 .field select,.field input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:10px 13px;border-radius:8px;outline:none;appearance:none;transition:border-color .2s}
@@ -400,58 +414,175 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="model-row" id="mrow"></div>
   </div>
   
-  <!-- Row 1: Industry, Language, Word Count -->
-  <div class="fg3">
-    <div class="field">
-      <label>Industry</label>
-      <select id="industry">
-        <option value="">— select —</option>
-        <option>AI Agents & Automation</option><option>Healthcare AI</option>
-        <option>Fintech & Neobanking</option><option>Developer Tools</option>
-        <option>B2B SaaS / Enterprise</option><option>Defense & Aerospace</option>
-        <option>Biotech & Life Sciences</option><option>Climate & CleanTech</option>
-        <option>Consumer & E-commerce</option><option>Education & EdTech</option>
-        <option>Cybersecurity</option><option>Logistics & Supply Chain</option>
-        <option>Crypto & Web3</option><option>Food & FoodTech</option>
-        <option>Mental Health & Wellness</option><option>Real Estate & PropTech</option>
-        <option>Gaming & Esports</option><option>Legal Tech</option>
-        <option>HR & Future of Work</option><option>Supply Chain & Robotics</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Language Focus</label>
-      <select id="language">
-        <option value="global" selected>🌍 Global-friendly (English base)</option>
-        <option value="en">🇺🇸 English-only names</option>
-        <option value="non-en">🗾 Non-English optimized</option>
-        <option value="multilingual">🌐 Multilingual adaptable</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Name Length</label>
-      <select id="wordcount">
-        <option value="any" selected>Any length (recommended)</option>
-        <option value="1">Single word (Slack, Arc)</option>
-        <option value="2">Two words (GitHub, PayPal)</option>
-        <option value="3">Three words max</option>
-      </select>
-    </div>
+  <!-- Row 1: Industry, Archetype, Language, Word Count -->
+<div class="fg4">
+
+  <div class="field">
+    <label>Industry</label>
+
+    <select id="industry">
+      <option value="">— select —</option>
+
+      <option>AI Agents & Automation</option>
+      <option>Healthcare AI</option>
+      <option>Fintech & Neobanking</option>
+      <option>Developer Tools</option>
+      <option>B2B SaaS / Enterprise</option>
+      <option>Defense & Aerospace</option>
+      <option>Biotech & Life Sciences</option>
+      <option>Climate & CleanTech</option>
+      <option>Consumer & E-commerce</option>
+      <option>Education & EdTech</option>
+      <option>Cybersecurity</option>
+      <option>Logistics & Supply Chain</option>
+      <option>Crypto & Web3</option>
+      <option>Food & FoodTech</option>
+      <option>Mental Health & Wellness</option>
+      <option>Real Estate & PropTech</option>
+      <option>Gaming & Esports</option>
+      <option>Legal Tech</option>
+      <option>HR & Future of Work</option>
+      <option>Supply Chain & Robotics</option>
+    </select>
   </div>
+
+  <div class="field">
+    <label>Brand Archetype</label>
+
+    <select id="archetype">
+
+      <option value="">
+        Mix styles (recommended)
+      </option>
+
+      <option value="linear">
+        Linear-style (clean SaaS)
+      </option>
+
+      <option value="stripe">
+        Stripe-style (premium fintech)
+      </option>
+
+      <option value="figma">
+        Figma-style (creative modern)
+      </option>
+
+      <option value="cursor">
+        Cursor-style (AI-native)
+      </option>
+
+      <option value="anduril">
+        Anduril-style (deep-tech)
+      </option>
+
+      <option value="palantir">
+        Palantir-style (intelligence)
+      </option>
+
+      <option value="vanta">
+        Vanta-style (security SaaS)
+      </option>
+
+      <option value="vercel">
+        Vercel-style (developer infra)
+      </option>
+
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Language Focus</label>
+
+    <select id="language">
+      <option value="global" selected>
+        🌍 Global-friendly
+      </option>
+
+      <option value="en">
+        🇺🇸 English-only
+      </option>
+
+      <option value="non-en">
+        🗾 Non-English optimized
+      </option>
+
+      <option value="multilingual">
+        🌐 Multilingual adaptable
+      </option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Name Length</label>
+
+    <select id="wordcount">
+      <option value="any" selected>
+        Any length
+      </option>
+
+      <option value="1">
+        Single word (Slack, Arc)
+      </option>
+
+      <option value="2">
+        Two words (GitHub, PayPal)
+      </option>
+
+      <option value="3">
+        Three words max
+      </option>
+    </select>
+  </div>
+
+</div>
   
   <!-- Row 2: Style, TLD, Audience -->
   <div class="fg3">
     <div class="field">
       <label>Naming style</label>
       <select id="style">
-        <option value="">Mix it up (recommended)</option>
-        <option>Abstract / Invented (Uber, Lyft)</option>
-        <option>Compound words (Dropbox, YouTube)</option>
-        <option>Portmanteau (Instagram, Pinterest)</option>
-        <option>Latin / Greek roots (Nexus, Astra)</option>
-        <option>Creative misspelling (Lyft, Fiverr)</option>
-        <option>Metaphor / Concept (Stripe, Airbnb)</option>
-        <option>Minimal one-word (Slack, Arc, Loom)</option>
-      </select>
+
+  <option value="">
+    Mixed styles (recommended)
+  </option>
+
+  <option value="ultra_short">
+    Ultra-short (4–5 letters)
+  </option>
+
+  <option value="invented">
+    Premium invented brandables
+  </option>
+
+  <option value="real_adjacent">
+    Real-word adjacent
+  </option>
+
+  <option value="infra">
+    Technical infrastructure
+  </option>
+
+  <option value="luxury">
+    Luxury minimal
+  </option>
+
+  <option value="enterprise">
+    Enterprise-grade
+  </option>
+
+  <option value="playful">
+    Playful modern startup
+  </option>
+
+  <option value="future">
+    Futuristic AI-native
+  </option>
+
+  <option value="mythic">
+    Mythological / powerful
+  </option>
+
+</select>
     </div>
     <div class="field">
   <label>Primary TLD</label>
@@ -772,6 +903,166 @@ FORMAT:
 }
 ]
 `;
+const STYLE_DNA = {
+
+  ultra_short: `
+Generate:
+- 4-5 character names
+- highly memorable
+- premium startup feel
+
+Examples:
+Brex, Ramp, Arc
+`,
+
+  invented: `
+Generate:
+- invented premium brandables
+- low dictionary overlap
+- VC-backable feel
+
+Examples:
+Vanta, Stripe, Figma
+`,
+
+  real_adjacent: `
+Generate:
+- names inspired by real words
+- trustworthy and simple
+- globally pronounceable
+
+Examples:
+Notion, Mercury, Plaid
+`,
+
+  infra: `
+Generate:
+- technical infrastructure feel
+- developer-tool energy
+- hard consonants
+
+Examples:
+Vercel, Supabase, Datadog
+`,
+
+  luxury: `
+Generate:
+- elegant minimalist names
+- premium phonetics
+- smooth syllables
+
+Examples:
+Avenza, Velora
+`,
+
+  enterprise: `
+Generate:
+- serious B2B credibility
+- trusted enterprise tone
+- scalable naming structure
+
+Examples:
+Okta, Workday, ServiceNow
+`,
+
+  playful: `
+Generate:
+- modern startup friendliness
+- softer memorable phonetics
+- creative energy
+
+Examples:
+Canva, Figma, Loom
+`,
+
+  future: `
+Generate:
+- futuristic AI-native names
+- modern technical energy
+- uncommon phonetics
+
+Examples:
+Anthropic, OpenAI, Replit
+`,
+
+  mythic: `
+Generate:
+- powerful memorable names
+- legendary undertones
+- deep-tech seriousness
+
+Examples:
+Palantir, Anduril
+`
+};
+const INDUSTRY_NEGATIVES = {
+
+  cybersecurity: `
+Avoid:
+- childish hacker names
+- excessive dark-web aesthetics
+`,
+
+  fintech: `
+Avoid:
+- sounding like a crypto exchange
+- meme-finance terminology
+`,
+
+  healthcare_ai: `
+Avoid:
+- scary biotech vibes
+- harsh robotic names
+`
+};
+const NEGATIVE_RULES = `
+
+STRICTLY AVOID:
+
+- generic AI names
+- cliché SaaS wording
+- repetitive startup patterns
+- obvious dictionary combinations
+
+Avoid overused words like:
+AI
+Labs
+Flow
+Sync
+Pilot
+Cloud
+Data
+Chain
+Logic
+Base
+Works
+Hub
+Verse
+Forge
+Mind
+Neuro
+Quantum
+Meta
+Next
+Core
+Link
+Stack
+
+Avoid:
+- sounding like a crypto scam
+- sounding autogenerated
+- obvious Silicon Valley clichés
+- hard-to-pronounce constructions
+- excessive X/Z overload
+- fake Latin spam
+- repetitive suffixes
+
+Prefer:
+- distinctive phonetics
+- clean syllables
+- memorable rhythm
+- premium VC-backable feel
+`;
 function USR(
   industry,
   style,
@@ -852,13 +1143,25 @@ ${lang!=='en'
   ? '• CRITICAL: Verify no negative connotations in Spanish, German, Japanese, Arabic per language_suitability field.'
   : ''
 }
-
+${
+  style
+    ? `
+Name Shape DNA:
+${STYLE_DNA[style]}
+`
+    : ''
+}
+    ${
+  INDUSTRY_NEGATIVES[industryKey] || ''
+}
+  ${NEGATIVE_RULES}
 ${prov==='gemini'
   ? 'Return compact JSON array of exactly 5 objects.'
   : 'Return JSON array of exactly 10 objects.'
 }
 
 Raw JSON only.`;
+
 }
 
 // ── API callers with rate limiting ─────────────────────────────────
