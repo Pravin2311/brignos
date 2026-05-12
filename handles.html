@@ -1,0 +1,1204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BrandLab — Social Handle Checker</title>
+
+<link rel="icon" href="data:,">
+
+<style>
+:root{
+  --bg:#09090b;
+  --bg2:#111114;
+  --card:#141418;
+  --border:#23232a;
+  --text:#f5f5f5;
+  --muted:#a1a1aa;
+  --lime:#c8f04a;
+  --red:#ff6363;
+  --yellow:#ffd95e;
+  --green:#56e39f;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+}
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(9,9,11,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 22px;
+  gap:18px;
+}
+.logo{
+  font-weight:800;
+  font-size:20px;
+  letter-spacing:-0.04em;
+}
+.logo span{color:var(--lime)}
+.hright{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.ptabs{
+  display:flex;
+  gap:8px;
+}
+.ptab{
+  border:1px solid var(--border);
+  background:var(--bg2);
+  color:var(--muted);
+  padding:9px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:12px;
+  font-family:var(--mono);
+}
+.ptab.on{
+  border-color:var(--lime);
+  color:var(--lime);
+}
+.kwrap{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.kwrap input,.select{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:13px;
+}
+.kwrap input{
+  width:220px;
+}
+.btn{
+  border:none;
+  background:var(--lime);
+  color:#000;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:42px 22px 70px;
+}
+.hero{
+  margin-bottom:28px;
+}
+.hero h1{
+  font-size:54px;
+  line-height:1;
+  margin:0 0 12px;
+  letter-spacing:-0.05em;
+}
+.hero p{
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.7;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:24px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+}
+.label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.input{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:14px;
+  padding:14px 16px;
+  font-size:15px;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:18px;
+}
+.actions{
+  margin-top:24px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.sec{
+  margin-top:26px;
+}
+.result{
+  margin-top:28px;
+  display:none;
+}
+.risk{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:700;
+}
+.high{
+  background:rgba(255,99,99,.15);
+  color:var(--red);
+}
+.medium{
+  background:rgba(255,217,94,.15);
+  color:var(--yellow);
+}
+.low{
+  background:rgba(86,227,159,.15);
+  color:var(--green);
+}
+.score{
+  font-size:42px;
+  font-weight:900;
+}
+.section-title{
+  margin:26px 0 10px;
+  font-size:14px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.item{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  line-height:1.6;
+}
+.note{
+  margin-top:20px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+}
+.loading{
+  display:none;
+  margin-top:18px;
+  color:var(--lime);
+  font-family:var(--mono);
+}
+@media(max-width:900px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+  .hero h1{
+    font-size:40px;
+  }
+}
+@media(max-width:800px){
+  .header-inner{
+    flex-wrap:wrap;
+    height:auto;
+    padding:12px 18px;
+  }
+  .hright{
+    width:100%;
+    flex-wrap:wrap;
+  }
+  .ptabs{
+    width:100%;
+  }
+  .ptab{
+    flex:1;
+    text-align:center;
+  }
+  .kwrap{
+    width:100%;
+  }
+  .kwrap input{
+    flex:1;
+    width:auto;
+  }
+  .row{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:800px){
+
+  .header-inner{
+    flex-direction:column;
+    align-items:stretch;
+    gap:14px;
+    padding:12px 14px;
+  }
+
+  .hright{
+    width:100%;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .ptabs{
+    width:100%;
+    display:flex;
+    gap:8px;
+  }
+
+  .ptab{
+    flex:1;
+    text-align:center;
+    padding:12px 8px;
+    font-size:11px;
+  }
+
+  .kwrap{
+    width:100%;
+    flex-direction:column;
+  }
+
+  .kwrap input,
+  .select{
+    width:100%;
+  }
+
+  .row{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:34px;
+    line-height:1.05;
+  }
+
+  .wrap{
+    padding:28px 14px 60px;
+  }
+
+  .card{
+    padding:18px;
+    border-radius:18px;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+  .btn{
+    width:100%;
+  }
+
+  .score{
+    font-size:34px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">Brand<span>Lab</span></div>
+
+    <div class="hright">
+      <div class="ptabs">
+        <button class="ptab on" onclick="switchProv('anthropic',this)">Claude</button>
+        <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
+        <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+      </div>
+
+      <div class="kwrap">
+        <input id="apikey" placeholder="API Key">
+        <select id="model" class="select"></select>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <h1>Social Handle Checker</h1>
+    <p>
+      Analyze username, startup branding consistency,
+      and social identity strength across modern platforms.
+    </p>
+  </section>
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div class="label">Brand / Username</div>
+      <input id="handle" class="input" placeholder="e.g. Linear">
+
+      <div class="row">
+        <div>
+          <div class="label">Industry</div>
+          <input id="industry" class="input" placeholder="e.g. Developer Tools">
+        </div>
+
+        <div>
+          <div class="label">Region</div>
+          <select id="region" class="input">
+            <option>United States</option>
+            <option>Global</option>
+            <option>Europe</option>
+            <option>India</option>
+            <option>United Kingdom</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="label">Extra Context</div>
+        <textarea id="context" class="input" rows="5"
+          placeholder="Optional product description, audience, competitors, positioning..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="analyzeTrademark()">
+          Analyze usernames...
+        </button>
+
+        <a href="index.html"
+           style="text-decoration:none">
+          <button class="btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)">
+            Back to Generator
+          </button>
+        </a>
+      </div>
+
+      <div id="loading" class="loading">
+        creating best usernames...
+      </div>
+
+      <div id="result" class="result card">
+
+   <div class="risk">
+
+  <div>
+    <div id="tierBadge" class="badge medium">
+      Strong Handle
+    </div>
+  </div>
+
+  <div id="valuation" class="score">
+    84
+  </div>
+
+</div>
+
+<div class="section-title">Summary</div>
+<div id="summary" class="item"></div>
+
+<div class="section-title">Platform Fit</div>
+<div id="platformfit" class="list"></div>
+
+<div class="section-title">Strengths</div>
+<div id="signals" class="list"></div>
+
+<div class="section-title">Weaknesses</div>
+<div id="weaknesses" class="list"></div>
+
+<div class="section-title">Alternatives</div>
+<div id="alternatives" class="list"></div>
+
+<div class="section-title">Recommendations</div>
+<div id="recommendations" class="list"></div>
+<div class="note">
+  AI-generated social identity analysis based on startup branding,
+username memorability, platform consistency, and modern social naming patterns.
+</div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+  What This Evaluates
+</div>
+
+<div class="list">
+
+  <div class="item">
+    Username consistency across platforms
+  </div>
+
+  <div class="item">
+    Startup brand identity strength
+  </div>
+
+  <div class="item">
+    Memorability & typing simplicity
+  </div>
+
+  <div class="item">
+    Collision probability with existing brands
+  </div>
+
+  <div class="item">
+    Social-first naming optimization
+  </div>
+
+  <div class="item">
+    Founder-friendly handle structure
+  </div>
+
+</div>
+
+</div>
+
+      <div class="section-title">
+  Recommended Workflow
+</div>
+
+<div class="list">
+
+  <div class="item">
+    1. Generate startup names
+  </div>
+
+  <div class="item">
+    2. Check trademark conflicts
+  </div>
+
+  <div class="item">
+    3. Evaluate domain valuation
+  </div>
+
+  <div class="item">
+    4. Secure social handles
+  </div>
+
+  <div class="item">
+    5. Launch consistent brand identity
+  </div>
+
+</div>
+
+</div>
+    </div>
+
+
+</div>
+
+</div>
+
+<script>
+const PROVS={
+  anthropic:{
+    ph:'sk-ant-...',
+    models:[
+      'claude-sonnet-4-20250514',
+      'claude-3-7-sonnet-20250219'
+    ]
+  },
+
+  openai:{
+    ph:'sk-...',
+    models:[
+      'gpt-4o',
+      'gpt-4.1-mini'
+    ]
+  },
+
+  gemini:{
+    ph:'AIza...',
+    models:[
+      'gemini-2.5-flash',
+      'gemini-2.5-pro'
+    ]
+  }
+};
+
+let prov=localStorage.getItem('bl_p')||'anthropic';
+
+function init(){
+
+  document.querySelectorAll('.ptab')
+    .forEach(btn=>{
+      if(
+        btn.textContent.toLowerCase()
+          .includes(prov === 'openai'
+            ? 'openai'
+            : prov === 'gemini'
+              ? 'gemini'
+              : 'claude')
+      ){
+        btn.classList.add('on');
+      }else{
+        btn.classList.remove('on');
+      }
+    });
+
+  const key=
+    localStorage.getItem('bl_k_'+prov)||'';
+
+  document.getElementById('apikey').value=key;
+  document.getElementById('apikey').placeholder=
+    PROVS[prov].ph;
+
+  renderModels();
+}
+
+function renderModels(){
+
+  const sel=document.getElementById('model');
+
+  sel.innerHTML='';
+
+  PROVS[prov].models.forEach(m=>{
+
+    const o=document.createElement('option');
+
+    o.value=m;
+    o.textContent=m;
+
+    sel.appendChild(o);
+  });
+
+  const stored=
+    localStorage.getItem('bl_m_'+prov);
+
+  // use stored model if valid
+  if(
+    stored &&
+    PROVS[prov].models.includes(stored)
+  ){
+
+    sel.value=stored;
+
+  }else{
+
+    // default first model
+    sel.value=PROVS[prov].models[0];
+
+    localStorage.setItem(
+      'bl_m_'+prov,
+      sel.value
+    );
+  }
+}
+
+function switchProv(p,el){
+
+  saveKey();
+
+  prov=p;
+
+  localStorage.setItem('bl_p',p);
+
+  document.querySelectorAll('.ptab')
+    .forEach(t=>t.classList.remove('on'));
+
+  el.classList.add('on');
+
+  document.getElementById('apikey').placeholder=
+    PROVS[p].ph;
+
+  document.getElementById('apikey').value=
+    localStorage.getItem('bl_k_'+p)||'';
+
+  renderModels();
+}
+
+function saveKey(){
+
+  localStorage.setItem(
+    'bl_k_'+prov,
+    document.getElementById('apikey').value.trim()
+  );
+
+  localStorage.setItem(
+    'bl_m_'+prov,
+    document.getElementById('model').value
+  );
+}
+
+document.getElementById('apikey')
+  .addEventListener('input',saveKey);
+
+document.getElementById('model')
+  .addEventListener('change',saveKey);
+
+const SYS=`
+You are a startup social identity strategist trained on:
+- startup branding systems
+- founder social positioning
+- modern social naming trends
+- X/Twitter handle structures
+- Instagram brandability
+- TikTok naming psychology
+- LinkedIn startup identity systems
+
+Analyze social handle quality.
+
+Return ONLY valid JSON.
+
+Format:
+{
+  "strength":"weak|moderate|strong|elite",
+  "summary":"...",
+  "platform_fit":{
+    "x":"strong",
+    "instagram":"moderate",
+    "linkedin":"strong",
+    "tiktok":"weak"
+  },
+  "strengths":["..."],
+  "weaknesses":["..."],
+  "alternatives":["..."],
+  "recommendations":["..."]
+}
+`;
+const GEMINI_TM_SYS=`
+You are a startup social handle strategist.
+
+Analyze:
+- memorability
+- typing simplicity
+- startup branding fit
+- social consistency
+- username collision risk
+
+Return EXACTLY in this format:
+
+STRENGTH: strong
+SUMMARY: Strong startup-ready handle
+
+PLATFORM FIT:
+X: strong
+INSTAGRAM: strong
+LINKEDIN: moderate
+TIKTOK: moderate
+
+STRENGTHS:
+- Short and memorable
+- Easy typing structure
+
+WEAKNESSES:
+- Slight collision risk
+
+ALTERNATIVES:
+- lumarhq
+- getlumar
+
+RECOMMENDATIONS:
+- Secure same username everywhere
+- Avoid underscores
+
+Rules:
+- No JSON
+- No markdown
+- Include all sections
+`;
+async function analyzeTrademark(){
+
+  saveKey();
+
+  const key=
+    document.getElementById('apikey')
+      .value.trim();
+
+  if(!key){
+    alert('Please enter API key');
+    return;
+  }
+
+  const handle=
+    document.getElementById('handle')
+      .value.trim();
+
+  if(!handle){
+  alert('Enter username');
+  return;
+}
+
+  const industry=
+    document.getElementById('industry')
+      .value.trim();
+
+  const region=
+    document.getElementById('region')
+      .value;
+
+  const context=
+    document.getElementById('context')
+      .value.trim();
+
+  const model=
+    document.getElementById('model')
+      .value;
+
+  document.getElementById('loading')
+    .style.display='block';
+
+  document.getElementById('result')
+    .style.display='none';
+
+  const usr=`
+Brand: ${handle}
+Industry: ${industry}
+Region: ${region}
+
+Extra context:
+${context || 'none'}
+
+${
+  prov==='gemini'
+  ? `
+Analyze social handle quality.
+
+You MUST include:
+- strength
+- summary
+- platform fit
+- strengths
+- weaknesses
+- alternatives
+- recommendations
+
+Return in exact text format requested by system prompt.
+`
+  : `
+Analyze:
+- social branding strength
+- username memorability
+- platform consistency
+- startup identity quality
+- collision probability
+- social-first branding fit
+
+Return concise JSON only.
+`
+}
+`;
+
+  try{
+
+    let raw='';
+
+    if(prov==='anthropic'){
+
+      const r=await fetch(
+        'https://api.anthropic.com/v1/messages',
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'x-api-key':key,
+            'anthropic-version':'2023-06-01'
+          },
+          body:JSON.stringify({
+            model,
+            max_tokens:1200,
+            system:SYS,
+            messages:[
+              {
+                role:'user',
+                content:usr
+              }
+            ]
+          })
+        }
+      );
+
+      const d=await r.json();
+
+      raw=d.content?.[0]?.text || '';
+
+    }else if(prov==='openai'){
+
+      const r=await fetch(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+key
+          },
+          body:JSON.stringify({
+            model,
+            temperature:.2,
+            messages:[
+              {
+                role:'system',
+                content:SYS
+              },
+              {
+                role:'user',
+                content:usr
+              }
+            ]
+          })
+        }
+      );
+
+      const d=await r.json();
+
+      raw=d.choices?.[0]?.message?.content || '';
+
+    }else{
+
+  let data=null;
+
+  const r=await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        system_instruction:{
+          parts:[{
+            text:GEMINI_TM_SYS
+          }]
+        },
+
+        contents:[
+          {
+            role:'user',
+            parts:[{
+              text:usr
+            }]
+          }
+        ],
+
+       generationConfig:{
+  temperature:0,
+  topP:.2,
+  maxOutputTokens:400,
+  thinkingConfig:{
+    thinkingBudget:0
+  
+}
+        }
+      })
+    }
+  );
+
+  if(!r.ok){
+
+    let errText='';
+
+    try{
+      errText=await r.text();
+    }catch(e){}
+
+    console.error(
+      'Gemini API Error:',
+      r.status,
+      errText
+    );
+
+    renderResult({
+      tier:'moderate',
+      valuation:'$--',
+      summary:'Gemini temporarily unavailable',
+      signals:[
+        'Google API issue'
+      ],
+      alternatives:[]
+    });
+
+    return;
+  }
+
+  const d=await r.json();
+
+  const parts=
+    d.candidates?.[0]?.content?.parts || [];
+
+  raw=parts
+    .map(p=>p.text||'')
+    .join('')
+    .trim();
+
+  console.log('GEMINI RAW:',raw);
+
+  const strengthMatch =
+  raw.match(/strength:\s*([^\n]+)/i);
+
+const summaryMatch =
+  raw.match(/summary:\s*([^\n]+)/i);
+
+const platformMatch =
+  raw.match(
+    /platform fit:\s*([\s\S]*?)(strengths:|weaknesses:|alternatives:|recommendations:|$)/i
+  );
+
+const strengthsMatch =
+  raw.match(
+    /strengths:\s*([\s\S]*?)(weaknesses:|alternatives:|recommendations:|$)/i
+  );
+
+const weaknessesMatch =
+  raw.match(
+    /weaknesses:\s*([\s\S]*?)(alternatives:|recommendations:|$)/i
+  );
+
+const alternativesMatch =
+  raw.match(
+    /alternatives:\s*([\s\S]*?)(recommendations:|$)/i
+  );
+
+const recommendationsMatch =
+  raw.match(
+    /recommendations:\s*([\s\S]*)$/i
+  );
+
+function parseBullets(str){
+
+  if(!str) return [];
+
+  return str
+    .split(/\n\s*[-•]\s*/)
+    .map(s=>s.trim())
+    .filter(Boolean);
+}
+
+data={
+
+  strength:
+    strengthMatch?.[1]
+      ?.trim()
+      ?.toLowerCase() || 'moderate',
+
+  summary:
+    summaryMatch?.[1]
+      ?.trim() ||
+      'Analysis completed',
+
+  platform_fit:
+    parseBullets(platformMatch?.[1]),
+
+  strengths:
+    parseBullets(strengthsMatch?.[1]),
+
+  weaknesses:
+    parseBullets(weaknessesMatch?.[1]),
+
+  alternatives:
+    parseBullets(alternativesMatch?.[1]),
+
+  recommendations:
+    parseBullets(recommendationsMatch?.[1])
+};
+
+console.log('PARSED:',data);
+
+renderResult(data);
+  return;
+}
+
+   
+
+    let clean=String(raw || '')
+  .replace(/```json/gi,'')
+  .replace(/```/g,'')
+  .trim();
+
+let data=null;
+
+try{
+
+  // normal parse first
+  data=JSON.parse(clean);
+
+}catch(e){
+
+  try{
+
+    // extract first JSON object
+    const start=clean.indexOf('{');
+    const end=clean.lastIndexOf('}');
+
+    if(start!==-1 && end!==-1){
+
+      const fixed=
+        clean.substring(start,end+1);
+
+      data=JSON.parse(fixed);
+    }
+
+  }catch(e2){}
+}
+
+// final fallback
+if(!data){
+
+  console.error('RAW:',raw);
+
+  data={
+    risk:'unknown',
+    score:0,
+    summary:'Unable to analyze response',
+    signals:[
+      'Model returned malformed output'
+    ],
+    alternatives:[]
+  };
+}
+
+renderResult(data);
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(
+      'Analysis failed. Check console for details.'
+    );
+
+  }finally{
+
+    document.getElementById('loading')
+      .style.display='none';
+  }
+}
+
+function renderResult(data){
+
+  const result=
+    document.getElementById('result');
+
+  result.style.display='block';
+
+  const strength=
+    String(data.strength || 'moderate')
+      .toLowerCase();
+
+  const badge=
+    document.getElementById('tierBadge');
+
+  badge.textContent=
+    strength.charAt(0).toUpperCase()+
+    strength.slice(1)+' Handle';
+
+  badge.className='badge '+(
+    strength==='elite'
+      ? 'low'
+      : strength==='strong'
+        ? 'low'
+        : strength==='moderate'
+          ? 'medium'
+          : 'high'
+  );
+
+  document.getElementById('valuation')
+    .textContent=
+      strength==='elite'
+        ? '95'
+        : strength==='strong'
+          ? '84'
+          : strength==='moderate'
+            ? '68'
+            : '42';
+
+  document.getElementById('summary')
+    .textContent=data.summary || '';
+
+  function renderList(id,items){
+
+  const el=document.getElementById(id);
+
+  if(!el) return;
+
+  el.innerHTML='';
+
+  // convert strings into arrays safely
+  if(typeof items==='string'){
+
+    items=[items];
+  }
+
+  // prevent non-array crashes
+  if(!Array.isArray(items)){
+
+    items=[];
+  }
+
+  items.forEach(item=>{
+
+    const div=document.createElement('div');
+
+    div.className='item';
+
+    div.textContent=item;
+
+    el.appendChild(div);
+  });
+}
+
+  renderList(
+    'platformfit',
+    data.platform_fit
+  );
+
+  renderList(
+    'signals',
+    data.strengths
+  );
+
+  renderList(
+    'weaknesses',
+    data.weaknesses
+  );
+
+  renderList(
+    'alternatives',
+    data.alternatives
+  );
+
+  renderList(
+    'recommendations',
+    data.recommendations
+  );
+}
+
+init();
+</script>
+
+</body>
+</html>

@@ -244,7 +244,72 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   color:var(--lime);
   transform:translateY(-1px);
 }
+.tools-section{
+  margin-top:34px;
+  padding-top:28px;
+  border-top:1px solid var(--border);
+}
 
+.tools-head{
+  font-family:var(--serif);
+  font-size:28px;
+  margin-bottom:18px;
+}
+
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.tool-card{
+  text-decoration:none;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  transition:.2s ease;
+  display:block;
+}
+
+.tool-card:hover{
+  border-color:var(--lime);
+  transform:translateY(-2px);
+}
+
+.tool-icon{
+  font-size:28px;
+  margin-bottom:14px;
+}
+
+.tool-title{
+  color:var(--text);
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.tool-sub{
+  color:var(--muted2);
+  font-size:14px;
+  line-height:1.6;
+}
+
+.tool-card.soon{
+  opacity:.55;
+  pointer-events:none;
+}
+
+@media(max-width:800px){
+
+  .tools-grid{
+    grid-template-columns:1fr;
+  }
+
+  .tool-card{
+    padding:18px;
+  }
+}
 @media(max-width:800px){
 
   .footer-inner{
@@ -429,7 +494,72 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="esub">Claude, GPT-4o, or Gemini generates 10 VC-vetted brand names with live .com/.ai/.io/.xyz/.co checks</div>
   </div>
 </div>
+<div class="rwrap">
 
+  <div class="tools-section">
+
+    <div class="tools-head">
+      BrandLab Tools
+    </div>
+
+    <div class="tools-grid">
+
+      <a href="trademarks.html" class="tool-card">
+        <div class="tool-icon">™</div>
+
+        <div class="tool-title">
+          Trademark Checker
+        </div>
+
+        <div class="tool-sub">
+          Analyze legal conflict probability,
+          startup overlap, and safer alternatives.
+        </div>
+      </a>
+
+      <a href="valuation.html" class="tool-card">
+        <div class="tool-icon">💎</div>
+
+        <div class="tool-title">
+          Domain Valuation
+        </div>
+
+        <div class="tool-sub">
+          Estimate startup brand value,
+          liquidity, and aftermarket potential.
+        </div>
+      </a>
+
+      <a href="handles.html" class="tool-card">
+        <div class="tool-icon">🌐</div>
+
+        <div class="tool-title">
+          Social Handle Checker
+        </div>
+
+        <div class="tool-sub">
+          Analyze username, startup branding consistency,
+      and social identity strength across modern platforms.
+        </div>
+      </a>
+
+      <a href="#" class="tool-card soon">
+        <div class="tool-icon">📈</div>
+
+        <div class="tool-title">
+          VC Brand Score
+        </div>
+
+        <div class="tool-sub">
+          Coming soon
+        </div>
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
 <footer class="footer">
   <span>BrandLab — Multi-provider AI naming engine</span>
   <span>Training: a16z · YC · NameBio · Crunchbase · TechCrunch · GoDaddy Auctions</span>
@@ -919,6 +1049,8 @@ function renderCards(names,tlds){
     </div>`;
   });
   h+='</div>';
+
+
   document.getElementById('results').innerHTML=h;
   
   // Start domain checks
@@ -1202,23 +1334,5 @@ document.addEventListener('keydown',(e)=>{
 });
 </script>
 </body>
-<footer class="footer">
 
-  <div class="footer-inner">
-
-    <a href="index.html" class="fbtn">
-      Brand Generator
-    </a>
-
-    <a href="trademarks.html" class="fbtn">
-      Trademark Checker
-    </a>
-
-    <a href="appraisal.html" class="fbtn">
-      Domain Appraisal
-    </a>
-
-  </div>
-
-</footer>
 </html>
