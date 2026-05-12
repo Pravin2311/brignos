@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="icon" href="data:,">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -81,6 +82,21 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .field select,.field input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:10px 13px;border-radius:8px;outline:none;appearance:none;transition:border-color .2s}
 .field select:focus,.field input:focus{border-color:var(--lime)}
 .field select option{background:#1a1a22}
+.tld-check{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--muted2);
+  cursor:pointer;
+}
+
+.tld-check input{
+  accent-color:var(--lime);
+  width:15px;
+  height:15px;
+}
 .model-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
 .mchip{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
 .mchip:hover{color:var(--text);border-color:var(--border2)}
@@ -362,7 +378,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 <!-- HERO -->
 <section class="hero">
   <div>
-    <h1>Names that get<br><em>funded.</em><br>Domains you own.</h1>
+    <h1>Names that get<br><em>funded.</em><br>Domains actually available.</h1>
     <p>Real-time AI brand generator trained on a16z, YC, NameBio & Crunchbase data — with live .com, .ai, .io, .xyz, .co availability. Works with Claude, GPT-4o, or Gemini.</p>
   </div>
   <div class="chips">
@@ -438,16 +454,26 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
       </select>
     </div>
     <div class="field">
-      <label>Primary TLD</label>
-      <select id="tld">
-        <option value="mix">Mixed TLDs (recommended)</option>
-        <option value="com">.com (universal)</option>
-        <option value="ai">.ai (AI-native)</option>
-        <option value="io">.io (SaaS / dev)</option>
-        <option value="co">.co (modern)</option>
-        <option value="xyz">.xyz (Web3 / emerging)</option>
-      </select>
-    </div>
+  <label>Primary TLD</label>
+
+  <select id="tld">
+    <option value="mix">Mixed TLDs (recommended)</option>
+    <option value="com">.com (universal)</option>
+    <option value="ai">.ai (AI-native)</option>
+    <option value="io">.io (SaaS / dev)</option>
+    <option value="co">.co (modern)</option>
+    <option value="xyz">.xyz (Web3 / emerging)</option>
+  </select>
+
+  <label class="tld-check">
+    <input
+      type="checkbox"
+      id="strictTld"
+    >
+    <span>Prioritize available primary TLD names</span>
+  </label>
+</div>
+
     <div class="field">
       <label>Target audience</label>
       <select id="aud">
@@ -612,12 +638,12 @@ const PROVS = {
 };
 
 // Expanded TLD config with NameBio/GoDaddy priority ordering [[34]][[17]]
-const TLDS={
-  com:['.com','.co','.io','.ai','.xyz'],
-  io:['.io','.com','.ai','.co','.xyz'],
-  ai:['.ai','.io','.com','.co','.xyz'],
-  co:['.co','.com','.io','.ai','.xyz'],
-  xyz:['.xyz','.com','.io','.ai','.co'],
+const TLDS = {
+  com:['.com'],
+  ai:['.ai'],
+  io:['.io'],
+  co:['.co'],
+  xyz:['.xyz'],
   mix:['.com','.ai','.io','.xyz','.co']
 };
 
@@ -710,59 +736,52 @@ Output Format (exactly 10 objects):
   "why_it_works":"Concise rationale referencing training data patterns",
   "score":{"brand_strength":88,"memorability":92,"global_fit":85,"trend_alignment":90},
   "colors":["#c8f04a","#09090b"],
-  "avoid_reason":"velo.com taken; velo.ai available per RDAP check",
+  
   "language_suitability":["en","es","de","ja"],
   "word_count":1
 }`;
 const GEMINI_SYS = `
-You are a world-class startup naming strategist trained on:
-- a16z portfolio naming patterns
-- YC alumni naming structures
-- TechCrunch startup trends
-- Crunchbase funding-stage naming
-- NameBio domain sales
-- GoDaddy Auctions aftermarket trends
+You are an elite VC startup naming strategist.
 
-Return ONLY valid JSON array.
+Return ONLY valid raw JSON.
 
-Rules:
+RULES:
 - No markdown
-- No explanation
+- No explanations
 - No code fences
-- Exactly 6 objects
+- EXACTLY 5 objects
 - Compact JSON only
-- Complete full JSON
+- Finish complete JSON
 - No trailing commas
 
-Naming principles:
-- VC-backable names
-- Globally pronounceable
-- Strong domain potential
-- Modern 2026 startup style
-- Avoid overused suffixes
+FORMAT:
 
-Format:
 [
 {
-"name":"Velo",
-"tagline":"Fast workflows",
-"naming_pattern":"Minimal",
+"name":"Klyro",
+"tagline":"AI workflows simplified",
+"naming_pattern":"Abstract",
 "vc_signal":"VC-ready",
-"why_it_works":"Short memorable",
+"why_it_works":"Short memorable modern",
 "score":{
-"brand_strength":88,
-"memorability":90,
-"global_fit":85,
-"trend_alignment":87
-},
-"colors":["#c8f04a","#09090b"],
-"avoid_reason":"velo.com taken",
-"language_suitability":["en"],
-"word_count":1
+"brand_strength":90,
+"memorability":91,
+"global_fit":88,
+"trend_alignment":89
+}
 }
 ]
 `;
-function USR(industry,style,aud,kw,tlds,lang,wc){
+function USR(
+  industry,
+  style,
+  aud,
+  kw,
+  tlds,
+  lang,
+  wc,
+  strictTld=false
+){
   const langInstructions={
     'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.',
     'global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.',
@@ -778,12 +797,50 @@ function USR(industry,style,aud,kw,tlds,lang,wc){
   };
 
   return `Create ${
-  prov==='gemini' ? 6 : 10
+  prov==='gemini' ? 5 : 10
 } brand names for a "${industry}" startup.
 Language: ${lang} — ${langInstructions[lang]}
 Name Length: ${wc} words — ${wordInstructions[wc]}
 Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
-Audience: ${aud} | TLDs: ${tlds.join(', ')}${kw?'\nKeywords: '+kw:''}
+Audience: ${aud} | TLDs: ${tlds.join(', ')}
+${
+  strictTld &&
+tlds[0] !== '.com'
+  ? `
+CRITICAL HARD REQUIREMENT:
+
+ALL generated names MUST prioritize ${tlds[0]} availability.
+
+Rules:
+- Avoid common dictionary words
+- Avoid existing startup-style names
+- Prefer invented brandables
+- Prefer uncommon phonetics
+- Prefer low-competition naming structures
+- Assume user wants domains AVAILABLE in ${tlds[0]}
+
+At least 80% of generated names should likely have ${tlds[0]} available.
+`
+  : strictTld
+    ? `
+CRITICAL HARD REQUIREMENT:
+
+The user specifically wants AVAILABLE .com domains.
+
+Rules:
+- ALL generated names should optimize for .com availability
+- Avoid common English words
+- Avoid popular startup suffixes
+- Avoid existing YC/a16z style collisions
+- Prefer invented 5-8 letter brandables
+- Prefer unusual consonant-vowel structures
+- Avoid ultra-short premium words already likely taken
+
+At least 80% of generated names should likely have .com available.
+`
+    : ''
+}
+${kw?'\nKeywords: '+kw:''}
 
 Data-Driven Rules:
 • Reference NameBio sales patterns: short .coms >$10k, brandable .ai rising 300% YoY
@@ -797,7 +854,7 @@ ${lang!=='en'
 }
 
 ${prov==='gemini'
-  ? 'Return compact JSON array of exactly 6 objects.'
+  ? 'Return compact JSON array of exactly 5 objects.'
   : 'Return JSON array of exactly 10 objects.'
 }
 
@@ -835,21 +892,22 @@ async function callGemini(sys,usr,cb){
         'Content-Type':'application/json'
       },
       body:JSON.stringify({
-        system_instruction:{
-          parts:[{text:sys}]
-        },
+  system_instruction:{
+    parts:[{text:sys}]
+  },
 
-        contents:[{
-          role:'user',
-          parts:[{text:usr}]
-        }],
+  contents:[{
+    role:'user',
+    parts:[{text:usr}]
+  }],
 
-        generationConfig:{
-          temperature:0.1,
-          topP:0.7,
-          maxOutputTokens:900
-        }
-      })
+  generationConfig:{
+    temperature:0.2,
+    topP:0.8,
+    maxOutputTokens:8192,
+    responseMimeType:"application/json"
+  }
+})
     }
   );
 
@@ -919,6 +977,9 @@ async function go(){
   const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
   
   const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix;
+  const strictTld =
+  document.getElementById('strictTld')
+    ?.checked;
   // const sys=SYS,usr=USR(ind,document.getElementById('style').value,document.getElementById('aud').value,document.getElementById('kw').value,tlds,language,wordCount);
   const sys =
   prov === 'gemini'
@@ -932,7 +993,8 @@ const usr = USR(
   document.getElementById('kw').value,
   tlds,
   language,
-  wordCount
+  wordCount,
+  strictTld
 );
   let sbuf='';
   const onChunk=t=>{sbuf+=t;ps.textContent=sbuf.slice(-160);};
@@ -949,47 +1011,85 @@ const usr = USR(
     // Parse and sanitize JSON
     //const clean=full.replace(/```json|```/g,'').trim();
     //const names=JSON.parse(clean);
-    let clean = String(full || '')
+   
+
+let clean = String(full || '')
   .replace(/```json/gi,'')
   .replace(/```/g,'')
   .trim();
 
-let names=null;
+console.log('RAW GEMINI:', clean);
 
+let names = null;
+
+// attempt 1
 try{
-  names=JSON.parse(clean);
+  names = JSON.parse(clean);
 }catch(e){}
 
-if(!names){
+// attempt 2
+if(!Array.isArray(names)){
 
-  const match=clean.match(/\[[\s\S]*\]/);
+  const start = clean.indexOf('[');
+  const end = clean.lastIndexOf(']');
 
-  if(match){
+  if(start !== -1 && end !== -1){
 
-    clean=match[0]
+    clean = clean.slice(start,end+1);
+
+    clean = clean
       .replace(/,\s*}/g,'}')
       .replace(/,\s*]/g,']')
       .replace(/\n/g,' ')
       .replace(/\r/g,' ')
+      .replace(/\t/g,' ')
+      .replace(/\s+/g,' ')
       .trim();
 
     try{
-      names=JSON.parse(clean);
+      names = JSON.parse(clean);
     }catch(e){}
   }
 }
 
-if(
-  Array.isArray(names) &&
-  prov==='gemini'
-){
-  names=names.slice(0,6);
+// attempt 3 — recover truncated Gemini JSON
+if(!Array.isArray(names) && prov==='gemini'){
+
+  try{
+
+    const repaired =
+      clean
+        .replace(/,\s*}/g,'}')
+        .replace(/,\s*]/g,']');
+
+    const arrStart = repaired.indexOf('[');
+
+    if(arrStart !== -1){
+
+      let partial = repaired.slice(arrStart);
+
+      // force close array if Gemini truncated
+      if(!partial.endsWith(']')){
+        partial += ']';
+      }
+
+      names = JSON.parse(partial);
+    }
+
+  }catch(e){}
 }
 
 if(!Array.isArray(names)){
-  console.error(full);
-  throw new Error('AI returned invalid JSON');
+  console.error('FAILED RAW:', full);
+  throw new Error('Gemini returned malformed JSON');
 }
+
+// hard limit
+if(prov==='gemini'){
+  names = names.filter(n => n && n.name);
+}
+
+
     // Store for export
     lastGeneratedNames=names.map(n=>({
       ...n,
