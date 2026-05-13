@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BrandLab — AI Brand Name Generator</title>
+<title>autoDNG — AI auto Name Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,7 +29,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 /* HEADER */
 .header{position:sticky;top:0;z-index:200;background:rgba(9,9,11,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .header-inner{max-width:1140px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{font-family:var(--serif);font-size:20px;letter-spacing:-.3px;white-space:nowrap;flex-shrink:0}
+.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
 .logo em{color:var(--lime);font-style:italic}
 .hright{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:nowrap}
 
@@ -355,16 +355,26 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 }
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PVV83DRSFT');
+</script>
 <body><div class="app">
 
 <!-- HEADER -->
 <div class="header"><div class="header-inner">
-  <div class="logo">Brand<em>Lab</em></div>
+  <div class="logo">auto<em>DNG</em></div>
   <div class="hright">
     <div class="ptabs" id="ptabs">
-      <button class="ptab on" onclick="switchProv('anthropic',this)">Anthropic</button>
+      <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
       <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
       <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+      <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
     </div>
     <div class="kwrap">
       <input type="password" id="akey" placeholder="Paste API key…" autocomplete="off" oninput="onKey()">
@@ -380,9 +390,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   <div class="hb-txt">
     <strong>Get your free API key</strong> — choose a provider in the header, then grab a key:
     <div class="hb-links">
+      <a class="hblink" href="https://openrouter.ai/keys" target="_blank">→ OpenRouter</a>
       <a class="hblink" href="https://console.anthropic.com/settings/keys" target="_blank">→ Anthropic Console</a>
       <a class="hblink" href="https://platform.openai.com/api-keys" target="_blank">→ OpenAI Platform</a>
       <a class="hblink" href="https://aistudio.google.com/app/apikey" target="_blank">→ Google AI Studio (free)</a>
+      <a class="hblink" href="https://console.groq.com/keys" target="_blank">→ Groq Console</a>
     </div>
     <div style="margin-top:8px;font-size:12px">Anthropic: starts with <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-ant-</code> &nbsp;|&nbsp; OpenAI: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-</code> &nbsp;|&nbsp; Gemini: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">AIza</code></div>
   </div>
@@ -399,7 +411,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="chip"><span class="cdot" style="background:var(--lime)"></span>a16z + YC naming patterns<span class="cval">6,130+</span></div>
     <div class="chip"><span class="cdot" style="background:var(--teal)"></span>NameBio sales intelligence<span class="cval">live</span></div>
     <div class="chip"><span class="cdot" style="background:var(--amber)"></span>5 TLDs checked: .com .ai .io .xyz .co<span class="cval">RDAP</span></div>
-    <div class="chip"><span class="cdot" style="background:var(--purple)"></span>LLM providers<span class="cval">Claude · GPT · Gemini</span></div>
+    <div class="chip"><span class="cdot" style="background:var(--purple)"></span>LLM providers<span class="cval">Claude · GPT · Gemini · Groq · OpenRouter</span></div>
     <div class="chip"><span class="cdot" style="background:var(--rose)"></span>Global + English modes<span class="cval">new</span></div>
   </div>
 </section>
@@ -656,7 +668,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   <div class="tools-section">
 
     <div class="tools-head">
-      BrandLab Tools
+      autoDNG Tools
     </div>
 
     <div class="tools-grid">
@@ -719,7 +731,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 
 </div>
 <footer class="footer">
-  <span>BrandLab — Multi-provider AI naming engine</span>
+  <span>autoDNG — Multi-provider AI naming engine</span>
   <span>Training: a16z · YC · NameBio · Crunchbase · TechCrunch · GoDaddy Auctions</span>
 </footer>
 
@@ -755,17 +767,83 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 <script>
 // ── Config ─────────────────────────────────────────────────────────
 const PROVS = {
-  anthropic:{ph:'sk-ant-api03-…',val:k=>k.startsWith('sk-ant'),models:[{id:'claude-sonnet-4-20250514',l:'Claude Sonnet 4'},{id:'claude-opus-4-5',l:'Claude Opus 4.5'},{id:'claude-haiku-4-5-20251001',l:'Claude Haiku 4.5'}]},
-  openai:   {ph:'sk-proj-…',     val:k=>k.startsWith('sk-'),   models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'},{id:'o3-mini',l:'o3-mini'}]},
- gemini:{
-  ph:'AIzaSy…',
-  val:k=>k.startsWith('AIza'),
+
+  openrouter:{
+    ph:'sk-or-…',
+    val:k=>k.startsWith('sk-or-'),
+    models:[
+      {
+        id:'deepseek/deepseek-chat',
+        l:'DeepSeek Chat'
+      },
+      {
+        id:'meta-llama/llama-3.3-70b-instruct',
+        l:'Llama 3.3'
+      },
+      {
+        id:'google/gemini-2.0-flash-001',
+        l:'Gemini Flash'
+      }
+    ]
+  },
+
+  openai:{
+    ph:'sk-proj-…',
+    val:k=>k.startsWith('sk-'),
+    models:[
+      {
+        id:'gpt-4o',
+        l:'GPT-4o'
+      },
+      {
+        id:'gpt-4o-mini',
+        l:'GPT-4o Mini'
+      }
+    ]
+  },
+
+  gemini:{
+    ph:'AIzaSy…',
+    val:k=>k.startsWith('AIza'),
+    models:[
+      {
+        id:'gemini-2.5-flash',
+        l:'Gemini 2.5 Flash'
+      },
+      {
+        id:'gemini-2.5-pro',
+        l:'Gemini 2.5 Pro'
+      }
+    ]
+  },
+
+  groq:{
+  ph:'gsk_…',
+
+  val:k=>k.startsWith('gsk_'),
+
   models:[
-    {id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},
-    {id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}
+
+    {
+      id:'llama-3.3-70b-versatile',
+      l:'Llama 3.3 70B'
+    },
+
+    {
+      id:'llama-3.1-8b-instant',
+      l:'Llama 3.1 Instant'
+    },
+
+    {
+      id:'qwen-qwq-32b',
+      l:'Qwen QwQ 32B'
+    }
+
   ]
-},
-  // gemini:   {ph:'AIzaSy…',       val:k=>k.length>20,           models:[{id:'gemini-2.0-flash',l:'Gemini 2.0 Flash'},{id:'gemini-2.5-pro-preview-05-06',l:'Gemini 2.5 Pro'},{id:'gemini-1.5-flash',l:'Gemini 1.5 Flash'}]},
+}
+
+  
+
 };
 
 // Expanded TLD config with NameBio/GoDaddy priority ordering [[34]][[17]]
@@ -1093,14 +1171,62 @@ Raw JSON only.`;
 }
 
 // ── API callers with rate limiting ─────────────────────────────────
-async function callAnthropic(sys,usr,cb){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
-    body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,system:sys,messages:[{role:'user',content:usr}]})
-  });
-  if(!r.ok)throw new Error(`Anthropic ${r.status}: ${await r.text()}`);
-  return readSSE(r,ev=>{const t=ev.delta?.text;if(t)cb(t);return t||'';});
+async function callOpenRouter(sys,usr,cb){
+
+  const r = await fetch(
+    'https://openrouter.ai/api/v1/chat/completions',
+    {
+      method:'POST',
+
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+key
+      },
+
+      body:JSON.stringify({
+
+        model:mdl,
+
+        temperature:0.7,
+
+        max_tokens:4000,
+
+        stream:false,
+
+        messages:[
+          {
+            role:'system',
+            content:sys
+          },
+          {
+            role:'user',
+            content:usr
+          }
+        ]
+
+      })
+    }
+  );
+
+  const data = await r.json();
+
+  if(!r.ok){
+
+    throw new Error(
+      `OpenRouter ${r.status}: ${
+        data.error?.message || 'Unknown error'
+      }`
+    );
+
+  }
+
+  const text =
+    data.choices?.[0]?.message?.content || '';
+
+  cb(text);
+
+  return text;
+
 }
 
 async function callOpenAI(sys,usr,cb){
@@ -1163,7 +1289,63 @@ async function callGemini(sys,usr,cb){
 
   return text;
 }
+async function callGroq(sys,usr,cb){
 
+  const r = await fetch(
+    'https://api.groq.com/openai/v1/chat/completions',
+    {
+      method:'POST',
+
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+key
+      },
+
+      body:JSON.stringify({
+
+        model:mdl,
+
+        temperature:0.7,
+
+        max_tokens:4000,
+
+        stream:false,
+
+        messages:[
+          {
+            role:'system',
+            content:sys
+          },
+          {
+            role:'user',
+            content:usr
+          }
+        ]
+
+      })
+    }
+  );
+
+  const data = await r.json();
+
+  if(!r.ok){
+
+    throw new Error(
+      `Groq ${r.status}: ${
+        data.error?.message || 'Unknown error'
+      }`
+    );
+
+  }
+
+  const text =
+    data.choices?.[0]?.message?.content || '';
+
+  cb(text);
+
+  return text;
+
+}
 async function readSSE(resp,extract){
   const reader=resp.body.getReader(),dec=new TextDecoder();
   let buf='',full='';
@@ -1232,9 +1414,51 @@ const usr = USR(
   
   try{
     let full;
-    if(prov==='anthropic')full=await callAnthropic(sys,usr,onChunk);
-    else if(prov==='openai')full=await callOpenAI(sys,usr,onChunk);
-    else full=await callGemini(sys,usr,onChunk);
+    if(prov==='anthropic'){
+
+  full = await callAnthropic(
+    sys,
+    usr,
+    onChunk
+  );
+
+}
+else if(prov==='openai'){
+
+  full = await callOpenAI(
+    sys,
+    usr,
+    onChunk
+  );
+
+}
+else if(prov==='gemini'){
+
+  full = await callGemini(
+    sys,
+    usr,
+    onChunk
+  );
+
+}
+else if(prov==='groq'){
+
+  full = await callGroq(
+    sys,
+    usr,
+    onChunk
+  );
+
+}
+else if(prov==='openrouter'){
+
+  full = await callOpenRouter(
+    sys,
+    usr,
+    onChunk
+  );
+
+}
     
     clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent='Done! Checking domains…';
     setTimeout(()=>pw.classList.remove('on'),2200);
@@ -1589,7 +1813,7 @@ function downloadPDF(names){
   // Header
   doc.setFont('helvetica','bold');
   doc.setFontSize(18);
-  doc.text('BrandLab — Brand Name Report',14,20);
+  doc.text('autoDNG — Brand Name Report',14,20);
   doc.setFontSize(10);
   doc.setFont('helvetica','normal');
   doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);
@@ -1641,7 +1865,7 @@ function downloadPDF(names){
   // Footer
   doc.setFontSize(8);
   doc.setTextColor(100);
-  doc.text('BrandLab — AI Brand Name Generator • brandlab.example.com',14,285);
+  doc.text('autoDNG — AI Brand Name Generator • brandlab.example.com',14,285);
   
   doc.save(`brandlab-export-${new Date().toISOString().slice(0,10)}.pdf`);
 }

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>autoDNG — Social Handle Checker</title>
-<link rel="icon" href="data:,">
+<title>BrandLab — VC Brand Score</title>
+<link rel="icon" href=",">
 <style>
 :root{
   --bg:#09090b;--bg2:#111114;--card:#141418;--border:#23232a;
@@ -23,7 +23,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);lin
 /* Header */
 .header{position:sticky;top:0;z-index:20;background:rgba(9,9,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .header-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:18px}
-.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
+.logo{font-weight:800;font-size:20px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
 .hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ptabs{display:flex;gap:8px}.ptab{border:1px solid var(--border);background:var(--bg2);color:var(--muted);padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-family:var(--mono);transition:all .15s}.ptab.on{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}.ptab:hover:not(.on){border-color:var(--border);color:var(--text)}
 .kwrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -50,14 +50,10 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 /* Result Section */
 .result{margin-top:28px;display:none;animation:fadeUp .3s ease}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* Handle Header */
-.handle-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.handle-display{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--lime);display:flex;align-items:center;gap:8px}.handle-display::before{content:'@';color:var(--muted)}
-.tier-badge{padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}.tier-elite{background:var(--gradient-elite);color:#000}.tier-strong{background:var(--gradient-strong);color:#000}.tier-moderate{background:var(--gradient-moderate);color:#000}.tier-weak{background:var(--gradient-weak);color:#000}
+/* Score Header */
+.score-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.brand-display{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--lime)}.tier-badge{padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}.tier-elite{background:var(--gradient-elite);color:#000}.tier-strong{background:var(--gradient-strong);color:#000}.tier-moderate{background:var(--gradient-moderate);color:#000}.tier-weak{background:var(--gradient-weak);color:#000}
 .score-display{text-align:right}.score-amount{font-size:clamp(28px,4vw,42px);font-weight:900;line-height:1}.score-label{color:var(--muted);font-size:12px;margin-top:4px}
-
-/* Platform Grid */
-.platforms{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.platform-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;transition:all .15s}.platform-card:hover{border-color:var(--lime);transform:translateY(-2px)}.platform-icon{font-size:24px;margin-bottom:8px}.platform-name{font-weight:600;font-size:13px;margin-bottom:4px}.platform-status{font-size:11px;padding:4px 8px;border-radius:99px;display:inline-block}.status-available{background:rgba(86,227,159,.15);color:var(--green)}.status-taken{background:rgba(255,99,99,.15);color:var(--red)}.status-unknown{background:var(--border);color:var(--muted)}
 
 /* Animated Gauge */
 .gauge-wrap{margin:20px 0;padding:16px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)}
@@ -71,10 +67,10 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 /* Summary & Lists */
 .summary{background:var(--bg2);border-left:3px solid var(--lime);border-radius:0 12px 12px 0;padding:14px 16px;margin:16px 0;line-height:1.6;font-size:14px}
 .section-title{margin:24px 0 12px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:flex;align-items:center;gap:8px}.section-title::before{content:'';width:3px;height:14px;background:var(--lime);border-radius:2px}
-.list{display:flex;flex-direction:column;gap:8px}.item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;line-height:1.5;font-size:14px;display:flex;align-items:flex-start;gap:10px}.item::before{content:'✓';color:var(--green);font-weight:700;font-size:14px}.item.weak::before{content:'⚠';color:var(--yellow)}.item.alt::before{content:'💡';color:var(--blue)}.item.rec::before{content:'🎯';color:var(--purple)}
+.list{display:flex;flex-direction:column;gap:8px}.item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;line-height:1.5;font-size:14px;display:flex;align-items:flex-start;gap:10px}.item::before{content:'✓';color:var(--green);font-weight:700;font-size:14px}.item.weak::before{content:'⚠';color:var(--yellow)}.item.exp::before{content:'🚀';color:var(--blue)}.item.comp::before{content:'📊';color:var(--purple)}.item.rec::before{content:'🎯';color:var(--pink)}
 
-/* Alternatives Grid */
-.alts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}.alt-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center}.alt-name{font-weight:600;color:var(--lime);font-family:var(--mono)}.alt-check{background:var(--border);color:var(--text);border:none;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}.alt-check:hover{background:var(--lime);color:#000}
+/* Comparable Cards */
+.comps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}.comp-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px}.comp-name{font-weight:600;color:var(--lime)}.comp-similarity{color:var(--muted);font-size:12px}
 
 /* Export Row */
 .export-row{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}.export-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:var(--mono);transition:all .15s;display:flex;align-items:center;gap:6px}.export-btn:hover{border-color:var(--lime);background:var(--lime);color:#000}
@@ -92,18 +88,16 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 .info-panel{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;height:fit-content;position:sticky;top:90px}.info-title{font-weight:600;margin-bottom:12px;font-size:15px}.info-list{display:flex;flex-direction:column;gap:10px}.info-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted)}.info-item::before{content:'';width:6px;height:6px;background:var(--lime);border-radius:50%;margin-top:6px;flex-shrink:0}
 
 /* Responsive */
-@media(max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:40px}.factors{grid-template-columns:1fr}.platforms{grid-template-columns:repeat(2,1fr)}.alts-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:40px}.factors{grid-template-columns:1fr}.comps-grid{grid-template-columns:1fr}}
 @media(max-width:800px){
   .header-inner{flex-direction:column;align-items:stretch;gap:14px;padding:12px 14px;height:auto}
   .hright{width:100%;flex-direction:column;gap:12px}
   .ptabs{width:100%;display:flex;gap:8px}.ptab{flex:1;text-align:center;padding:12px 8px;font-size:11px}
-  .kwrap{width:100%;flex-direction:column;align-items:stretch}
-  .kwrap input,
-  .select{width:100%;}
+  .kwrap{width:100%;flex-direction:column;align-items:stretch}.kwrap input,.select{width:100}
   .row{grid-template-columns:1fr}.hero h1{font-size:34px;line-height:1.05}
   .wrap{padding:28px 14px 60px}.card{padding:18px;border-radius:18px}
   .actions{flex-direction:column}.btn{width:100%;justify-content:center}
-  .handle-header{flex-direction:column;align-items:flex-start;gap:12px}.score-display{text-align:left}
+  .score-header{flex-direction:column;align-items:flex-start;gap:12px}.score-display{text-align:left}
   .info-panel{position:static}
 }
 
@@ -118,20 +112,11 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 .mt-4{margin-top:16px}.mb-4{margin-bottom:16px}.flex{display:flex}.gap-2{gap:8px}.items-center{align-items:center}
 </style>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-PVV83DRSFT');
-</script>
 <body>
 
 <header class="header">
   <div class="header-inner">
-    <div class="logo">auto<span>DNG</span></div>
+    <div class="logo">Brand<span>Lab</span></div>
     <div class="hright">
       <div class="ptabs" role="tablist">
         <button class="ptab on" onclick="switchProv('openrouter',this)">OpenRouter</button>
@@ -152,15 +137,15 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 
 <div class="wrap">
   <section class="hero">
-    <h1>Social Handle Checker</h1>
-    <p>Analyze username availability, startup branding consistency, and social identity strength across X, Instagram, TikTok, LinkedIn, YouTube, and GitHub — with AI-powered collision detection and alternative suggestions.</p>
+    <h1>VC Brand Score</h1>
+    <p>Analyze investor perception, startup readiness, memorability, and venture-scale branding potential — with AI-powered scoring trained on YC, a16z, and top-tier startup naming patterns.</p>
   </section>
 
   <div class="grid">
     <div class="card">
       <div>
-        <label class="label" for="handle">Brand / Username *</label>
-        <input id="handle" class="input" placeholder="e.g. Linear" required>
+        <label class="label" for="brand">Startup Brand *</label>
+        <input id="brand" class="input" placeholder="e.g. Linear" required>
       </div>
 
       <div class="row">
@@ -185,8 +170,8 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
       </div>
 
       <div class="actions">
-        <button class="btn" id="analyzeBtn" onclick="analyzeHandle()">
-          <span class="btn-text">Analyze Social Handles</span>
+        <button class="btn" id="analyzeBtn" onclick="analyzeVC()">
+          <span class="btn-text">Analyze VC Score</span>
           <span class="spinner" style="display:none"></span>
         </button>
         <a href="index.html" style="text-decoration:none">
@@ -196,29 +181,23 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 
       <div id="loading" class="loading">
         <span class="spinner"></span>
-        <span>analyzing social identity...</span>
+        <span>analyzing investor perception...</span>
       </div>
 
       <div id="result" class="result">
-        <!-- Handle Header -->
-        <div class="handle-header">
+        <!-- Score Header -->
+        <div class="score-header">
           <div>
-            <div id="handleDisplay" class="handle-display">@linear</div>
+            <div id="brandDisplay" class="brand-display">Linear</div>
             <div id="tierBadge" class="tier-badge tier-moderate" style="margin-top:8px">
               <span id="tierIcon">✨</span>
-              <span id="tierText">Moderate Handle</span>
+              <span id="tierText">Moderate VC Signal</span>
             </div>
           </div>
           <div class="score-display">
             <div id="score" class="score-amount">68</div>
-            <div class="score-label">brand consistency score</div>
+            <div class="score-label">investor appeal score</div>
           </div>
-        </div>
-
-        <!-- Platform Availability -->
-        <div class="section-title">Platform Availability</div>
-        <div class="platforms" id="platforms">
-          <!-- Dynamically populated -->
         </div>
 
         <!-- Animated Gauge -->
@@ -236,15 +215,15 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
             <div class="factor-bar"><div class="factor-fill" id="f1b" style="width:0%"></div></div>
           </div>
           <div class="factor">
-            <div class="factor-head"><span class="factor-name">Consistency</span><span class="factor-val" id="f2">—</span></div>
+            <div class="factor-head"><span class="factor-name">Credibility</span><span class="factor-val" id="f2">—</span></div>
             <div class="factor-bar"><div class="factor-fill" id="f2b" style="width:0%"></div></div>
           </div>
           <div class="factor">
-            <div class="factor-head"><span class="factor-name">Simplicity</span><span class="factor-val" id="f3">—</span></div>
+            <div class="factor-head"><span class="factor-name">Scalability</span><span class="factor-val" id="f3">—</span></div>
             <div class="factor-bar"><div class="factor-fill" id="f3b" style="width:0%"></div></div>
           </div>
           <div class="factor">
-            <div class="factor-head"><span class="factor-name">Uniqueness</span><span class="factor-val" id="f4">—</span></div>
+            <div class="factor-head"><span class="factor-name">Differentiation</span><span class="factor-val" id="f4">—</span></div>
             <div class="factor-bar"><div class="factor-fill" id="f4b" style="width:0%"></div></div>
           </div>
         </div>
@@ -253,17 +232,21 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
         <div class="section-title">Analysis Summary</div>
         <div id="summary" class="summary">Loading analysis...</div>
 
-        <!-- Strengths -->
-        <div class="section-title">Strengths</div>
+        <!-- Investor Signals -->
+        <div class="section-title">Investor Signals</div>
         <div id="signals" class="list"></div>
 
         <!-- Weaknesses -->
         <div class="section-title">Considerations</div>
         <div id="weaknesses" class="list"></div>
 
-        <!-- Alternatives -->
-        <div class="section-title">Available Alternatives</div>
-        <div id="alternatives" class="alts-grid"></div>
+        <!-- Expansion Potential -->
+        <div class="section-title">Category Expansion</div>
+        <div id="expansion" class="list"></div>
+
+        <!-- Comparable Brands -->
+        <div class="section-title">Comparable Brands</div>
+        <div id="comparables" class="comps-grid"></div>
 
         <!-- Recommendations -->
         <div class="section-title">Action Plan</div>
@@ -273,10 +256,10 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
         <div class="export-row">
           <button class="export-btn" onclick="copyResults()">📋 Copy Report</button>
           <button class="export-btn" onclick="exportJSON()">⚙️ Export JSON</button>
-          <button class="export-btn" onclick="checkAvailability()">🔍 Check Live Availability</button>
+          <button class="export-btn" onclick="showInsights()">💡 View Insights</button>
         </div>
 
-        <div class="note">⚠️ AI-generated analysis for informational purposes only. Platform availability is simulated — always verify directly on each platform before committing to a handle.</div>
+        <div class="note">⚠️ AI-generated investor perception analysis for informational purposes only. Not financial advice. Always validate with human experts before major branding decisions.</div>
       </div>
     </div>
 
@@ -284,30 +267,31 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
     <div class="info-panel">
       <div class="info-title">🔍 What We Evaluate</div>
       <div class="info-list">
-        <div class="info-item">Username consistency across platforms</div>
-        <div class="info-item">Startup brand identity strength</div>
-        <div class="info-item">Memorability & typing simplicity</div>
-        <div class="info-item">Collision probability with existing brands</div>
-        <div class="info-item">Social-first naming optimization</div>
-        <div class="info-item">Founder-friendly handle structure</div>
+        <div class="info-item">Investor perception & startup credibility</div>
+        <div class="info-item">Memorability after first hearing</div>
+        <div class="info-item">Venture-scale naming potential</div>
+        <div class="info-item">SaaS & AI startup naming alignment</div>
+        <div class="info-item">Global pronunciation quality</div>
+        <div class="info-item">Category expansion flexibility</div>
+        <div class="info-item">Modern founder-brand compatibility</div>
       </div>
 
-      <div class="section-title mt-4">📊 Handle Tiers</div>
+      <div class="section-title mt-4">📊 VC Score Tiers</div>
       <div class="info-list">
-        <div class="info-item"><span class="tier-badge tier-elite" style="padding:4px 10px;font-size:11px">Elite</span> 90–100 — Premium, brandable, highly available</div>
-        <div class="info-item"><span class="tier-badge tier-strong" style="padding:4px 10px;font-size:11px">Strong</span> 75–89 — Solid startup potential, good availability</div>
-        <div class="info-item"><span class="tier-badge tier-moderate" style="padding:4px 10px;font-size:11px">Moderate</span> 50–74 — Niche appeal, some platforms taken</div>
-        <div class="info-item"><span class="tier-badge tier-weak" style="padding:4px 10px;font-size:11px">Weak</span> &lt;50 — High collision risk, limited availability</div>
+        <div class="info-item"><span class="tier-badge tier-elite" style="padding:4px 10px;font-size:11px">Elite</span> 90–100 — Premium, highly fundable, strong brand moat</div>
+        <div class="info-item"><span class="tier-badge tier-strong" style="padding:4px 10px;font-size:11px">Strong</span> 75–89 — Solid startup potential, good investor appeal</div>
+        <div class="info-item"><span class="tier-badge tier-moderate" style="padding:4px 10px;font-size:11px">Moderate</span> 50–74 — Niche appeal, may need brand refinement</div>
+        <div class="info-item"><span class="tier-badge tier-weak" style="padding:4px 10px;font-size:11px">Weak</span> &lt;50 — High risk, likely to face investor skepticism</div>
       </div>
 
       <div class="section-title mt-4">🎯 Recommended Workflow</div>
       <div class="info-list">
-        <div class="info-item">1. Generate startup names in autoDNG</div>
+        <div class="info-item">1. Generate startup names in BrandLab</div>
         <div class="info-item">2. Check trademark risk</div>
         <div class="info-item">3. Evaluate domain valuation</div>
-        <div class="info-item">4. Analyze social handle availability</div>
-        <div class="info-item">5. Secure handles on key platforms</div>
-        <div class="info-item">6. Launch consistent brand identity</div>
+        <div class="info-item">4. Analyze VC brand score</div>
+        <div class="info-item">5. Secure social handles & domains</div>
+        <div class="info-item">6. Pitch with confidence</div>
       </div>
     </div>
   </div>
@@ -325,92 +309,8 @@ const PROVS = {
 };
 
 // ── State ─────────────────────────────────────────────────────────
-let prov = localStorage.getItem('sh_p') || 'openrouter';
+let prov = localStorage.getItem('vc_p') || 'openrouter';
 let lastAnalysis = null;
-const RESERVED = [
-  'google','meta','apple','microsoft',
-  'openai','amazon','netflix',
-  'linear','notion','github',
-  'tesla','nike','uber',
-  'spotify','figma','airbnb'
-];
-
-function estimateHandleAvailability(handle){
-
-  const h =
-    handle.toLowerCase();
-
-  const out = {};
-
-  PLATFORMS.forEach(p=>{
-
-    let status = 'unknown';
-
-    // extremely common words
-    if(
-      RESERVED.includes(h)
-    ){
-
-      status = 'taken';
-
-    }
-
-    // ultra short names
-    else if(h.length <= 4){
-
-      status = 'taken';
-
-    }
-
-    // dictionary-like names
-    else if(
-      /^[a-z]+$/.test(h) &&
-      h.length <= 7
-    ){
-
-      status = 'taken';
-
-    }
-
-    // startup suffixes improve odds
-    else if(
-      /(hq|app|labs|ai|get|try)$/
-      .test(h)
-    ){
-
-      status = 'available';
-
-    }
-
-    // numbers reduce collision
-    else if(/\d/.test(h)){
-
-      status = 'available';
-
-    }
-
-    // underscores usually available
-    else if(h.includes('_')){
-
-      status = 'available';
-
-    }
-
-    // longer unique names
-    else if(h.length >= 10){
-
-      status = 'available';
-
-    }
-
-    out[p] = status;
-
-  });
-
-  return out;
-
-}
-const PLATFORMS = ['x', 'instagram', 'tiktok', 'linkedin', 'youtube', 'github'];
 
 // ── Init ──────────────────────────────────────────────────────────
 function init() {
@@ -418,7 +318,7 @@ function init() {
     btn.classList.toggle('on', btn.textContent.toLowerCase().includes(prov));
   });
 
-  const key = localStorage.getItem('sh_k_' + prov) || '';
+  const key = localStorage.getItem('vc_k_' + prov) || '';
   document.getElementById('apikey').value = key;
   document.getElementById('apikey').placeholder = PROVS[prov].ph;
   updateKeyStatus(key);
@@ -426,14 +326,14 @@ function init() {
 
   document.getElementById('apikey').addEventListener('input', e => {
     const val = e.target.value.trim();
-    localStorage.setItem('sh_k_' + prov, val);
+    localStorage.setItem('vc_k_' + prov, val);
     updateKeyStatus(val);
   });
   document.getElementById('model').addEventListener('change', e => {
-    localStorage.setItem('sh_m_' + prov, e.target.value);
+    localStorage.setItem('vc_m_' + prov, e.target.value);
   });
-  document.getElementById('handle').addEventListener('keydown', e => {
-    if (e.key === 'Enter') analyzeHandle();
+  document.getElementById('brand').addEventListener('keydown', e => {
+    if (e.key === 'Enter') analyzeVC();
   });
 }
 
@@ -453,159 +353,88 @@ function renderModels() {
     o.value = m; o.textContent = m;
     sel.appendChild(o);
   });
-  const stored = localStorage.getItem('sh_m_' + prov);
+  const stored = localStorage.getItem('vc_m_' + prov);
   sel.value = PROVS[prov].models.includes(stored) ? stored : PROVS[prov].models[0];
 }
 
 function switchProv(p, el) {
-  localStorage.setItem('sh_k_' + prov, document.getElementById('apikey').value.trim());
-  prov = p; localStorage.setItem('sh_p', p);
+  localStorage.setItem('vc_k_' + prov, document.getElementById('apikey').value.trim());
+  prov = p; localStorage.setItem('vc_p', p);
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('apikey').placeholder = PROVS[p].ph;
-  document.getElementById('apikey').value = localStorage.getItem('sh_k_' + p) || '';
+  document.getElementById('apikey').value = localStorage.getItem('vc_k_' + p) || '';
   updateKeyStatus(document.getElementById('apikey').value);
   renderModels();
 }
 
 // ── System Prompts ────────────────────────────────────────────────
-const SYS = `You are a startup social identity strategist trained on:
-- startup branding systems & founder social positioning
-- modern social naming trends across X, Instagram, TikTok, LinkedIn, YouTube, GitHub
-- username collision detection & availability heuristics
-- social-first naming psychology & memorability research
+const SYS = `You are a venture-scale startup branding analyst trained on:
+- Y Combinator naming patterns & portfolio analysis
+- a16z branding heuristics & investment thesis
+- SaaS startup psychology & naming conventions
+- AI startup naming systems & trend analysis
+- Investor perception research & pitch deck psychology
+- Startup memorability science & cognitive load theory
+- Global pronunciation patterns & linguistic accessibility
 
-Evaluate social handle quality for startup branding.
+Analyze startup brand quality for venture funding potential.
 
 Return ONLY valid JSON with this exact schema:
 {
   "tier": "weak" | "moderate" | "strong" | "elite",
   "score": 0-100,
-  "summary": "concise 1-2 sentence analysis",
+  "summary": "concise 1-2 sentence investor-focused summary",
   "factors": {
     "memorability": 0-100,
-    "consistency": 0-100,
-    "simplicity": 0-100,
-    "uniqueness": 0-100
+    "credibility": 0-100,
+    "scalability": 0-100,
+    "differentiation": 0-100
   },
-  
-  "strengths": ["string"],
+  "signals": ["string"],
   "weaknesses": ["string"],
-  "alternatives": [
-    {"handle":"linearhq","reason":"Adds 'hq' for uniqueness while keeping brand core"},
-    {"handle":"getlinear","reason":"Action prefix improves availability"}
+  "expansion": ["string"],
+  "comparables": [
+    {"name":"Linear","similarity":"high","reason":"Similar minimalist SaaS naming pattern"}
   ],
-  "recommendations": ["string"]
+  "recommendations": ["string"],
+  "insights": ["string"]
 }
 
 Rules:
 - No markdown, no code fences, no explanations outside JSON
+- Score 0-100 where higher = better VC appeal
+- Factors should sum to ~400 total (100 each)
+- Comparables should be real or plausible startup brands with similarity rationale
+- Insights should be actionable, non-obvious strategic observations
+- Be conservative: flag risks even if uncertain (better false positive than false negative)`;
 
-- Alternatives should be practical, brandable variations with clear reasoning
-- Score 0-100 where higher = better handle quality
-- Factors should sum to ~400 total (100 each)`;
+const GEMINI_SYS = `You are an elite VC startup branding strategist. Return ONLY valid JSON.
 
+Schema:
+{"tier":"weak|moderate|strong|elite","score":85,"summary":"...","factors":{"memorability":90,"credibility":75,"scalability":88,"differentiation":92},"signals":["..."],"weaknesses":["..."],"expansion":["..."],"comparables":[{"name":"...","similarity":"high|medium|low","reason":"..."}],"recommendations":["..."],"insights":["..."]}
 
+No markdown. No explanations. Pure JSON only.`;
 
 // ── API Callers ───────────────────────────────────────────────────
-async function fetchWithRetry(
-  url,
-  options,
-  retries = 2
-){
-
-  for(let i=0;i<=retries;i++){
-
-    try{
-
-      const controller =
-        new AbortController();
-
-      const timeout =
-        setTimeout(
-          ()=>controller.abort(),
-          25000
-        );
-
-      const res =
-        await fetch(
-          url,
-          {
-            ...options,
-            signal:
-              controller.signal
-          }
-        );
-
-      clearTimeout(timeout);
-
-      if(res.status===402){
-
-        throw new Error(
-          'PAYMENT_REQUIRED: Add credits at provider billing page or switch provider.'
-        );
-
+async function fetchWithRetry(url, options, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.status === 402) throw new Error('PAYMENT_REQUIRED: Add credits at provider billing page or switch to free tier (Gemini).');
+      if (res.status === 401) throw new Error('INVALID_KEY: API key is incorrect or expired.');
+      if (res.status === 429) throw new Error('RATE_LIMIT: Too many requests. Wait 30 seconds.');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `HTTP ${res.status}`);
       }
-
-      if(res.status===401){
-
-        throw new Error(
-          'INVALID_KEY: API key is incorrect or expired.'
-        );
-
-      }
-
-      if(res.status===429){
-
-        throw new Error(
-          'RATE_LIMIT: Too many requests.'
-        );
-
-      }
-
-      if(!res.ok){
-
-        const err =
-          await res.json()
-          .catch(()=>({}));
-
-        throw new Error(
-          err.error?.message ||
-          `HTTP ${res.status}`
-        );
-
-      }
-
       return res;
-
-    }catch(err){
-
-      if(
-        err.message?.includes('PAYMENT_REQUIRED') ||
-        err.message?.includes('INVALID_KEY')
-      ){
-
-        throw err;
-
-      }
-
-      if(i===retries){
-
-        throw err;
-
-      }
-
-      await new Promise(
-        r=>setTimeout(
-          r,
-          500 * Math.pow(2,i)
-        )
-      );
-
+    } catch (err) {
+      if (err.message?.includes('PAYMENT_REQUIRED') || err.message?.includes('INVALID_KEY')) throw err;
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 500 * Math.pow(2, i)));
     }
-
   }
-
 }
 
 async function callOpenRouter(key, model, sys, usr) {
@@ -615,18 +444,13 @@ async function callOpenRouter(key, model, sys, usr) {
       'Content-Type': 'application/json', 
       'Authorization': 'Bearer ' + key,
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'autoDNG Social Checker'
+      'X-Title': 'BrandLab VC Score'
     },
     body: JSON.stringify({ 
-    model, 
-    temperature: 0.2,
-    max_tokens: 900,
-
-    response_format:{
-      type:'json_object'
-    },
-
-  messages: [
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
         { role: 'system', content: sys }, 
         { role: 'user', content: usr }
       ] 
@@ -641,15 +465,10 @@ async function callOpenAI(key, model, sys, usr) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
     body: JSON.stringify({ 
-    model, 
-    temperature: 0.2,
-    max_tokens: 900,
-
-  response_format:{
-    type:'json_object'
-  },
-
-  messages: [
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
         { role: 'system', content: sys }, 
         { role: 'user', content: usr }
       ] 
@@ -681,15 +500,10 @@ async function callGroq(key, model, sys, usr) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
     body: JSON.stringify({ 
-    model, 
-    temperature: 0.2,
-    max_tokens: 900,
-
-  response_format:{
-    type:'json_object'
-  },
-
-  messages: [
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
         { role: 'system', content: sys }, 
         { role: 'user', content: usr }
       ] 
@@ -700,7 +514,7 @@ async function callGroq(key, model, sys, usr) {
 }
 
 // ── JSON Parser with Truncation Recovery ──────────────────────────
-function parseHandleJSON(raw, provider = null) {
+function parseVCJSON(raw, provider = null) {
   if (!raw || typeof raw !== 'string') return null;
   let clean = String(raw).trim().replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '').trim();
 
@@ -747,9 +561,8 @@ function parseHandleJSON(raw, provider = null) {
       return {
         tier: extracted.tier, score: extracted.score,
         summary: extracted.summary || 'Partial analysis completed',
-        factors: { memorability: 70, consistency: 65, simplicity: 75, uniqueness: 80 },
-        platforms: { x: 'unknown', instagram: 'unknown', tiktok: 'unknown', linkedin: 'unknown', youtube: 'unknown', github: 'unknown' },
-        strengths: [], weaknesses: [], alternatives: [], recommendations: []
+        factors: { memorability: 70, credibility: 65, scalability: 75, differentiation: 80 },
+        signals: [], weaknesses: [], expansion: [], comparables: [], recommendations: [], insights: []
       };
     }
   } catch {}
@@ -759,7 +572,7 @@ function parseHandleJSON(raw, provider = null) {
 }
 
 // ── Main Analysis ─────────────────────────────────────────────────
-async function analyzeHandle() {
+async function analyzeVC() {
   const btn = document.getElementById('analyzeBtn');
   const btnText = btn.querySelector('.btn-text');
   const spinner = btn.querySelector('.spinner');
@@ -767,34 +580,8 @@ async function analyzeHandle() {
   const key = document.getElementById('apikey').value.trim();
   if (!key || !PROVS[prov]?.val?.(key)) { showToast('Please enter a valid API key'); return; }
   
-  const handle =
-  document.getElementById('handle')
-    .value
-    .trim()
-    .replace(/^@/,'');
-
-if(!handle){
-
-  showToast(
-    'Please enter a username'
-  );
-
-  return;
-
-}
-
-if(
-  !/^[a-zA-Z0-9._]{2,30}$/
-    .test(handle)
-){
-
-  showToast(
-    'Invalid username format'
-  );
-
-  return;
-
-}
+  const brand = document.getElementById('brand').value.trim();
+  if (!brand) { showToast('Please enter a startup brand'); return; }
   
   // Loading state
   btn.disabled = true; btnText.textContent = 'Analyzing...'; spinner.style.display = 'inline-block';
@@ -806,24 +593,25 @@ if(
   const context = document.getElementById('context').value.trim();
   const model = document.getElementById('model').value;
   
-  const usr = `Handle: @${handle}
+  const usr = `Brand: ${brand}
 Industry: ${industry}
 Region: ${region}
 Context: ${context || 'None'}
 
-Evaluate for startup social branding:
-- Username memorability & typing simplicity
-- Cross-platform consistency potential
-- Collision risk with existing brands/startups
+Evaluate for venture-scale startup branding:
+- Investor perception & pitch deck readiness
+- Memorability after first hearing (cognitive load test)
+- Venture-scale naming potential (can this brand scale to $100M+ ARR?)
+- Pronunciation quality across English, Spanish, Mandarin, Hindi
+- SaaS/AI startup naming alignment (2026 trends)
+- Category expansion flexibility (can this brand work beyond current niche?)
+- Founder-brand compatibility (does this feel authentic for a technical founder?)
 
-- Social-first naming optimization for founder branding
-- Actionable alternatives if primary handle is taken
-
-`;
+Provide conservative, investor-focused analysis. Flag risks even if uncertain.`;
   
   try {
     let raw = '';
-    const sys = SYS;
+    const sys = prov === 'gemini' ? GEMINI_SYS : SYS;
     
     if (prov === 'openai') raw = await callOpenAI(key, model, sys, usr);
     else if (prov === 'openrouter') raw = await callOpenRouter(key, model, sys, usr);
@@ -831,47 +619,41 @@ Evaluate for startup social branding:
     else if (prov === 'groq') raw = await callGroq(key, model, sys, usr);
     else throw new Error('Unknown provider');
     
-    let data = parseHandleJSON(raw, prov);
+    let data = parseVCJSON(raw, prov);
     if (!data || !data.tier || data.score == null) throw new Error('Invalid response format');
     
     // Normalize data
-    data.platforms =
-    estimateHandleAvailability(
-    handle
-    );
-
-    data =
-    normalizeHandleData(data);
+    data = normalizeVCData(data);
     
-    lastAnalysis = { ...data, handle, timestamp: new Date().toISOString() };
+    lastAnalysis = { ...data, brand, timestamp: new Date().toISOString() };
     renderResult(data);
-    showToast('✓ Analysis complete');
+    showToast('✓ VC analysis complete');
     
   } catch (err) {
-    console.error('Handle analysis error:', err);
+    console.error('VC analysis error:', err);
     const userMsg = err.message?.includes('PAYMENT_REQUIRED') 
       ? '⚠️ Credits exhausted. Add funds or switch to Gemini (free tier).'
       : err.message?.includes('INVALID_KEY')
         ? '⚠️ Invalid API key. Check format or get a new key.'
         : 'Analysis failed: ' + (err.message || 'Unknown error');
     showToast(userMsg, 6000);
-    renderFallback(handle);
+    renderFallback(brand);
   } finally {
-    btn.disabled = false; btnText.textContent = 'Analyze Social Handles'; spinner.style.display = 'none';
+    btn.disabled = false; btnText.textContent = 'Analyze VC Score'; spinner.style.display = 'none';
     document.getElementById('loading').classList.remove('on');
   }
 }
 
-function normalizeHandleData(data) {
+function normalizeVCData(data) {
   data.score = Math.max(0, Math.min(100, Number(data.score ?? 50)));
   
   if (!data.factors) {
     const base = data.score;
     data.factors = {
       memorability: Math.min(100, base + 5),
-      consistency: Math.max(40, base - 10),
-      simplicity: Math.min(100, base + 15),
-      uniqueness: Math.min(100, base + 10)
+      credibility: Math.max(40, base - 10),
+      scalability: Math.min(100, base + 15),
+      differentiation: Math.min(100, base + 10)
     };
   } else {
     Object.keys(data.factors).forEach(k => {
@@ -879,20 +661,12 @@ function normalizeHandleData(data) {
     });
   }
   
-  if (!data.platforms || typeof data.platforms !== 'object') {
-    data.platforms = {};
-    PLATFORMS.forEach(p => data.platforms[p] = 'unknown');
-  } else {
-    PLATFORMS.forEach(p => {
-      const val = String(data.platforms[p] || 'unknown').toLowerCase();
-      data.platforms[p] = ['available', 'taken', 'unknown'].includes(val) ? val : 'unknown';
-    });
-  }
-  
-  data.strengths = Array.isArray(data.strengths) ? data.strengths : [];
+  data.signals = Array.isArray(data.signals) ? data.signals : [];
   data.weaknesses = Array.isArray(data.weaknesses) ? data.weaknesses : [];
-  data.alternatives = Array.isArray(data.alternatives) ? data.alternatives : [];
+  data.expansion = Array.isArray(data.expansion) ? data.expansion : [];
+  data.comparables = Array.isArray(data.comparables) ? data.comparables : [];
   data.recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+  data.insights = Array.isArray(data.insights) ? data.insights : [];
   
   return data;
 }
@@ -902,9 +676,9 @@ function renderResult(data) {
   const result = document.getElementById('result');
   result.style.display = 'block';
   
-  // Handle display
-  const handle = lastAnalysis?.handle || 'handle';
-  document.getElementById('handleDisplay').textContent = `@${handle}`;
+  // Brand display
+  const brand = lastAnalysis?.brand || 'Brand';
+  document.getElementById('brandDisplay').textContent = brand;
   
   // Tier badge
   const tier = String(data.tier || 'moderate').toLowerCase();
@@ -913,10 +687,10 @@ function renderResult(data) {
   const tierText = document.getElementById('tierText');
   
   const tierConfig = {
-    elite: { class: 'tier-elite', icon: '🏆', label: 'Elite Handle' },
-    strong: { class: 'tier-strong', icon: '⭐', label: 'Strong Handle' },
-    moderate: { class: 'tier-moderate', icon: '✨', label: 'Moderate Handle' },
-    weak: { class: 'tier-weak', icon: '⚠️', label: 'Weak Handle' }
+    elite: { class: 'tier-elite', icon: '🏆', label: 'Elite VC Signal' },
+    strong: { class: 'tier-strong', icon: '⭐', label: 'Strong VC Signal' },
+    moderate: { class: 'tier-moderate', icon: '✨', label: 'Moderate VC Signal' },
+    weak: { class: 'tier-weak', icon: '⚠️', label: 'Weak VC Signal' }
   };
   const cfg = tierConfig[tier] || tierConfig.moderate;
   badge.className = `tier-badge ${cfg.class}`;
@@ -930,85 +704,55 @@ function renderResult(data) {
     document.getElementById('gaugeFill').style.width = `${score}%`;
   }, 100);
   
-  // Platforms grid
-  const platformsEl = document.getElementById('platforms');
-  platformsEl.innerHTML = '';
-  const platformIcons = {
-    x: '𝕏', instagram: '📷', tiktok: '🎵', linkedin: '💼', youtube: '▶️', github: '🐙'
-  };
-  PLATFORMS.forEach(p => {
-    const status = data.platforms?.[p] || 'unknown';
-    const statusClass = status === 'available' ? 'status-available' : status === 'taken' ? 'status-taken' : 'status-unknown';
-    const statusText =
-    status === 'available'
-    ? 'Likely Available'
-    : status === 'taken'
-      ? 'Likely Taken'
-      : 'Unknown';
-    const div = document.createElement('div');
-    div.className = 'platform-card';
-    div.innerHTML = `
-      <div class="platform-icon">${platformIcons[p] || p.toUpperCase()}</div>
-      <div class="platform-name">${p.charAt(0).toUpperCase() + p.slice(1)}</div>
-      <span class="platform-status ${statusClass}">${statusText}</span>
-    `;
-    platformsEl.appendChild(div);
-  });
-  
   // Factors
   const factors = data.factors || {};
   updateFactor('f1', 'f1b', factors.memorability ?? 70, 'Memorability');
-  updateFactor('f2', 'f2b', factors.consistency ?? 65, 'Consistency');
-  updateFactor('f3', 'f3b', factors.simplicity ?? 75, 'Simplicity');
-  updateFactor('f4', 'f4b', factors.uniqueness ?? 80, 'Uniqueness');
+  updateFactor('f2', 'f2b', factors.credibility ?? 65, 'Credibility');
+  updateFactor('f3', 'f3b', factors.scalability ?? 75, 'Scalability');
+  updateFactor('f4', 'f4b', factors.differentiation ?? 80, 'Differentiation');
   
   // Summary
-  document.getElementById('summary').textContent = data.summary || 'AI social identity analysis completed.';
+  document.getElementById('summary').textContent = data.summary || 'AI investor perception analysis completed.';
   
   // Lists
-  renderList('signals', data.strengths || [], '');
+  renderList('signals', data.signals || [], '');
   renderList('weaknesses', data.weaknesses || [], 'weak');
+  renderList('expansion', data.expansion || [], 'exp');
   
-  // Alternatives with check buttons
-  const altsEl = document.getElementById('alternatives');
-  altsEl.innerHTML = '';
-  (data.alternatives || []).slice(0, 4).forEach(alt => {
+  // Comparables with similarity badges
+  const compsEl = document.getElementById('comparables');
+  compsEl.innerHTML = '';
+  (data.comparables || []).slice(0, 4).forEach(c => {
+    const simClass = c.similarity === 'high' ? 'text-green' : c.similarity === 'medium' ? 'text-yellow' : 'text-red';
     const div = document.createElement('div');
-    div.className = 'alt-card';
+    div.className = 'comp-card';
     div.innerHTML = `
-      <span class="alt-name">@${alt.handle || '—'}</span>
-      <button class="alt-check" onclick="copyHandle('${alt.handle}')">Copy</button>
+      <div class="comp-name">${c.name || '—'}</div>
+      <div class="comp-similarity ${simClass}">${c.similarity || 'unknown'} similarity</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">${c.reason || ''}</div>
     `;
-    altsEl.appendChild(div);
+    compsEl.appendChild(div);
   });
-  if (!data.alternatives?.length) altsEl.innerHTML = '<div class="item alt">No alternatives suggested — primary handle is strong</div>';
+  if (!data.comparables?.length) compsEl.innerHTML = '<div class="item comp">No direct comparables found</div>';
   
   // Recommendations
   renderList('recommendations', data.recommendations || [], 'rec');
   
   // Scroll to results
-  if(result.dataset.scrolled !== '1'){
-
-  result.scrollIntoView({
-    behavior:'smooth',
-    block:'start'
-  });
-
-  result.dataset.scrolled = '1';
-
-}
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function renderFallback(handle) {
+function renderFallback(brand) {
   renderResult({
     tier: 'moderate', score: 55,
-    summary: `Unable to complete full analysis for "@${handle}". This may be due to API limits or response formatting.`,
-    factors: { memorability: 60, consistency: 50, simplicity: 65, uniqueness: 70 },
-    platforms: { x: 'unknown', instagram: 'unknown', tiktok: 'unknown', linkedin: 'unknown', youtube: 'unknown', github: 'unknown' },
-    strengths: ['Short and memorable', 'Easy to type'],
-    weaknesses: ['Limited availability data', 'Potential collision risk'],
-    alternatives: [{ handle: `${handle}hq`, reason: 'Adds "hq" for uniqueness' }, { handle: `get${handle}`, reason: 'Action prefix improves availability' }],
-    recommendations: ['Verify availability directly on each platform', 'Consider securing handle variations']
+    summary: `Unable to complete full VC analysis for "${brand}". This may be due to API limits or response formatting.`,
+    factors: { memorability: 60, credibility: 50, scalability: 65, differentiation: 70 },
+    signals: ['Short and memorable', 'Easy to pronounce'],
+    weaknesses: ['Limited comparable data', 'Potential category confusion'],
+    expansion: ['Could work in adjacent SaaS categories', 'May need refinement for enterprise'],
+    comparables: [{ name: 'Linear', similarity: 'medium', reason: 'Similar minimalist naming pattern' }],
+    recommendations: ['Validate with target investors', 'Test pronunciation with global team'],
+    insights: ['Consider securing .com domain early', 'Avoid AI suffix saturation in 2026']
   });
 }
 
@@ -1029,7 +773,7 @@ function renderList(id, items, extraClass) {
   items.forEach(item => {
     const div = document.createElement('div');
     div.className = `item${extraClass ? ' ' + extraClass : ''}`;
-    div.textContent = typeof item === 'string' ? item : (item.reason || item.handle || '—');
+    div.textContent = typeof item === 'string' ? item : (item.reason || item.name || '—');
     el.appendChild(div);
   });
 }
@@ -1042,43 +786,39 @@ function showToast(msg, duration = 3000) {
   setTimeout(() => toast.classList.remove('on'), duration);
 }
 
-function copyHandle(handle) {
-  if (!handle) return;
-  navigator.clipboard.writeText(`@${handle}`).then(() => {
-    showToast(`✓ Copied @${handle}`);
-  }).catch(() => showToast('✗ Copy failed'));
-}
-
 function copyResults() {
   if (!lastAnalysis) { showToast('No analysis to copy'); return; }
-  const text = `Social Handle Analysis: @${lastAnalysis.handle}
+  const text = `VC Brand Analysis: ${lastAnalysis.brand}
 Tier: ${lastAnalysis.tier.toUpperCase()} | Score: ${lastAnalysis.score}/100
 
 Summary: ${lastAnalysis.summary}
 
 Factors:
 • Memorability: ${lastAnalysis.factors?.memorability || '--'}/100
-• Consistency: ${lastAnalysis.factors?.consistency || '--'}/100
-• Simplicity: ${lastAnalysis.factors?.simplicity || '--'}/100
-• Uniqueness: ${lastAnalysis.factors?.uniqueness || '--'}/100
+• Credibility: ${lastAnalysis.factors?.credibility || '--'}/100
+• Scalability: ${lastAnalysis.factors?.scalability || '--'}/100
+• Differentiation: ${lastAnalysis.factors?.differentiation || '--'}/100
 
-Platform Availability:
-${PLATFORMS.map(p => `• ${p}: ${lastAnalysis.platforms?.[p] || 'unknown'}`).join('\n')}
-
-Strengths:
-${(lastAnalysis.strengths || []).map(s => '• ' + s).join('\n') || 'None'}
+Investor Signals:
+${(lastAnalysis.signals || []).map(s => '• ' + s).join('\n') || 'None'}
 
 Considerations:
 ${(lastAnalysis.weaknesses || []).map(w => '• ' + w).join('\n') || 'None'}
 
-Alternatives:
-${(lastAnalysis.alternatives || []).map(a => `• @${a.handle}: ${a.reason}`).join('\n') || 'None'}
+Category Expansion:
+${(lastAnalysis.expansion || []).map(e => '• ' + e).join('\n') || 'None'}
+
+Comparable Brands:
+${(lastAnalysis.comparables || []).map(c => `• ${c.name}: ${c.similarity} similarity — ${c.reason}`).join('\n') || 'None'}
 
 Recommendations:
 ${(lastAnalysis.recommendations || []).map(r => '• ' + r).join('\n') || 'None'}
 
+Strategic Insights:
+${(lastAnalysis.insights || []).map(i => '• ' + i).join('\n') || 'None'}
+
 ---
-Generated by autoDNG Social Handle Checker`;
+Generated by BrandLab VC Brand Score`;
   
   navigator.clipboard.writeText(text).then(() => showToast('✓ Copied to clipboard')).catch(() => showToast('✗ Copy failed'));
 }
@@ -1088,18 +828,19 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(lastAnalysis, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `handle-analysis-${lastAnalysis.handle.toLowerCase().replace(/\W+/g, '-')}.json`;
+  a.href = url; a.download = `vc-analysis-${lastAnalysis.brand.toLowerCase().replace(/\W+/g, '-')}.json`;
   a.click(); URL.revokeObjectURL(url);
   showToast('✓ Exported JSON');
 }
 
-function checkAvailability() {
-  showToast('🔍 Live availability check requires backend integration. For now, verify manually on each platform.');
+function showInsights() {
+  if (!lastAnalysis?.insights?.length) { showToast('No additional insights available'); return; }
+  showToast(lastAnalysis.insights.join(' • '), 6000);
 }
 
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); analyzeHandle(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); analyzeVC(); }
   if (e.key === 'Escape') document.getElementById('result').style.display = 'none';
 });
 

@@ -1,1189 +1,860 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>BrandLab — VC Brand Score</title>
-
-<link rel="icon" href="data:,">
-
+<title>autoDNG — VC Brand Score</title>
+<link rel="icon" href=",">
 <style>
 :root{
-  --bg:#09090b;
-  --bg2:#111114;
-  --card:#141418;
-  --border:#23232a;
-  --text:#f5f5f5;
-  --muted:#a1a1aa;
-  --lime:#c8f04a;
-  --red:#ff6363;
-  --yellow:#ffd95e;
-  --green:#56e39f;
+  --bg:#09090b;--bg2:#111114;--card:#141418;--border:#23232a;
+  --text:#f5f5f5;--muted:#a1a1aa;--lime:#c8f04a;--red:#ff6363;
+  --yellow:#ffd95e;--green:#56e39f;--blue:#60a5fa;--purple:#a78bfa;--pink:#f472b6;
   --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
   --sans:Inter,system-ui,sans-serif;
+  --gradient-elite:linear-gradient(135deg,#c8f04a,#86efac);
+  --gradient-strong:linear-gradient(135deg,#60a5fa,#a78bfa);
+  --gradient-moderate:linear-gradient(135deg,#ffd95e,#fb923c);
+  --gradient-weak:linear-gradient(135deg,#f87171,#fca5a5);
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--sans);
-}
-.header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(9,9,11,.92);
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--border);
-}
-.header-inner{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 22px;
-  gap:18px;
-}
-.logo{
-  font-weight:800;
-  font-size:20px;
-  letter-spacing:-0.04em;
-}
-.logo span{color:var(--lime)}
-.hright{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.ptabs{
-  display:flex;
-  gap:8px;
-}
-.ptab{
-  border:1px solid var(--border);
-  background:var(--bg2);
-  color:var(--muted);
-  padding:9px 12px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:12px;
-  font-family:var(--mono);
-}
-.ptab.on{
-  border-color:var(--lime);
-  color:var(--lime);
-}
-.kwrap{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.kwrap input,.select{
-  background:var(--bg2);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:10px;
-  padding:10px 12px;
-  font-size:13px;
-}
-.kwrap input{
-  width:220px;
-}
-.btn{
-  border:none;
-  background:var(--lime);
-  color:#000;
-  padding:12px 18px;
-  border-radius:12px;
-  font-weight:700;
-  cursor:pointer;
-}
-.wrap{
-  max-width:1100px;
-  margin:auto;
-  padding:42px 22px 70px;
-}
-.hero{
-  margin-bottom:28px;
-}
-.hero h1{
-  font-size:54px;
-  line-height:1;
-  margin:0 0 12px;
-  letter-spacing:-0.05em;
-}
-.hero p{
-  color:var(--muted);
-  max-width:760px;
-  line-height:1.7;
-}
-.grid{
-  display:grid;
-  grid-template-columns:1fr 360px;
-  gap:24px;
-}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:24px;
-}
-.label{
-  font-size:12px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--muted);
-  margin-bottom:8px;
-}
-.input{
-  width:100%;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:14px;
-  padding:14px 16px;
-  font-size:15px;
-}
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:18px;
-}
-.actions{
-  margin-top:24px;
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.sec{
-  margin-top:26px;
-}
-.result{
-  margin-top:28px;
-  display:none;
-}
-.risk{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-}
-.badge{
-  padding:10px 14px;
-  border-radius:999px;
-  font-weight:700;
-}
-.high{
-  background:rgba(255,99,99,.15);
-  color:var(--red);
-}
-.medium{
-  background:rgba(255,217,94,.15);
-  color:var(--yellow);
-}
-.low{
-  background:rgba(86,227,159,.15);
-  color:var(--green);
-}
-.score{
-  font-size:42px;
-  font-weight:900;
-}
-.section-title{
-  margin:26px 0 10px;
-  font-size:14px;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.item{
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-  line-height:1.6;
-}
-.note{
-  margin-top:20px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.7;
-}
-.loading{
-  display:none;
-  margin-top:18px;
-  color:var(--lime);
-  font-family:var(--mono);
-}
-@media(max-width:900px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-  .hero h1{
-    font-size:40px;
-  }
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5}
+
+/* Header */
+.header{position:sticky;top:0;z-index:20;background:rgba(9,9,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:18px}
+.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
+.hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ptabs{display:flex;gap:8px}.ptab{border:1px solid var(--border);background:var(--bg2);color:var(--muted);padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-family:var(--mono);transition:all .15s}.ptab.on{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}.ptab:hover:not(.on){border-color:var(--border);color:var(--text)}
+.kwrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kwrap input,.select{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:13px;font-family:var(--sans)}.kwrap input{width:220px}.kwrap input:focus,.select:focus{outline:none;border-color:var(--lime)}
+.kstatus{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.kdot{width:6px;height:6px;border-radius:50%;background:var(--muted)}.kdot.ok{background:var(--lime);box-shadow:0 0 6px rgba(200,240,74,.5)}
+
+/* Buttons */
+.btn{border:none;background:var(--lime);color:#000;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}.btn:hover{opacity:.92;transform:translateY(-1px)}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-secondary{background:var(--bg2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--lime);color:var(--lime)}
+
+/* Layout */
+.wrap{max-width:1200px;margin:auto;padding:42px 22px 70px}
+.hero{margin-bottom:32px;text-align:center}.hero h1{font-size:clamp(32px,5vw,54px);line-height:1;margin:0 0 12px;letter-spacing:-0.05em}.hero p{color:var(--muted);max-width:760px;line-height:1.7;margin:0 auto}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:24px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;transition:border-color .2s}.card:hover{border-color:var(--lime)}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;display:block;font-weight:600}
+.input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:14px;padding:14px 16px;font-size:15px;font-family:var(--sans);transition:border-color .15s}.input:focus{outline:none;border-color:var(--lime)}
+textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-height:1.6}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+.sec{margin-top:26px}
+
+/* Result Section */
+.result{margin-top:28px;display:none;animation:fadeUp .3s ease}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Score Header */
+.score-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.brand-display{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--lime)}.tier-badge{padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}.tier-elite{background:var(--gradient-elite);color:#000}.tier-strong{background:var(--gradient-strong);color:#000}.tier-moderate{background:var(--gradient-moderate);color:#000}.tier-weak{background:var(--gradient-weak);color:#000}
+.score-display{text-align:right}.score-amount{font-size:clamp(28px,4vw,42px);font-weight:900;line-height:1}.score-label{color:var(--muted);font-size:12px;margin-top:4px}
+
+/* Animated Gauge */
+.gauge-wrap{margin:20px 0;padding:16px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)}
+.gauge{height:8px;background:var(--border);border-radius:99px;overflow:hidden;position:relative}.gauge-fill{height:100%;border-radius:99px;transition:width .8s ease;position:relative}.gauge-fill::after{content:'';position:absolute;right:0;top:-3px;width:14px;height:14px;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none}
+.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:8px}
+
+/* Factor Bars */
+.factors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.factor{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px}.factor-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}.factor-name{font-weight:500}.factor-val{font-family:var(--mono);font-weight:600}.factor-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden}.factor-fill{height:100%;border-radius:99px;transition:width .6s ease}
+
+/* Summary & Lists */
+.summary{background:var(--bg2);border-left:3px solid var(--lime);border-radius:0 12px 12px 0;padding:14px 16px;margin:16px 0;line-height:1.6;font-size:14px}
+.section-title{margin:24px 0 12px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:flex;align-items:center;gap:8px}.section-title::before{content:'';width:3px;height:14px;background:var(--lime);border-radius:2px}
+.list{display:flex;flex-direction:column;gap:8px}.item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;line-height:1.5;font-size:14px;display:flex;align-items:flex-start;gap:10px}.item::before{content:'✓';color:var(--green);font-weight:700;font-size:14px}.item.weak::before{content:'⚠';color:var(--yellow)}.item.exp::before{content:'🚀';color:var(--blue)}.item.comp::before{content:'📊';color:var(--purple)}.item.rec::before{content:'🎯';color:var(--pink)}
+
+/* Comparable Cards */
+.comps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}.comp-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px}.comp-name{font-weight:600;color:var(--lime)}.comp-similarity{color:var(--muted);font-size:12px}
+
+/* Export Row */
+.export-row{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}.export-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:var(--mono);transition:all .15s;display:flex;align-items:center;gap:6px}.export-btn:hover{border-color:var(--lime);background:var(--lime);color:#000}
+
+/* Loading */
+.loading{display:none;margin-top:18px;color:var(--lime);font-family:var(--mono);font-size:13px;align-items:center;gap:10px}.loading.on{display:flex}.spinner{width:18px;height:18px;border:2px solid rgba(200,240,74,.3);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:13px;z-index:1000;transform:translateY(60px);opacity:0;transition:all .3s;max-width:320px}.toast.on{transform:translateY(0);opacity:1}
+
+/* Note */
+.note{margin-top:20px;color:var(--muted);font-size:12px;line-height:1.6;padding:12px 14px;background:var(--bg2);border-radius:12px;border-left:3px solid var(--yellow)}
+
+/* Info Panel */
+.info-panel{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;height:fit-content;position:sticky;top:90px}.info-title{font-weight:600;margin-bottom:12px;font-size:15px}.info-list{display:flex;flex-direction:column;gap:10px}.info-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted)}.info-item::before{content:'';width:6px;height:6px;background:var(--lime);border-radius:50%;margin-top:6px;flex-shrink:0}
+
+/* Responsive */
+@media(max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:40px}.factors{grid-template-columns:1fr}.comps-grid{grid-template-columns:1fr}}
 @media(max-width:800px){
-  .header-inner{
-    flex-wrap:wrap;
-    height:auto;
-    padding:12px 18px;
-  }
-  .hright{
-    width:100%;
-    flex-wrap:wrap;
-  }
-  .ptabs{
-    width:100%;
-  }
-  .ptab{
-    flex:1;
-    text-align:center;
-  }
-  .kwrap{
-    width:100%;
-  }
-  .kwrap input{
-    flex:1;
-    width:auto;
-  }
-  .row{
-    grid-template-columns:1fr;
-  }
+  .header-inner{flex-direction:column;align-items:stretch;gap:14px;padding:12px 14px;height:auto}
+  .hright{width:100%;flex-direction:column;gap:12px}
+  .ptabs{width:100%;display:flex;gap:8px}.ptab{flex:1;text-align:center;padding:12px 8px;font-size:11px}
+  .kwrap{width:100%;flex-direction:column;align-items:stretch}.kwrap input,.select{width:100}
+  .row{grid-template-columns:1fr}.hero h1{font-size:34px;line-height:1.05}
+  .wrap{padding:28px 14px 60px}.card{padding:18px;border-radius:18px}
+  .actions{flex-direction:column}.btn{width:100%;justify-content:center}
+  .score-header{flex-direction:column;align-items:flex-start;gap:12px}.score-display{text-align:left}
+  .info-panel{position:static}
 }
 
-@media(max-width:800px){
+/* Animations */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.animate-pulse{animation:pulse 2s infinite}
+.fade-in{animation:fadeUp .4s ease both}
 
-  .header-inner{
-    flex-direction:column;
-    align-items:stretch;
-    gap:14px;
-    padding:12px 14px;
-  }
-
-  .hright{
-    width:100%;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  .ptabs{
-    width:100%;
-    display:flex;
-    gap:8px;
-  }
-
-  .ptab{
-    flex:1;
-    text-align:center;
-    padding:12px 8px;
-    font-size:11px;
-  }
-
-  .kwrap{
-    width:100%;
-    flex-direction:column;
-  }
-
-  .kwrap input,
-  .select{
-    width:100%;
-  }
-
-  .row{
-    grid-template-columns:1fr;
-  }
-
-  .hero h1{
-    font-size:34px;
-    line-height:1.05;
-  }
-
-  .wrap{
-    padding:28px 14px 60px;
-  }
-
-  .card{
-    padding:18px;
-    border-radius:18px;
-  }
-
-  .actions{
-    flex-direction:column;
-  }
-
-  .btn{
-    width:100%;
-  }
-
-  .score{
-    font-size:34px;
-  }
-}
+/* Utility */
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.text-lime{color:var(--lime)}.text-green{color:var(--green)}.text-yellow{color:var(--yellow)}.text-red{color:var(--red)}
+.mt-4{margin-top:16px}.mb-4{margin-bottom:16px}.flex{display:flex}.gap-2{gap:8px}.items-center{align-items:center}
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PVV83DRSFT');
+</script>
 <body>
 
 <header class="header">
   <div class="header-inner">
-    <div class="logo">Brand<span>Lab</span></div>
-
+    <div class="logo">auto<span>DNG</span></div>
     <div class="hright">
-      <div class="ptabs">
-        <button class="ptab on" onclick="switchProv('anthropic',this)">Claude</button>
+      <div class="ptabs" role="tablist">
+        <button class="ptab on" onclick="switchProv('openrouter',this)">OpenRouter</button>
         <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
         <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+        <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
       </div>
-
       <div class="kwrap">
-        <input id="apikey" placeholder="API Key">
+        <label for="apikey" class="visually-hidden">API Key</label>
+        <input id="apikey" type="password" placeholder="API Key" autocomplete="off">
+        <label for="model" class="visually-hidden">Model</label>
         <select id="model" class="select"></select>
+        <div class="kstatus"><span class="kdot" id="kdot"></span><span id="ktext">no key</span></div>
       </div>
     </div>
   </div>
 </header>
 
 <div class="wrap">
-
   <section class="hero">
     <h1>VC Brand Score</h1>
-    <p>
-        Analyze investor perception, startup readiness,
-        memorability, and venture-scale branding potential.
-    </p>
+    <p>Analyze investor perception, startup readiness, memorability, and venture-scale branding potential — with AI-powered scoring trained on YC, a16z, and top-tier startup naming patterns.</p>
   </section>
 
   <div class="grid">
-
     <div class="card">
-
-      <div class="label">Startup Brand</div>
-      <input id="brand" class="input" placeholder="e.g. Linear">
+      <div>
+        <label class="label" for="brand">Startup Brand *</label>
+        <input id="brand" class="input" placeholder="e.g. Linear" required>
+      </div>
 
       <div class="row">
         <div>
-          <div class="label">Industry</div>
+          <label class="label" for="industry">Industry</label>
           <input id="industry" class="input" placeholder="e.g. Developer Tools">
         </div>
-
         <div>
-          <div class="label">Region</div>
+          <label class="label" for="region">Target Region</label>
           <select id="region" class="input">
-            <option>United States</option>
-            <option>Global</option>
-            <option>Europe</option>
-            <option>India</option>
-            <option>United Kingdom</option>
+            <option value="global">🌍 Global</option>
+            <option value="us">🇺🇸 United States</option>
+            <option value="eu">🇪🇺 Europe</option>
+            <option value="asia">🌏 Asia-Pacific</option>
           </select>
         </div>
       </div>
 
       <div class="sec">
-        <div class="label">Extra Context</div>
-        <textarea id="context" class="input" rows="5"
-          placeholder="Optional product description, audience, competitors, positioning..."></textarea>
+        <label class="label" for="context">Product Context (optional)</label>
+        <textarea id="context" class="input" rows="4" placeholder="Describe your product, audience, or use case..."></textarea>
       </div>
 
       <div class="actions">
-        <button class="btn" onclick="analyzeTrademark()">
-          Analyze VC score
+        <button class="btn" id="analyzeBtn" onclick="analyzeVC()">
+          <span class="btn-text">Analyze VC Score</span>
+          <span class="spinner" style="display:none"></span>
         </button>
-
-        <a href="index.html"
-           style="text-decoration:none">
-          <button class="btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)">
-            Back to Generator
-          </button>
+        <a href="index.html" style="text-decoration:none">
+          <button class="btn btn-secondary">← Back to Generator</button>
         </a>
       </div>
 
       <div id="loading" class="loading">
-        analyzing investor perception...
+        <span class="spinner"></span>
+        <span>analyzing investor perception...</span>
       </div>
-<div id="result" class="result card">
- <div class="risk">
 
-  <div>
-    <div id="tierBadge" class="badge medium">
-      Strong VC Signal
+      <div id="result" class="result">
+        <!-- Score Header -->
+        <div class="score-header">
+          <div>
+            <div id="brandDisplay" class="brand-display">Linear</div>
+            <div id="tierBadge" class="tier-badge tier-moderate" style="margin-top:8px">
+              <span id="tierIcon">✨</span>
+              <span id="tierText">Moderate VC Signal</span>
+            </div>
+          </div>
+          <div class="score-display">
+            <div id="score" class="score-amount">68</div>
+            <div class="score-label">investor appeal score</div>
+          </div>
+        </div>
+
+        <!-- Animated Gauge -->
+        <div class="gauge-wrap">
+          <div class="gauge"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div>
+          <div class="gauge-labels">
+            <span>Weak</span><span>Moderate</span><span>Strong</span><span>Elite</span>
+          </div>
+        </div>
+
+        <!-- Factor Breakdown -->
+        <div class="factors">
+          <div class="factor">
+            <div class="factor-head"><span class="factor-name">Memorability</span><span class="factor-val" id="f1">—</span></div>
+            <div class="factor-bar"><div class="factor-fill" id="f1b" style="width:0%"></div></div>
+          </div>
+          <div class="factor">
+            <div class="factor-head"><span class="factor-name">Credibility</span><span class="factor-val" id="f2">—</span></div>
+            <div class="factor-bar"><div class="factor-fill" id="f2b" style="width:0%"></div></div>
+          </div>
+          <div class="factor">
+            <div class="factor-head"><span class="factor-name">Scalability</span><span class="factor-val" id="f3">—</span></div>
+            <div class="factor-bar"><div class="factor-fill" id="f3b" style="width:0%"></div></div>
+          </div>
+          <div class="factor">
+            <div class="factor-head"><span class="factor-name">Differentiation</span><span class="factor-val" id="f4">—</span></div>
+            <div class="factor-bar"><div class="factor-fill" id="f4b" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section-title">Analysis Summary</div>
+        <div id="summary" class="summary">Loading analysis...</div>
+
+        <!-- Investor Signals -->
+        <div class="section-title">Investor Signals</div>
+        <div id="signals" class="list"></div>
+
+        <!-- Weaknesses -->
+        <div class="section-title">Considerations</div>
+        <div id="weaknesses" class="list"></div>
+
+        <!-- Expansion Potential -->
+        <div class="section-title">Category Expansion</div>
+        <div id="expansion" class="list"></div>
+
+        <!-- Comparable Brands -->
+        <div class="section-title">Comparable Brands</div>
+        <div id="comparables" class="comps-grid"></div>
+
+        <!-- Recommendations -->
+        <div class="section-title">Action Plan</div>
+        <div id="recommendations" class="list"></div>
+
+        <!-- Export -->
+        <div class="export-row">
+          <button class="export-btn" onclick="copyResults()">📋 Copy Report</button>
+          <button class="export-btn" onclick="exportJSON()">⚙️ Export JSON</button>
+          <button class="export-btn" onclick="showInsights()">💡 View Insights</button>
+        </div>
+
+        <div class="note">⚠️ AI-generated investor perception analysis for informational purposes only. Not financial advice. Always validate with human experts before major branding decisions.</div>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel">
+      <div class="info-title">🔍 What We Evaluate</div>
+      <div class="info-list">
+        <div class="info-item">Investor perception & startup credibility</div>
+        <div class="info-item">Memorability after first hearing</div>
+        <div class="info-item">Venture-scale naming potential</div>
+        <div class="info-item">SaaS & AI startup naming alignment</div>
+        <div class="info-item">Global pronunciation quality</div>
+        <div class="info-item">Category expansion flexibility</div>
+        <div class="info-item">Modern founder-brand compatibility</div>
+      </div>
+
+      <div class="section-title mt-4">📊 VC Score Tiers</div>
+      <div class="info-list">
+        <div class="info-item"><span class="tier-badge tier-elite" style="padding:4px 10px;font-size:11px">Elite</span> 90–100 — Premium, highly fundable, strong brand moat</div>
+        <div class="info-item"><span class="tier-badge tier-strong" style="padding:4px 10px;font-size:11px">Strong</span> 75–89 — Solid startup potential, good investor appeal</div>
+        <div class="info-item"><span class="tier-badge tier-moderate" style="padding:4px 10px;font-size:11px">Moderate</span> 50–74 — Niche appeal, may need brand refinement</div>
+        <div class="info-item"><span class="tier-badge tier-weak" style="padding:4px 10px;font-size:11px">Weak</span> &lt;50 — High risk, likely to face investor skepticism</div>
+      </div>
+
+      <div class="section-title mt-4">🎯 Recommended Workflow</div>
+      <div class="info-list">
+        <div class="info-item">1. Generate startup names in autoDNG</div>
+        <div class="info-item">2. Check trademark risk</div>
+        <div class="info-item">3. Evaluate domain valuation</div>
+        <div class="info-item">4. Analyze VC brand score</div>
+        <div class="info-item">5. Secure social handles & domains</div>
+        <div class="info-item">6. Pitch with confidence</div>
+      </div>
     </div>
   </div>
-
-  <div id="score" class="score">
-    84
-  </div>
-
 </div>
 
-<div class="section-title">Summary</div>
-<div id="summary" class="item"></div>
-
-<div class="section-title">Investor Signals</div>
-<div id="signals" class="list"></div>
-
-<div class="section-title">Weaknesses</div>
-<div id="weaknesses" class="list"></div>
-
-<div class="section-title">Expansion Potential</div>
-<div id="expansion" class="list"></div>
-
-<div class="section-title">Comparable Brands</div>
-<div id="comparables" class="list"></div>
-
-<div class="section-title">Recommendations</div>
-<div id="recommendations" class="list"></div>
-
-<div class="note">
-  AI-generated investor perception analysis based on YC,
-  a16z, SaaS, AI startup, and venture-scale branding patterns.
-</div>
-    </div>
-</div>
-    <div class="card">
-<div class="section-title">
-  What This Evaluates
-</div>
-
-<div class="list">
-
-  <div class="item">
-    Investor perception & startup credibility
-  </div>
-
-  <div class="item">
-    Memorability after first hearing
-  </div>
-
-  <div class="item">
-    Venture-scale naming potential
-  </div>
-
-  <div class="item">
-    SaaS & AI startup naming alignment
-  </div>
-
-  <div class="item">
-    Global pronunciation quality
-  </div>
-
-  <div class="item">
-    Category expansion flexibility
-  </div>
-
-  <div class="item">
-    Modern founder-brand compatibility
-  </div>
-
-</div>
-
-<div class="section-title">
-  Recommended Workflow
-</div>
-
-<div class="list">
-
-  <div class="item">
-    1. Generate startup names
-  </div>
-
-  <div class="item">
-    2. Check trademark conflicts
-  </div>
-
-  <div class="item">
-    3. Evaluate domain valuation
-  </div>
-
-  <div class="item">
-    4. Analyze VC brand score
-  </div>
-
-  <div class="item">
-    5. Secure social handles
-  </div>
-
-</div>
-
-</div>
-</div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const PROVS={
-  anthropic:{
-    ph:'sk-ant-...',
-    models:[
-      'claude-sonnet-4-20250514',
-      'claude-3-7-sonnet-20250219'
-    ]
-  },
-
-  openai:{
-    ph:'sk-...',
-    models:[
-      'gpt-4o',
-      'gpt-4.1-mini'
-    ]
-  },
-
-  gemini:{
-    ph:'AIza...',
-    models:[
-      'gemini-2.5-flash',
-      'gemini-2.5-pro'
-    ]
-  }
+// ── Provider Config ───────────────────────────────────────────────
+const PROVS = {
+  openrouter: { ph: 'sk-or-...', models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct'], val: k => k.startsWith('sk-or-') },
+  openai: { ph: 'sk-...', models: ['gpt-4o', 'gpt-4.1-mini'], val: k => k.startsWith('sk-') },
+  gemini: { ph: 'AIza...', models: ['gemini-2.5-flash', 'gemini-2.5-pro'], val: k => k.startsWith('AIza') },
+  groq: { ph: 'gsk_...', models: ['llama-3.3-70b-versatile', 'meta-llama/llama-4-scout-17b-16e-instruct'], val: k => k.startsWith('gsk_') }
 };
 
-let prov=localStorage.getItem('bl_p')||'anthropic';
+// ── State ─────────────────────────────────────────────────────────
+let prov = localStorage.getItem('vc_p') || 'openrouter';
+let lastAnalysis = null;
 
-function init(){
-
-  document.querySelectorAll('.ptab')
-    .forEach(btn=>{
-      if(
-        btn.textContent.toLowerCase()
-          .includes(prov === 'openai'
-            ? 'openai'
-            : prov === 'gemini'
-              ? 'gemini'
-              : 'claude')
-      ){
-        btn.classList.add('on');
-      }else{
-        btn.classList.remove('on');
-      }
-    });
-
-  const key=
-    localStorage.getItem('bl_k_'+prov)||'';
-
-  document.getElementById('apikey').value=key;
-  document.getElementById('apikey').placeholder=
-    PROVS[prov].ph;
-
-  renderModels();
-}
-
-function renderModels(){
-
-  const sel=document.getElementById('model');
-
-  sel.innerHTML='';
-
-  PROVS[prov].models.forEach(m=>{
-
-    const o=document.createElement('option');
-
-    o.value=m;
-    o.textContent=m;
-
-    sel.appendChild(o);
+// ── Init ──────────────────────────────────────────────────────────
+function init() {
+  document.querySelectorAll('.ptab').forEach(btn => {
+    btn.classList.toggle('on', btn.textContent.toLowerCase().includes(prov));
   });
 
-  const stored=
-    localStorage.getItem('bl_m_'+prov);
+  const key = localStorage.getItem('vc_k_' + prov) || '';
+  document.getElementById('apikey').value = key;
+  document.getElementById('apikey').placeholder = PROVS[prov].ph;
+  updateKeyStatus(key);
+  renderModels();
 
-  // use stored model if valid
-  if(
-    stored &&
-    PROVS[prov].models.includes(stored)
-  ){
-
-    sel.value=stored;
-
-  }else{
-
-    // default first model
-    sel.value=PROVS[prov].models[0];
-
-    localStorage.setItem(
-      'bl_m_'+prov,
-      sel.value
-    );
-  }
+  document.getElementById('apikey').addEventListener('input', e => {
+    const val = e.target.value.trim();
+    localStorage.setItem('vc_k_' + prov, val);
+    updateKeyStatus(val);
+  });
+  document.getElementById('model').addEventListener('change', e => {
+    localStorage.setItem('vc_m_' + prov, e.target.value);
+  });
+  document.getElementById('brand').addEventListener('keydown', e => {
+    if (e.key === 'Enter') analyzeVC();
+  });
 }
 
-function switchProv(p,el){
+function updateKeyStatus(key) {
+  const dot = document.getElementById('kdot');
+  const text = document.getElementById('ktext');
+  const isValid = key && PROVS[prov]?.val?.(key);
+  dot.className = 'kdot' + (isValid ? ' ok' : '');
+  text.textContent = isValid ? 'key ready' : (key ? 'invalid format' : 'no key');
+}
 
-  saveKey();
+function renderModels() {
+  const sel = document.getElementById('model');
+  sel.innerHTML = '';
+  PROVS[prov].models.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+  const stored = localStorage.getItem('vc_m_' + prov);
+  sel.value = PROVS[prov].models.includes(stored) ? stored : PROVS[prov].models[0];
+}
 
-  prov=p;
-
-  localStorage.setItem('bl_p',p);
-
-  document.querySelectorAll('.ptab')
-    .forEach(t=>t.classList.remove('on'));
-
+function switchProv(p, el) {
+  localStorage.setItem('vc_k_' + prov, document.getElementById('apikey').value.trim());
+  prov = p; localStorage.setItem('vc_p', p);
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
-
-  document.getElementById('apikey').placeholder=
-    PROVS[p].ph;
-
-  document.getElementById('apikey').value=
-    localStorage.getItem('bl_k_'+p)||'';
-
+  document.getElementById('apikey').placeholder = PROVS[p].ph;
+  document.getElementById('apikey').value = localStorage.getItem('vc_k_' + p) || '';
+  updateKeyStatus(document.getElementById('apikey').value);
   renderModels();
 }
 
-function saveKey(){
+// ── System Prompts ────────────────────────────────────────────────
+const SYS = `You are a venture-scale startup branding analyst trained on:
+- Y Combinator naming patterns & portfolio analysis
+- a16z branding heuristics & investment thesis
+- SaaS startup psychology & naming conventions
+- AI startup naming systems & trend analysis
+- Investor perception research & pitch deck psychology
+- Startup memorability science & cognitive load theory
+- Global pronunciation patterns & linguistic accessibility
 
-  localStorage.setItem(
-    'bl_k_'+prov,
-    document.getElementById('apikey').value.trim()
-  );
+Analyze startup brand quality for venture funding potential.
 
-  localStorage.setItem(
-    'bl_m_'+prov,
-    document.getElementById('model').value
-  );
-}
-
-document.getElementById('apikey')
-  .addEventListener('input',saveKey);
-
-document.getElementById('model')
-  .addEventListener('change',saveKey);
-
-const SYS=`
-You are a venture-scale startup branding analyst trained on:
-- Y Combinator naming patterns
-- a16z portfolio branding
-- SaaS startup psychology
-- AI startup naming systems
-- investor perception heuristics
-- startup memorability science
-
-Analyze startup brand quality.
-
-Return ONLY valid JSON.
-
-Format:
+Return ONLY valid JSON with this exact schema:
 {
-  "strength":"weak|moderate|strong|elite",
-  "score":84,
-  "summary":"...",
-  "signals":["..."],
-  "weaknesses":["..."],
-  "expansion":["..."],
-  "comparables":["..."],
-  "recommendations":["..."]
+  "tier": "weak" | "moderate" | "strong" | "elite",
+  "score": 0-100,
+  "summary": "concise 1-2 sentence investor-focused summary",
+  "factors": {
+    "memorability": 0-100,
+    "credibility": 0-100,
+    "scalability": 0-100,
+    "differentiation": 0-100
+  },
+  "signals": ["string"],
+  "weaknesses": ["string"],
+  "expansion": ["string"],
+  "comparables": [
+    {"name":"Linear","similarity":"high","reason":"Similar minimalist SaaS naming pattern"}
+  ],
+  "recommendations": ["string"],
+  "insights": ["string"]
 }
-`;
-const GEMINI_TM_SYS=`
-You are a VC startup branding strategist.
-
-Analyze:
-- investor perception
-- startup credibility
-- memorability
-- pronunciation quality
-- venture-scale potential
-
-Return EXACTLY in this format:
-
-STRENGTH: strong
-SCORE: 84
-SUMMARY: Strong VC-ready startup brand
-
-SIGNALS:
-- Easy pronunciation
-- Strong SaaS naming structure
-
-WEAKNESSES:
-- Slight similarity to existing brands
-
-EXPANSION:
-- Flexible across categories
-- Works beyond current niche
-
-COMPARABLES:
-- Linear
-- Vanta
-
-RECOMMENDATIONS:
-- Secure short domains
-- Avoid AI suffix saturation
 
 Rules:
-- No JSON
-- No markdown
-- Include all sections
-`;
-async function analyzeTrademark(){
+- No markdown, no code fences, no explanations outside JSON
+- Score 0-100 where higher = better VC appeal
+- Factors should sum to ~400 total (100 each)
+- Comparables should be real or plausible startup brands with similarity rationale
+- Insights should be actionable, non-obvious strategic observations
+- Be conservative: flag risks even if uncertain (better false positive than false negative)`;
 
-  saveKey();
+const GEMINI_SYS = `You are an elite VC startup branding strategist. Return ONLY valid JSON.
 
-  const key=
-    document.getElementById('apikey')
-      .value.trim();
+Schema:
+{"tier":"weak|moderate|strong|elite","score":85,"summary":"...","factors":{"memorability":90,"credibility":75,"scalability":88,"differentiation":92},"signals":["..."],"weaknesses":["..."],"expansion":["..."],"comparables":[{"name":"...","similarity":"high|medium|low","reason":"..."}],"recommendations":["..."],"insights":["..."]}
 
-  if(!key){
-    alert('Please enter API key');
-    return;
+No markdown. No explanations. Pure JSON only.`;
+
+// ── API Callers ───────────────────────────────────────────────────
+async function fetchWithRetry(url, options, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.status === 402) throw new Error('PAYMENT_REQUIRED: Add credits at provider billing page or switch to free tier (Gemini).');
+      if (res.status === 401) throw new Error('INVALID_KEY: API key is incorrect or expired.');
+      if (res.status === 429) throw new Error('RATE_LIMIT: Too many requests. Wait 30 seconds.');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `HTTP ${res.status}`);
+      }
+      return res;
+    } catch (err) {
+      if (err.message?.includes('PAYMENT_REQUIRED') || err.message?.includes('INVALID_KEY')) throw err;
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 500 * Math.pow(2, i)));
+    }
   }
-
-  const brand=
-  document.getElementById('brand')
-      .value.trim();
-
-
-
-  if(!brand){
-  alert('Enter startup brand');
-  return;
 }
 
-  const industry=
-    document.getElementById('industry')
-      .value.trim();
-
-  const region=
-    document.getElementById('region')
-      .value;
-
-  const context=
-    document.getElementById('context')
-      .value.trim();
-
-  const model=
-    document.getElementById('model')
-      .value;
-
-  document.getElementById('loading')
-    .style.display='block';
-
-  document.getElementById('result')
-    .style.display='none';
-
-  const usr=`
-Brand: ${brand}
-Industry: ${industry}
-Region: ${region}
-
-Extra context:
-${context || 'none'}
-
-${
-  prov==='gemini'
-  ? `
-Analyze VC startup brand quality.
-
-You MUST include:
-- strength
-- score
-- summary
-- signals
-- weaknesses
-- expansion
-- comparables
-- recommendations
-
-Return in exact text format requested by system prompt.
-`
-  : `
-Analyze:
-- investor perception
-- startup memorability
-- venture-scale branding potential
-- pronunciation quality
-- SaaS/AI naming alignment
-- category expansion flexibility
-
-Return concise JSON only.
-`
+async function callOpenRouter(key, model, sys, usr) {
+  const res = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json', 
+      'Authorization': 'Bearer ' + key,
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'autoDNG VC Score'
+    },
+    body: JSON.stringify({ 
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
+        { role: 'system', content: sys }, 
+        { role: 'user', content: usr }
+      ] 
+    })
+  });
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content || '';
 }
-`;
 
-  try{
+async function callOpenAI(key, model, sys, usr) {
+  const res = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({ 
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
+        { role: 'system', content: sys }, 
+        { role: 'user', content: usr }
+      ] 
+    })
+  });
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content || '';
+}
 
-    let raw='';
-
-    if(prov==='anthropic'){
-
-      const r=await fetch(
-        'https://api.anthropic.com/v1/messages',
-        {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'x-api-key':key,
-            'anthropic-version':'2023-06-01'
-          },
-          body:JSON.stringify({
-            model,
-            max_tokens:1200,
-            system:SYS,
-            messages:[
-              {
-                role:'user',
-                content:usr
-              }
-            ]
-          })
-        }
-      );
-
-      const d=await r.json();
-
-      raw=d.content?.[0]?.text || '';
-
-    }else if(prov==='openai'){
-
-      const r=await fetch(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'Authorization':'Bearer '+key
-          },
-          body:JSON.stringify({
-            model,
-            temperature:.2,
-            messages:[
-              {
-                role:'system',
-                content:SYS
-              },
-              {
-                role:'user',
-                content:usr
-              }
-            ]
-          })
-        }
-      );
-
-      const d=await r.json();
-
-      raw=d.choices?.[0]?.message?.content || '';
-
-    }else{
-
-  let data=null;
-
-  const r=await fetch(
+async function callGemini(key, model, sys, usr) {
+  const res = await fetchWithRetry(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
     {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({
-        system_instruction:{
-          parts:[{
-            text:GEMINI_TM_SYS
-          }]
-        },
-
-        contents:[
-          {
-            role:'user',
-            parts:[{
-              text:usr
-            }]
-          }
-        ],
-
-       generationConfig:{
-  temperature:0,
-  topP:.2,
-  maxOutputTokens:400,
-  thinkingConfig:{
-    thinkingBudget:0
-  
-}
-        }
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: sys }] },
+        contents: [{ role: 'user', parts: [{ text: usr }] }],
+        generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 4096, responseMimeType: 'application/json' }
       })
     }
   );
+  const d = await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
 
-  if(!r.ok){
+async function callGroq(key, model, sys, usr) {
+  const res = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({ 
+      model, 
+      temperature: 0.2, 
+      max_tokens: 3000,
+      messages: [
+        { role: 'system', content: sys }, 
+        { role: 'user', content: usr }
+      ] 
+    })
+  });
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content || '';
+}
 
-    let errText='';
+// ── JSON Parser with Truncation Recovery ──────────────────────────
+function parseVCJSON(raw, provider = null) {
+  if (!raw || typeof raw !== 'string') return null;
+  let clean = String(raw).trim().replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '').trim();
 
-    try{
-      errText=await r.text();
-    }catch(e){}
+  // Strategy 1: Direct parse
+  try { return JSON.parse(clean); } catch {}
 
-    console.error(
-      'Gemini API Error:',
-      r.status,
-      errText
-    );
+  // Strategy 2: Extract JSON object
+  const first = clean.indexOf('{'), last = clean.lastIndexOf('}');
+  if (first !== -1 && last !== -1) {
+    try { return JSON.parse(clean.slice(first, last + 1)); } catch {}
+  }
 
-    renderResult({
-  strength:'moderate',
-  score:68,
-  summary:'Gemini temporarily unavailable',
-  signals:[
-    'Google API issue'
-  ],
-  weaknesses:[],
-  expansion:[],
-  comparables:[],
-  recommendations:[]
-});
+  // Strategy 3: Fix syntax errors
+  let fixed = clean.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']').replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '"$1"').replace(/[“”]/g, '"').trim();
+  try { return JSON.parse(fixed); } catch {}
 
+  // Strategy 4: Handle truncation
+  try {
+    let recovered = fixed;
+    const openBraces = (recovered.match(/\{/g) || []).length, closeBraces = (recovered.match(/\}/g) || []).length;
+    const openBrackets = (recovered.match(/\[/g) || []).length, closeBrackets = (recovered.match(/\]/g) || []).length;
+    if (openBrackets > closeBrackets) recovered += ']'.repeat(openBrackets - closeBrackets);
+    if (openBraces > closeBraces) recovered += '}'.repeat(openBraces - closeBraces);
+    if (recovered.endsWith('"') && !recovered.endsWith('\\"')) {
+      const lastQuote = recovered.lastIndexOf('"', recovered.length - 2);
+      if (lastQuote !== -1 && (recovered.slice(lastQuote + 1).match(/"/g) || []).length % 2 === 1) {
+        recovered = recovered.slice(0, -1) + '"';
+      }
+    }
+    return JSON.parse(recovered);
+  } catch {}
+
+  // Strategy 5: Regex fallback for key fields
+  try {
+    const extracted = {};
+    const tierMatch = clean.match(/"tier"\s*:\s*"([^"]+)"/);
+    if (tierMatch) extracted.tier = tierMatch[1];
+    const scoreMatch = clean.match(/"score"\s*:\s*(\d+)/);
+    if (scoreMatch) extracted.score = parseInt(scoreMatch[1]);
+    const summaryMatch = clean.match(/"summary"\s*:\s*"([^"]*(?:\.[^"]*)?)"/);
+    if (summaryMatch) extracted.summary = summaryMatch[1];
+    
+    if (extracted.tier && extracted.score != null) {
+      return {
+        tier: extracted.tier, score: extracted.score,
+        summary: extracted.summary || 'Partial analysis completed',
+        factors: { memorability: 70, credibility: 65, scalability: 75, differentiation: 80 },
+        signals: [], weaknesses: [], expansion: [], comparables: [], recommendations: [], insights: []
+      };
+    }
+  } catch {}
+
+  console.warn('❌ All JSON parsing strategies failed');
+  return null;
+}
+
+// ── Main Analysis ─────────────────────────────────────────────────
+async function analyzeVC() {
+  const btn = document.getElementById('analyzeBtn');
+  const btnText = btn.querySelector('.btn-text');
+  const spinner = btn.querySelector('.spinner');
+  
+  const key = document.getElementById('apikey').value.trim();
+  if (!key || !PROVS[prov]?.val?.(key)) { showToast('Please enter a valid API key'); return; }
+  
+  const brand = document.getElementById('brand').value.trim();
+  if (!brand) { showToast('Please enter a startup brand'); return; }
+  
+  // Loading state
+  btn.disabled = true; btnText.textContent = 'Analyzing...'; spinner.style.display = 'inline-block';
+  document.getElementById('loading').classList.add('on');
+  document.getElementById('result').style.display = 'none';
+  
+  const industry = document.getElementById('industry').value.trim() || 'General Tech';
+  const region = document.getElementById('region').value;
+  const context = document.getElementById('context').value.trim();
+  const model = document.getElementById('model').value;
+  
+  const usr = `Brand: ${brand}
+Industry: ${industry}
+Region: ${region}
+Context: ${context || 'None'}
+
+Evaluate for venture-scale startup branding:
+- Investor perception & pitch deck readiness
+- Memorability after first hearing (cognitive load test)
+- Venture-scale naming potential (can this brand scale to $100M+ ARR?)
+- Pronunciation quality across English, Spanish, Mandarin, Hindi
+- SaaS/AI startup naming alignment (2026 trends)
+- Category expansion flexibility (can this brand work beyond current niche?)
+- Founder-brand compatibility (does this feel authentic for a technical founder?)
+
+Provide conservative, investor-focused analysis. Flag risks even if uncertain.`;
+  
+  try {
+    let raw = '';
+    const sys = prov === 'gemini' ? GEMINI_SYS : SYS;
+    
+    if (prov === 'openai') raw = await callOpenAI(key, model, sys, usr);
+    else if (prov === 'openrouter') raw = await callOpenRouter(key, model, sys, usr);
+    else if (prov === 'gemini') raw = await callGemini(key, model, sys, usr);
+    else if (prov === 'groq') raw = await callGroq(key, model, sys, usr);
+    else throw new Error('Unknown provider');
+    
+    let data = parseVCJSON(raw, prov);
+    if (!data || !data.tier || data.score == null) throw new Error('Invalid response format');
+    
+    // Normalize data
+    data = normalizeVCData(data);
+    
+    lastAnalysis = { ...data, brand, timestamp: new Date().toISOString() };
+    renderResult(data);
+    showToast('✓ VC analysis complete');
+    
+  } catch (err) {
+    console.error('VC analysis error:', err);
+    const userMsg = err.message?.includes('PAYMENT_REQUIRED') 
+      ? '⚠️ Credits exhausted. Add funds or switch to Gemini (free tier).'
+      : err.message?.includes('INVALID_KEY')
+        ? '⚠️ Invalid API key. Check format or get a new key.'
+        : 'Analysis failed: ' + (err.message || 'Unknown error');
+    showToast(userMsg, 6000);
+    renderFallback(brand);
+  } finally {
+    btn.disabled = false; btnText.textContent = 'Analyze VC Score'; spinner.style.display = 'none';
+    document.getElementById('loading').classList.remove('on');
+  }
+}
+
+function normalizeVCData(data) {
+  data.score = Math.max(0, Math.min(100, Number(data.score ?? 50)));
+  
+  if (!data.factors) {
+    const base = data.score;
+    data.factors = {
+      memorability: Math.min(100, base + 5),
+      credibility: Math.max(40, base - 10),
+      scalability: Math.min(100, base + 15),
+      differentiation: Math.min(100, base + 10)
+    };
+  } else {
+    Object.keys(data.factors).forEach(k => {
+      data.factors[k] = Math.max(0, Math.min(100, Number(data.factors[k] ?? 50)));
+    });
+  }
+  
+  data.signals = Array.isArray(data.signals) ? data.signals : [];
+  data.weaknesses = Array.isArray(data.weaknesses) ? data.weaknesses : [];
+  data.expansion = Array.isArray(data.expansion) ? data.expansion : [];
+  data.comparables = Array.isArray(data.comparables) ? data.comparables : [];
+  data.recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+  data.insights = Array.isArray(data.insights) ? data.insights : [];
+  
+  return data;
+}
+
+// ── Render Results ────────────────────────────────────────────────
+function renderResult(data) {
+  const result = document.getElementById('result');
+  result.style.display = 'block';
+  
+  // Brand display
+  const brand = lastAnalysis?.brand || 'Brand';
+  document.getElementById('brandDisplay').textContent = brand;
+  
+  // Tier badge
+  const tier = String(data.tier || 'moderate').toLowerCase();
+  const badge = document.getElementById('tierBadge');
+  const tierIcon = document.getElementById('tierIcon');
+  const tierText = document.getElementById('tierText');
+  
+  const tierConfig = {
+    elite: { class: 'tier-elite', icon: '🏆', label: 'Elite VC Signal' },
+    strong: { class: 'tier-strong', icon: '⭐', label: 'Strong VC Signal' },
+    moderate: { class: 'tier-moderate', icon: '✨', label: 'Moderate VC Signal' },
+    weak: { class: 'tier-weak', icon: '⚠️', label: 'Weak VC Signal' }
+  };
+  const cfg = tierConfig[tier] || tierConfig.moderate;
+  badge.className = `tier-badge ${cfg.class}`;
+  tierIcon.textContent = cfg.icon;
+  tierText.textContent = cfg.label;
+  
+  // Score with animation
+  const score = data.score || 50;
+  document.getElementById('score').textContent = score;
+  setTimeout(() => {
+    document.getElementById('gaugeFill').style.width = `${score}%`;
+  }, 100);
+  
+  // Factors
+  const factors = data.factors || {};
+  updateFactor('f1', 'f1b', factors.memorability ?? 70, 'Memorability');
+  updateFactor('f2', 'f2b', factors.credibility ?? 65, 'Credibility');
+  updateFactor('f3', 'f3b', factors.scalability ?? 75, 'Scalability');
+  updateFactor('f4', 'f4b', factors.differentiation ?? 80, 'Differentiation');
+  
+  // Summary
+  document.getElementById('summary').textContent = data.summary || 'AI investor perception analysis completed.';
+  
+  // Lists
+  renderList('signals', data.signals || [], '');
+  renderList('weaknesses', data.weaknesses || [], 'weak');
+  renderList('expansion', data.expansion || [], 'exp');
+  
+  // Comparables with similarity badges
+  const compsEl = document.getElementById('comparables');
+  compsEl.innerHTML = '';
+  (data.comparables || []).slice(0, 4).forEach(c => {
+    const simClass = c.similarity === 'high' ? 'text-green' : c.similarity === 'medium' ? 'text-yellow' : 'text-red';
+    const div = document.createElement('div');
+    div.className = 'comp-card';
+    div.innerHTML = `
+      <div class="comp-name">${c.name || '—'}</div>
+      <div class="comp-similarity ${simClass}">${c.similarity || 'unknown'} similarity</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">${c.reason || ''}</div>
+    `;
+    compsEl.appendChild(div);
+  });
+  if (!data.comparables?.length) compsEl.innerHTML = '<div class="item comp">No direct comparables found</div>';
+  
+  // Recommendations
+  renderList('recommendations', data.recommendations || [], 'rec');
+  
+  // Scroll to results
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderFallback(brand) {
+  renderResult({
+    tier: 'moderate', score: 55,
+    summary: `Unable to complete full VC analysis for "${brand}". This may be due to API limits or response formatting.`,
+    factors: { memorability: 60, credibility: 50, scalability: 65, differentiation: 70 },
+    signals: ['Short and memorable', 'Easy to pronounce'],
+    weaknesses: ['Limited comparable data', 'Potential category confusion'],
+    expansion: ['Could work in adjacent SaaS categories', 'May need refinement for enterprise'],
+    comparables: [{ name: 'Linear', similarity: 'medium', reason: 'Similar minimalist naming pattern' }],
+    recommendations: ['Validate with target investors', 'Test pronunciation with global team'],
+    insights: ['Consider securing .com domain early', 'Avoid AI suffix saturation in 2026']
+  });
+}
+
+function updateFactor(id, barId, value, label) {
+  document.getElementById(id).textContent = `${value}/100`;
+  const bar = document.getElementById(barId);
+  bar.style.width = `${value}%`;
+  bar.style.background = value >= 80 ? 'var(--green)' : value >= 60 ? 'var(--lime)' : value >= 40 ? 'var(--yellow)' : 'var(--red)';
+}
+
+function renderList(id, items, extraClass) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  if (!items?.length) {
+    el.innerHTML = `<div class="item${extraClass ? ' ' + extraClass : ''}">No items to display</div>`;
     return;
   }
-
-  const d=await r.json();
-
-  const parts=
-    d.candidates?.[0]?.content?.parts || [];
-
-  raw=parts
-    .map(p=>p.text||'')
-    .join('')
-    .trim();
-
-  console.log('GEMINI RAW:',raw);
-
-const strengthMatch =
-  raw.match(/strength:\s*([^\n]+)/i);
-
-const scoreMatch =
-  raw.match(/score:\s*(\d+)/i);
-
-const summaryMatch =
-  raw.match(/summary:\s*([^\n]+)/i);
-
-const signalsMatch =
-  raw.match(
-    /signals:\s*([\s\S]*?)(weaknesses:|expansion:|comparables:|recommendations:|$)/i
-  );
-
-const weaknessesMatch =
-  raw.match(
-    /weaknesses:\s*([\s\S]*?)(expansion:|comparables:|recommendations:|$)/i
-  );
-
-const expansionMatch =
-  raw.match(
-    /expansion:\s*([\s\S]*?)(comparables:|recommendations:|$)/i
-  );
-
-const comparablesMatch =
-  raw.match(
-    /comparables:\s*([\s\S]*?)(recommendations:|$)/i
-  );
-
-const recommendationsMatch =
-  raw.match(
-    /recommendations:\s*([\s\S]*)$/i
-  );
-
-function parseBullets(str){
-
-  if(!str) return [];
-
-  return str
-    .split(/\n\s*[-•]\s*/)
-    .map(s=>s.trim())
-    .filter(Boolean);
-}
-
-data={
-
-  strength:
-    strengthMatch?.[1]
-      ?.trim()
-      ?.toLowerCase() || 'moderate',
-
-  score:
-    Number(scoreMatch?.[1] || 68),
-
-  summary:
-    summaryMatch?.[1]
-      ?.trim() ||
-      'Analysis completed',
-
-  signals:
-    parseBullets(signalsMatch?.[1]),
-
-  weaknesses:
-    parseBullets(weaknessesMatch?.[1]),
-
-  expansion:
-    parseBullets(expansionMatch?.[1]),
-
-  comparables:
-    parseBullets(comparablesMatch?.[1]),
-
-  recommendations:
-    parseBullets(recommendationsMatch?.[1])
-};
-
-renderResult(data);
-return;
-}
-
-   
-
-    let clean=String(raw || '')
-  .replace(/```json/gi,'')
-  .replace(/```/g,'')
-  .trim();
-
-let data=null;
-
-try{
-
-  // normal parse first
-  data=JSON.parse(clean);
-
-}catch(e){
-
-  try{
-
-    // extract first JSON object
-    const start=clean.indexOf('{');
-    const end=clean.lastIndexOf('}');
-
-    if(start!==-1 && end!==-1){
-
-      const fixed=
-        clean.substring(start,end+1);
-
-      data=JSON.parse(fixed);
-    }
-
-  }catch(e2){}
-}
-
-// final fallback
-if(!data){
-
-  console.error('RAW:',raw);
-
-  data={
-  strength:'moderate',
-  score:68,
-  summary:'Unable to analyze response',
-  signals:[
-    'Model returned malformed output'
-  ],
-  weaknesses:[],
-  expansion:[],
-  comparables:[],
-  recommendations:[]
-};
-}
-
-renderResult(data);
-
-  }catch(err){
-
-    console.error(err);
-
-    alert(
-      'Analysis failed. Check console for details.'
-    );
-
-  }finally{
-
-    document.getElementById('loading')
-      .style.display='none';
-  }
-}
-
-function renderResult(data){
-
-  const result=
-    document.getElementById('result');
-
-  result.style.display='block';
-
-  const strength=
-    String(data.strength || 'moderate')
-      .toLowerCase();
-
-  const badge=
-    document.getElementById('tierBadge');
-
-  badge.textContent=
-    strength.charAt(0).toUpperCase()+
-    strength.slice(1)+' VC Signal';
-
-  badge.className='badge '+(
-    strength==='elite'
-      ? 'low'
-      : strength==='strong'
-        ? 'low'
-        : strength==='moderate'
-          ? 'medium'
-          : 'high'
-  );
-
-  document.getElementById('score')
-  .textContent=data.score || 68;
-        
-
-  document.getElementById('summary')
-    .textContent=data.summary || '';
-
-  function renderList(id,items){
-
-  const el=document.getElementById(id);
-
-  if(!el) return;
-
-  el.innerHTML='';
-
-  // convert strings into arrays safely
-  if(typeof items==='string'){
-
-    items=[items];
-  }
-
-  // prevent non-array crashes
-  if(!Array.isArray(items)){
-
-    items=[];
-  }
-
-  items.forEach(item=>{
-
-    const div=document.createElement('div');
-
-    div.className='item';
-
-    div.textContent=item;
-
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = `item${extraClass ? ' ' + extraClass : ''}`;
+    div.textContent = typeof item === 'string' ? item : (item.reason || item.name || '—');
     el.appendChild(div);
   });
 }
 
-  renderList(
-    'platformfit',
-    data.platform_fit
-  );
-
-renderList('signals',data.signals);
-
-renderList('weaknesses',data.weaknesses);
-
-renderList('expansion',data.expansion);
-
-renderList('comparables',data.comparables);
-
-renderList('recommendations',data.recommendations);
+// ── Utilities ─────────────────────────────────────────────────────
+function showToast(msg, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('on');
+  setTimeout(() => toast.classList.remove('on'), duration);
 }
 
+function copyResults() {
+  if (!lastAnalysis) { showToast('No analysis to copy'); return; }
+  const text = `VC Brand Analysis: ${lastAnalysis.brand}
+Tier: ${lastAnalysis.tier.toUpperCase()} | Score: ${lastAnalysis.score}/100
+
+Summary: ${lastAnalysis.summary}
+
+Factors:
+• Memorability: ${lastAnalysis.factors?.memorability || '--'}/100
+• Credibility: ${lastAnalysis.factors?.credibility || '--'}/100
+• Scalability: ${lastAnalysis.factors?.scalability || '--'}/100
+• Differentiation: ${lastAnalysis.factors?.differentiation || '--'}/100
+
+Investor Signals:
+${(lastAnalysis.signals || []).map(s => '• ' + s).join('\n') || 'None'}
+
+Considerations:
+${(lastAnalysis.weaknesses || []).map(w => '• ' + w).join('\n') || 'None'}
+
+Category Expansion:
+${(lastAnalysis.expansion || []).map(e => '• ' + e).join('\n') || 'None'}
+
+Comparable Brands:
+${(lastAnalysis.comparables || []).map(c => `• ${c.name}: ${c.similarity} similarity — ${c.reason}`).join('\n') || 'None'}
+
+Recommendations:
+${(lastAnalysis.recommendations || []).map(r => '• ' + r).join('\n') || 'None'}
+
+Strategic Insights:
+${(lastAnalysis.insights || []).map(i => '• ' + i).join('\n') || 'None'}
+
+---
+Generated by autoDNG VC Brand Score`;
+  
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Copied to clipboard')).catch(() => showToast('✗ Copy failed'));
+}
+
+function exportJSON() {
+  if (!lastAnalysis) { showToast('No analysis to export'); return; }
+  const blob = new Blob([JSON.stringify(lastAnalysis, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `vc-analysis-${lastAnalysis.brand.toLowerCase().replace(/\W+/g, '-')}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('✓ Exported JSON');
+}
+
+function showInsights() {
+  if (!lastAnalysis?.insights?.length) { showToast('No additional insights available'); return; }
+  showToast(lastAnalysis.insights.join(' • '), 6000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); analyzeVC(); }
+  if (e.key === 'Escape') document.getElementById('result').style.display = 'none';
+});
+
+// Init
 init();
 </script>
-
 </body>
 </html>
