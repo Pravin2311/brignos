@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>autoDNG — Social Handle Checker</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
 <style>
 :root{
   --bg:#09090b;--bg2:#111114;--card:#141418;--border:#23232a;
@@ -94,7 +97,7 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 /* Responsive */
 @media(max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:40px}.factors{grid-template-columns:1fr}.platforms{grid-template-columns:repeat(2,1fr)}.alts-grid{grid-template-columns:1fr}}
 @media(max-width:800px){
-  .header-inner{flex-direction:column;align-items:stretch;gap:14px;padding:12px 14px;height:auto}
+ /* .header-inner{flex-direction:column;align-items:stretch;gap:14px;padding:12px 14px;height:auto} */
   .hright{width:100%;flex-direction:column;gap:12px}
   .ptabs{width:100%;display:flex;gap:8px}.ptab{flex:1;text-align:center;padding:12px 8px;font-size:11px}
   .kwrap{width:100%;flex-direction:column;align-items:stretch}
@@ -116,6 +119,107 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .text-lime{color:var(--lime)}.text-green{color:var(--green)}.text-yellow{color:var(--yellow)}.text-red{color:var(--red)}
 .mt-4{margin-top:16px}.mb-4{margin-bottom:16px}.flex{display:flex}.gap-2{gap:8px}.items-center{align-items:center}
+.getkeybtn{
+  border:1px solid var(--border);
+  background:var(--bg2);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:13px;
+  min-height:44px;
+  white-space:nowrap;
+}
+
+.getkeybtn:hover{
+  border-color:var(--lime);
+  color:var(--lime);
+}
+.keymodal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:20px;
+}
+
+.keymodal.on{
+  display:flex;
+}
+
+.keycard{
+  width:100%;
+  max-width:360px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.keycard a{
+  text-decoration:none;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:10px;
+  color:var(--text);
+}
+
+.keycard button{
+  margin-top:10px;
+  background:var(--lime);
+  color:#000;
+  border:none;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+@media(max-width:800px){
+
+  .header-inner{
+    padding:12px;
+    gap:12px;
+  }
+
+  .hright{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .ptabs{
+    width:100%;
+    overflow-x:auto;
+    display:flex;
+    flex-wrap:nowrap;
+  }
+
+  .ptab{
+    flex:1;
+    min-width:90px;
+  }
+
+  .kwrap{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+
+  .kwrap input,
+  .select,
+  .getkeybtn{
+    width:100%;
+  }
+
+}
 </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -144,7 +248,12 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
         <input id="apikey" type="password" placeholder="API Key" autocomplete="off">
         <label for="model" class="visually-hidden">Model</label>
         <select id="model" class="select"></select>
-        <div class="kstatus"><span class="kdot" id="kdot"></span><span id="ktext">no key</span></div>
+        <div class="kstatus">
+          <span class="kdot" id="kdot"></span>
+          <span id="ktext">no key</span>
+        </div>
+
+      <button class="getkeybtn" onclick="showKeys()">Get Key</button>
       </div>
     </div>
   </div>
@@ -316,6 +425,18 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 <div class="toast" id="toast"></div>
 
 <script>
+
+  function showKeys(){
+  document
+    .getElementById('keyModal')
+    .classList.add('on');
+}
+
+function closeKeys(){
+  document
+    .getElementById('keyModal')
+    .classList.remove('on');
+}
 // ── Provider Config ───────────────────────────────────────────────
 const PROVS = {
   openrouter: { ph: 'sk-or-...', models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct'], val: k => k.startsWith('sk-or-') },
@@ -1106,5 +1227,32 @@ document.addEventListener('keydown', e => {
 // Init
 init();
 </script>
+
+<div id="keyModal" class="keymodal">
+  <div class="keycard">
+    <h3>Get API Keys</h3>
+
+    <a href="https://openrouter.ai/keys" target="_blank">
+      OpenRouter
+    </a>
+
+    <a href="https://platform.openai.com/api-keys" target="_blank">
+      OpenAI
+    </a>
+
+    <a href="https://aistudio.google.com/app/apikey" target="_blank">
+      Gemini
+    </a>
+
+    <a href="https://console.groq.com/keys" target="_blank">
+      Groq
+    </a>
+
+    <button onclick="closeKeys()">Close</button>
+  </div>
+</div>
+
+</body>
+</html>
 </body>
 </html>

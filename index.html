@@ -7,7 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link rel="icon" href="data:,">
+
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -48,10 +52,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .spill{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:5px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
 .sdot.ok{background:var(--lime);box-shadow:0 0 7px var(--lime-glow)}
-.helpbtn{background:none;border:1px solid var(--border2);border-radius:6px;padding:5px 9px;color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;flex-shrink:0;transition:all .15s}
+.helpbtn{
+  background:none;
+  border:1px solid var(--border2);
+  border-radius:8px;
+  padding:10px 14px;
+  color:var(--muted2);
+  font-family:var(--mono);
+  font-size:13px;
+  cursor:pointer;
+  min-height:44px;
+}
 .helpbtn:hover{border-color:var(--lime);color:var(--lime)}
 
 /* Help banner */
+.helpbar{
+  position:relative;
+  z-index:300;
+}
 .helpbar{max-width:1140px;margin:0 auto;padding:10px 24px 0;display:none}
 .helpbar.on{display:block}
 .helpbar-inner{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
@@ -89,6 +107,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   .fg4{
     grid-template-columns:1fr;
   }
+
+  .helpbtn{
+  width:100%;
+  padding:12px;
+  text-align:center;
+  font-size:13px;
+}
 
 }
 .fg2{display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:18px}
@@ -390,13 +415,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   <div class="hb-txt">
     <strong>Get your free API key</strong> — choose a provider in the header, then grab a key:
     <div class="hb-links">
-      <a class="hblink" href="https://openrouter.ai/keys" target="_blank">→ OpenRouter</a>
-      <a class="hblink" href="https://console.anthropic.com/settings/keys" target="_blank">→ Anthropic Console</a>
-      <a class="hblink" href="https://platform.openai.com/api-keys" target="_blank">→ OpenAI Platform</a>
-      <a class="hblink" href="https://aistudio.google.com/app/apikey" target="_blank">→ Google AI Studio (free)</a>
-      <a class="hblink" href="https://console.groq.com/keys" target="_blank">→ Groq Console</a>
+      <a class="hblink" href="https://openrouter.ai/keys" rel="noopener">→ OpenRouter</a>
+      <a class="hblink" href="https://console.anthropic.com/settings/keys" rel="noopener">→ Anthropic Console</a>
+      <a class="hblink" href="https://platform.openai.com/api-keys" rel="noopener">→ OpenAI Platform</a>
+      <a class="hblink" href="https://aistudio.google.com/app/apikey" rel="noopener">→ Google AI Studio (free)</a>
+      <a class="hblink" href="https://console.groq.com/keys" rel="noopener">→ Groq Console</a>
     </div>
-    <div style="margin-top:8px;font-size:12px">Anthropic: starts with <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-ant-</code> &nbsp;|&nbsp; OpenAI: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-</code> &nbsp;|&nbsp; Gemini: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">AIza</code></div>
+    <div style="margin-top:8px;font-size:12px">OpenRouter: starts with <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-or-</code> &nbsp;|&nbsp; OpenAI: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-</code> &nbsp;|&nbsp; Gemini: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">AIza</code></div>
   </div>
   <button class="hbclose" onclick="toggleHelp()">×</button>
 </div></div>
@@ -865,7 +890,7 @@ const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',
 const WC_LABELS={1:'1-word',2:'2-word',3:'3-word',any:'Any'};
 
 // ── State ──────────────────────────────────────────────────────────
-let prov=localStorage.getItem('bl_p')||'anthropic';
+let prov=localStorage.getItem('bl_p')||'openrouter';
 let key=localStorage.getItem('bl_k_'+prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
 if(!PROVS[prov].models.find(m=>m.id===mdl)){
