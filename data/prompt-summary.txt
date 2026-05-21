@@ -1,26 +1,33 @@
+ACT AS: Expert Startup Naming Strategist & Computational Linguist
+TASK: Generate [NUMBER] high-potential startup names based on data-driven constraints and brand parameters.
 
+📥 BRAND CONTEXT (Fill before running):
+- Industry/Vertical: [e.g., AI infrastructure, climate fintech, B2B workflow automation]
+- Target Audience: [e.g., enterprise operators, developer teams, SMB founders]
+- Core Value/Vibe: [e.g., precision, speed, trust, scalability, elegance]
+- Preferred Tone: [e.g., modern, authoritative, minimalist, forward-leaning]
 
-Startup Naming Intelligence:
+📊 NAMING CONSTRAINTS & WEIGHTING:
+• Structure Priority: 60% Invented/Neologism | 25% Atomic (1-2 syllables) | 15% Compound/Hybrid
+• Phonetic Preference: Balanced or Hard-Minimal (crisp consonants + open vowels). Avoid soft-vocalic unless explicitly requested.
+• Length: Strictly 4–8 characters.
+• Morphology: Strategically deploy these suffixes: -ics, -ai, -ent, -ter, -nce, -abs, -san, -lth, -ion, -ing. Use these consonant clusters for internal rhythm: nt, st, ng, nd, ct, nc, th, ll, pr, rt.
+• Global Pronounceability: Must be intuitively readable/speakable across EN, ES, DE, FR, JP. Avoid ambiguous stress patterns, silent letters, or culture-specific traps.
 
-- dominant structures:
-invented (852), atomic (433), compound (332), hybrid (22)
+🚫 STRICT EXCLUSIONS:
+- Zero usage of: health, labs, therapeutics, winter, summer, games, security, systems, tools, product, space, networks, hunt, intelligence, network, protocol, code, software, technologies, biosciences
+- Avoid generic SaaS/tech tropes: -ly, -ify, -io, cloud, sync, flow, hub, stack, next, pro, meta, quantum, neo, core, pulse, spark, vault, ai (as standalone suffix unless contextually justified)
+- No names phonetically, orthographically, or conceptually similar to VC-backed startups or established brands.
 
-- dominant phonetics:
-balanced (1099), hard-minimal (462), soft-vocalic (78)
+✅ OUTPUT FORMAT (Per Name):
+1. Name
+2. Structure Type: [Invented / Atomic / Compound / Hybrid]
+3. Phonetic Style: [Balanced / Hard-Minimal]
+4. Pronunciation: [Simple phonetic breakdown]
+5. Rationale: [≤2 sentences: linguistic strength, brand alignment, memorability]
+6. Viability Note: [Domain heuristic, trademark risk flag, global pronunciation caveat if any]
 
-- common suffixes:
-ing, ion, lth, abs, san, ics,  ai, ent, ter, nce
+🔍 SELF-EVALUATION PROTOCOL:
+Before outputting, run each candidate through: length (4-8), exclusion list, phonetic clarity, structural weighting, and uniqueness. Discard weak candidates. Output ONLY names that pass all filters. If fewer than [NUMBER] pass, explain why and offer a refined batch.
 
-- common consonant clusters:
-nt, st, ng, nd, ct, nc, th, ll, pr, rt
-
-- avoid oversaturated terms:
-health, labs, therapeutics, winter, summer, games, security, systems, tools, product, space, networks, hunt, intelligence, network, protocol, code, software, technologies, biosciences
-
-Guidance:
-Prefer unique invented phonetics.
-Avoid generic SaaS buzzwords.
-Prioritize globally pronounceable names.
-Prefer 4-8 character brandables.
-Avoid names too similar to existing startups.
-
+Generate now.
