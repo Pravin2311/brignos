@@ -1,0 +1,47 @@
+{
+  "General": {
+    "total_startups": 1639,
+    "top_prefixes": [
+      "pro",
+      "sta",
+      "com",
+      "for",
+      "win",
+      "sum",
+      "con",
+      "fin",
+      "ind",
+      "app",
+      "bra",
+      "cha"
+    ],
+    "top_suffixes": [
+      "ing",
+      "ion",
+      "lth",
+      "abs",
+      "san",
+      "ics",
+      " ai",
+      "ent",
+      "ter",
+      "nce",
+      "ity",
+      "ive"
+    ],
+    "top_clusters": [
+      "nt",
+      "st",
+      "ng",
+      "nd",
+      "ct",
+      "nc",
+      "th",
+      "ll",
+      "pr",
+      "rt",
+      "rd",
+      "sh"
+    ]
+  }
+}

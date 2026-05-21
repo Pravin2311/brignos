@@ -97,7 +97,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
 .fg4{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:13px;
   margin-bottom:13px;
 }
@@ -203,17 +203,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .dchip.av{border-color:rgba(200,240,74,.4);color:var(--lime);background:var(--lime-dim);cursor:pointer}
 .dchip.av:hover{background:rgba(200,240,74,.2)}
 .dchip.tk{border-color:rgba(240,80,106,.3);color:var(--rose);opacity:.6}
-/* .dchip.un{border-color:rgba(240,184,74,.3);color:var(--amber);cursor:pointer} */
-.dchip.un{
-  border-color:rgba(240,184,74,.35);
-  color:var(--amber);
-  background:var(--amber-dim);
-  cursor:pointer;
-}
-
-.dchip.un:hover{
-  background:rgba(240,184,74,.18);
-}
+.dchip.un{border-color:rgba(240,184,74,.3);color:var(--amber);cursor:pointer}
 .dchip a{color:inherit;text-decoration:none}
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 .caution{font-family:var(--mono);font-size:10px;color:var(--muted);padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;line-height:1.5}
@@ -560,26 +550,58 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   </div>
 
   <div class="field">
-    <label>Name Length</label>
+  <label>Name Length</label>
 
-    <select id="wordcount">
-      <option value="any" selected>
-        Any length
-      </option>
+  <select id="wordcount">
+    <option value="any" selected>
+      Any length
+    </option>
 
-      <option value="1">
-        Single word (Slack, Arc)
-      </option>
+    <option value="1">
+      Single word (Slack, Arc)
+    </option>
 
-      <option value="2">
-        Two words (GitHub, PayPal)
-      </option>
+    <option value="2">
+      Two words (GitHub, PayPal)
+    </option>
 
-      <option value="3">
-        Three words max
-      </option>
-    </select>
-  </div>
+    <option value="3">
+      Three words max
+    </option>
+  </select>
+</div>
+
+<div class="field">
+  <label>Character Length</label>
+
+  <select id="charlen">
+
+    <option value="any" selected>
+      Any length
+    </option>
+
+    <option value="3-5">
+      3–5 chars
+    </option>
+
+    <option value="4-6">
+      4–6 chars
+    </option>
+
+    <option value="5-8">
+      5–8 chars
+    </option>
+
+    <option value="6-10">
+      6–10 chars
+    </option>
+
+    <option value="10+">
+      10+ chars
+    </option>
+
+  </select>
+</div>
 
 </div>
   
@@ -650,18 +672,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     >
     <span>Prioritize available primary TLD names</span>
   </label>
-
-<label class="tld-check">
-  <input type="checkbox" id="onlyAvailable">
-  <span>Show only available names</span>
-</label>
-
-<label class="tld-check" style="margin-top:6px">
-  <input type="checkbox" id="aftermarketMode">
-  <span>🎯 Prioritize .com aftermarket candidates</span>
-</label>
 </div>
-
 
     <div class="field">
       <label>Target audience</label>
@@ -909,10 +920,9 @@ const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],
 // Language labels for UI
 const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
 const WC_LABELS={1:'1-word',2:'2-word',3:'3-word',any:'Any'};
-
 function getWordCount(name){
 
-  return String(name)
+  return name
     .trim()
     .split(/\s+/)
     .filter(Boolean)
@@ -920,25 +930,44 @@ function getWordCount(name){
 
 }
 
-function matchesWordCount(name,wc){
+function matchesWordCount(
+  name,
+  wc
+){
 
-  if(wc === 'any') return true;
-
-  const count = getWordCount(name);
-
-  if(wc === '1'){
-    return count === 1;
+  if(wc === 'any'){
+    return true;
   }
 
-  if(wc === '2'){
-    return count === 2;
+  return getWordCount(name)
+    === Number(wc);
+
+}
+
+function matchesCharLength(
+  name,
+  range
+){
+
+  if(range === 'any'){
+    return true;
   }
 
-  if(wc === '3'){
-    return count <= 3;
+  const len =
+    name
+      .replace(/\s+/g,'')
+      .length;
+
+  if(range === '10+'){
+    return len >= 10;
   }
 
-  return true;
+  const [min,max] =
+    range.split('-').map(Number);
+
+  return len >= min &&
+         len <= max;
+
 }
 
 // ── State ──────────────────────────────────────────────────────────
@@ -949,7 +978,14 @@ if(!PROVS[prov].models.find(m=>m.id===mdl)){
   mdl=PROVS[prov].models[0].id;
   localStorage.setItem('bl_m_'+prov,mdl);
 }
-let busy=false,domC={},pill='all',helpOn=false,language='global',wordCount='any';
+// let busy=false,domC={},pill='all',helpOn=false,language='global',wordCount='any';
+let busy=false,
+    domC={},
+    pill='all',
+    helpOn=false,
+    language='global',
+    wordCount='any',
+    charLength='any';
 let lastGeneratedNames=[]; // For export functionality
 
 // ── Boot ───────────────────────────────────────────────────────────
@@ -963,13 +999,16 @@ let lastGeneratedNames=[]; // For export functionality
   // Load persisted preferences
   language=localStorage.getItem('bl_lang')||'global';
   wordCount=localStorage.getItem('bl_wc')||'any';
-  const aftermarketPref = localStorage.getItem('bl_aftermarket') === 'true';
-  
   document.getElementById('language').value=language;
   document.getElementById('wordcount').value=wordCount;
-  if(document.getElementById('aftermarketMode')){
-    document.getElementById('aftermarketMode').checked = aftermarketPref;
-  }
+  charLength =
+  localStorage.getItem(
+    'bl_charlen'
+  ) || 'any';
+
+document.getElementById(
+  'charlen'
+).value = charLength;
 })();
 
 function switchProv(p,el){
@@ -1000,37 +1039,21 @@ function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='pa
 function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
 
 // ── Enhanced Prompts with Training Data Integration ─────────────────
-const SYS=`You are a world-class brand naming strategist trained on:
-• a16z portfolio naming patterns (Anduril,Glean,Figma,Loom,Deel,Harvey,Castelion)
-• Y Combinator alumni naming data (Airbnb,Stripe,Dropbox,Brex,Rippling,Vanta,Retool,Linear)
-• TechCrunch startup naming trends & launch analysis
-• Crunchbase funding-stage naming correlations
-• NameBio domain sales data: premium patterns, price signals, TLD performance
-• GoDaddy Auctions historical data: expired premium names, aftermarket trends
-• Twitter/X domain sales tweets: real-time market sentiment, viral naming patterns
+const SYS = `
+You are an elite startup naming strategist.
 
-Return ONLY a raw JSON array — no markdown, no code fences, no explanation.
+Generate modern venture-scale startup names.
 
-Naming Principles:
-1. VC Signal: Names that pass the "a16z pitch test" — memorable in 3 seconds, spellable after hearing once
-2. Domain Reality: Prioritize names with available .com/.ai/.io/.xyz/.co options based on NameBio sale patterns
-3. Global Readiness: Avoid English-only puns; ensure phonetic clarity across major languages
-4. Trend Alignment: Balance timeless structure with current tech naming conventions (2026)
-5. Trademark Safety: Avoid direct dictionary words in crowded categories
+Rules:
+- memorable
+- globally pronounceable
+- clean phonetics
+- strong brandability
+- avoid generic AI buzzwords
+- avoid trademark-heavy names
+- avoid hyphens and numbers
 
-Output Format (exactly 40 objects):
-{
-  "name":"Velo",
-  "tagline":"Speed built into every workflow",
-  "naming_pattern":"Minimal|Abstract|Compound|Portmanteau|Latin/Greek|Misspelled|Metaphor",
-  "vc_signal":"a16z-style|YC-style|Enterprise-grade|Consumer-ready|Founder-friendly",
-  "why_it_works":"Concise rationale referencing training data patterns",
-  "score":{"brand_strength":88,"memorability":92,"global_fit":85,"trend_alignment":90},
-  "colors":["#c8f04a","#09090b"],
-  
-  "language_suitability":["en"],
-  "word_count":1
-  Avoid overused startup terms:
+Avoid overused startup terms:
 AI
 Nova
 Core
@@ -1043,7 +1066,27 @@ Bot
 Sync
 Cloud
 Data
-}`;
+
+Return ONLY raw JSON array.
+
+Format:
+
+[
+{
+"name":"",
+"tagline":"",
+"naming_pattern":"",
+"vc_signal":"",
+"why_it_works":"",
+"score":{
+"brand_strength":90,
+"memorability":90,
+"global_fit":90,
+"trend_alignment":90
+}
+}
+]
+`;
 const GEMINI_SYS = `
 You are an elite VC startup naming strategist.
 
@@ -1169,6 +1212,140 @@ Palantir, Anduril
 `
 };
 
+// ── Two-Phase Generation Helpers ──────────────────────────────────
+
+// Generate heuristic name patterns to guide LLM toward available-friendly names
+function generateHeuristicExamples(industry, count = 8) {
+  const roots = {
+    'AI Agents & Automation': ['auto', 'agent', 'flow', 'sync', 'mind'],
+    'Fintech & Neobanking': ['pay', 'coin', 'vault', 'flux', 'mint'],
+    'Developer Tools': ['code', 'dev', 'stack', 'build', 'deploy'],
+    'Healthcare AI': ['med', 'care', 'health', 'vital', 'pulse'],
+  };
+  const industryRoots = roots[industry] || ['tech', 'labs', 'sys', 'net'];
+  
+  const prefixes = ['z', 'k', 'v', 'x', 'q', 'kr', 'vy', 'zyl', 'vex'];
+  const suffixes = ['ox', 'ra', 'on', 'ix', 'or', 'ex', 'al', 'en'];
+  
+  const examples = [];
+  
+  // Pattern 1: Prefix + Suffix (invented)
+  for (let p of prefixes.slice(0, 4)) {
+    for (let s of suffixes.slice(0, 3)) {
+      if (examples.length >= count) break;
+      examples.push((p + s).charAt(0).toUpperCase() + (p + s).slice(1));
+    }
+  }
+  
+  // Pattern 2: Root + uncommon suffix
+  for (let r of industryRoots.slice(0, 3)) {
+    if (examples.length >= count) break;
+    examples.push((r + 'ix').charAt(0).toUpperCase() + (r + 'ix').slice(1));
+  }
+  
+  return examples;
+}
+
+// Score names for availability likelihood (client-side heuristic)
+function calculateAvailabilityScore(name, tld = '.com') {
+  let score = 70; // Base score
+  const lower = name.toLowerCase().replace(/\s+/g, '');
+  const len = lower.length;
+  
+  // 🔽 Penalties
+  const commonWords = ['cloud','data','sync','flow','core','labs','tech','app','web','net','ai','bot','meta','quantum','nova','prime','elite'];
+  if (commonWords.includes(lower)) score -= 40;
+  if (len <= 4 && /^[a-z]+$/.test(lower)) score -= 30;
+  if (/(ify|ly|able|io|ai|app)$/.test(lower)) score -= 20;
+  if (/[-\d]/.test(name)) score -= 25;
+  
+  // 🔼 Bonuses  
+  if (/[xzqvk]/.test(lower)) score += 15;
+  if (/[^aeiou]{3,}/.test(lower)) score += 10;
+  if (len >= 5 && len <= 7) score += 10;
+  if (/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower)) score += 8;
+  
+  return Math.max(5, Math.min(99, score));
+}
+
+// Phase 1: Generate broad candidate pool
+async function generateRawCandidates(industry, style, kw, targetCount = 25) {
+  const heuristicExamples = generateHeuristicExamples(industry, 6);
+  const exampleList = heuristicExamples.map(e => `- ${e}`).join('\n');
+  
+  const prompt = `Generate ${targetCount} invented brandable startup names for "${industry}".
+
+🎯 STYLE EXAMPLES (emulate these patterns):
+${exampleList}
+
+Rules:
+- 4-8 characters, globally pronounceable  
+- No exact dictionary words under 6 letters
+- Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs
+- Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation
+- Style: ${style || 'mixed modern tech'}
+${kw ? `Incorporate creatively: ${kw}` : ''}
+
+Return ONLY a JSON array:
+[{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
+
+No markdown, no explanations.`;
+
+  const sys = `You are a startup naming expert. Return ONLY valid JSON array.`;
+  
+  try {
+    let response;
+    if (prov === 'gemini') {
+      response = await callGemini(sys, prompt, () => {});
+    } else if (prov === 'openai') {
+      response = await callOpenAI(sys, prompt, () => {});
+    } else if (prov === 'groq') {
+      response = await callGroq(sys, prompt, () => {});
+    } else {
+      response = await callOpenRouter(sys, prompt, () => {});
+    }
+    
+    // Parse response
+    const clean = String(response || '').replace(/```json|```/g, '').trim();
+    let names = null;
+    
+    try { names = JSON.parse(clean); }
+    catch(e) {
+      const start = clean.indexOf('[');
+      const end = clean.lastIndexOf(']');
+      if (start !== -1 && end !== -1) {
+        names = JSON.parse(clean.slice(start, end + 1)
+          .replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
+      }
+    }
+    
+    return Array.isArray(names) ? names.filter(n => n?.name) : [];
+  } catch(e) {
+    console.error('Phase 1 generation error:', e);
+    return [];
+  }
+}
+
+// Phase 2: Score candidates for availability + brand strength
+async function scoreCandidates(rawNames, tlds, config) {
+  if (rawNames.length === 0) return [];
+  
+  // Client-side scoring (fast, no API call)
+  return rawNames.map(n => {
+    const availScore = calculateAvailabilityScore(n.name, tlds[0]);
+    const brandScore = n.score 
+      ? Object.values(n.score).reduce((a,b) => a + b, 0) / Object.values(n.score).length 
+      : 70;
+    
+    return {
+      ...n,
+      _availabilityScore: availScore,
+      _brandScore: brandScore,
+      _combinedScore: (availScore * 0.6) + (brandScore * 0.4) // Weight availability higher
+    };
+  });
+}
+
 function USR(
   industry,
   style,
@@ -1177,6 +1354,7 @@ function USR(
   tlds,
   lang,
   wc,
+  charlen,
   strictTld=false
 ){
   const langInstructions={
@@ -1193,11 +1371,21 @@ function USR(
     'any':'Mix of lengths; prioritize memorability over strict count.'
   };
 
+  const charInstructions = {
+  '3-5': 'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".',
+  '4-6': 'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".',
+  '5-8': 'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".',
+  '6-10': 'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".',
+  '10+': 'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".',
+  'any': 'Mix of lengths; prioritize memorability and brandability over strict count.'
+};
   return `Create ${
   prov==='gemini' ? 5 : 10
 } brand names for a "${industry}" startup.
 Language: ${lang} — ${langInstructions[lang]}
 Name Length: ${wc} words — ${wordInstructions[wc]}
+Character Length:
+${charInstructions[charlen]}
 Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
 Audience: ${aud} | TLDs: ${tlds.join(', ')}
 ${
@@ -1218,56 +1406,39 @@ Rules:
 
 At least 80% of generated names should likely have ${tlds[0]} available.
 `
-  : strictTld
+ : strictTld
+  ? `
+🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE
 
-      ? `
-CRITICAL HARD REQUIREMENT: .com DOMAIN STRATEGY
+Strategy for available .com domains:
+1. INVENTED BRANDABLES (highest availability):
+   - 5-7 letters, no dictionary words
+   - Uncommon consonant clusters: xv, zq, kr, vy
+   - Vowel patterns: a-e-i-o-u rotated unusually
+   - Examples: "Zylox", "Krevu", "Vexor"
 
-The user wants .com domains — either instantly available OR realistic aftermarket acquisitions.
+2. COMPOUND INNOVATIONS:
+   - Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly"
+   - Avoid common suffixes: -ify, -ly, -able, -ify
+   - Use uncommon prefixes: "Vor-", "Zyn-", "Kael-"
 
-🎯 GENERATION RULES FOR .com:
+3. PHONETIC UNIQUENESS:
+   - Names that sound distinctive when spoken
+   - Pass the "radio test": spellable after hearing once
+   - Avoid homophones with existing brands
 
-1. INSTANTLY AVAILABLE (.com):
-   - Invented brandables: 5-8 letters, no dictionary words
-   - Uncommon phonetics: X, Z, Q, V, Y in strategic positions
-   - Novel compounds: 2 short words fused uniquely (e.g., "Stratly", "Vexora")
-   - Avoid: common suffixes (-ly, -ify, -able), overused prefixes (neo-, meta-, quantum-)
+4. AVOID (high registration probability):
+   - Exact dictionary words under 6 letters
+   - Common tech terms: cloud, data, sync, flow, nexus
+   - Popular startup patterns: get[word], [word]app, [word]io
 
-2. AFTERMARKET CANDIDATES (premium .com likely for sale):
-   - Short (4-6 letters), pronounceable, brandable
-   - Real-word adjacent but not exact dictionary matches
-   - Names that sound like funded startups (Anduril, Vanta, Rippling style)
-   - Include 3-5 names in this category per batch
+Output guidance:
+- 70% invented brandables (highest .com availability)
+- 20% novel compounds (medium availability)  
+- 10% creative risks (low availability but high brand potential)
 
-3. AVOID ABSOLUTELY:
-   - Exact dictionary words under 5 letters (cloud, data, flow, sync)
-   - Names matching top 1000 YC/a16z portfolio companies
-   - Hyphenated or numbered names
-
-📊 NameBio Data Integration:
-- Short .com brandables sell for $2k-$50k on average
-- Prioritize names with "startup phonetics": hard consonants + open vowels
-- Favor names that pass the "radio test" and "spell-after-hearing" test
-
-Output distribution:
-- 60% likely available .com (invented/compound)
-- 30% premium aftermarket candidates (short, brandable, taken)
-- 10% wildcards (creative risks)
-
-${kw?'\nKeywords: '+kw:''}
+${kw ? '\nKeywords to incorporate creatively: ' + kw : ''}
 `
-    : ''
-}
-${kw?'\nKeywords: '+kw:''}
-
-Data-Driven Rules:
-• Reference NameBio sales patterns: short .coms >$10k, brandable .ai rising 300% YoY
-• Apply a16z portfolio filters: hard consonants, vowel balance, no hyphens
-• YC naming heuristic: "Could this be a verb?" test for consumer products
-• Avoid: -ify/-ly suffixes, nova/apex/nexus overuse, trademark-conflicting terms
-• Prioritize: 4-8 chars, globally pronounceable, strong DNS profile
-${lang!=='en'
-  ? '• CRITICAL: Verify no negative connotations in Spanish, German, Japanese, Arabic per language_suitability field.'
   : ''
 }
 
@@ -1375,10 +1546,9 @@ async function callGemini(sys,usr,cb){
   }],
 
   generationConfig:{
-    temperature:1.1,
-    topP:0.95,
-    topK:40,
-    maxOutputTokens:4096,
+    temperature:0.2,
+    topP:0.8,
+    maxOutputTokens:8192,
     responseMimeType:"application/json"
   }
 })
@@ -1487,14 +1657,20 @@ async function go(){
   if(!ind){toast('Please select an industry');return;}
   if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}
   
-    // Save preferences
+  // Save preferences
   language=document.getElementById('language').value;
   wordCount=document.getElementById('wordcount').value;
-  const aftermarketMode = document.getElementById('aftermarketMode')?.checked || false;
-  
+  charLength =
+  document.getElementById(
+    'charlen'
+  ).value;
+
+localStorage.setItem(
+  'bl_charlen',
+  charLength
+);
   localStorage.setItem('bl_lang',language);
   localStorage.setItem('bl_wc',wordCount);
-  localStorage.setItem('bl_aftermarket', aftermarketMode);
   
   busy=true;domC={};
   const btn=document.getElementById('gbtn');
@@ -1527,6 +1703,7 @@ const usr = USR(
   tlds,
   language,
   wordCount,
+  charLength,
   strictTld
 );
   let sbuf='';
@@ -1643,42 +1820,6 @@ if(!Array.isArray(names) && prov==='gemini'){
 
       let partial = repaired.slice(arrStart);
 
-      const openBraces =
-  (partial.match(/{/g)||[]).length;
-
-const closeBraces =
-  (partial.match(/}/g)||[]).length;
-
-const missingBraces =
-  openBraces - closeBraces;
-
-if(missingBraces > 0){
-
-  partial += '}'.repeat(
-    missingBraces
-  );
-
-}
-
-const openArrays =
-  (partial.match(/\[/g)||[]).length;
-
-const closeArrays =
-  (partial.match(/\]/g)||[]).length;
-
-const missingArrays =
-  openArrays - closeArrays;
-
-if(missingArrays > 0){
-
-  partial += ']'.repeat(
-    missingArrays
-  );
-
-}
-
-names = JSON.parse(partial);
-
       // force close array if Gemini truncated
       if(!partial.endsWith(']')){
         partial += ']';
@@ -1695,45 +1836,42 @@ if(!Array.isArray(names)){
   throw new Error('Gemini returned malformed JSON');
 }
 
-// hard limit
-{
-  names = names.filter(n => {
+// Step 1: Basic validation only
+names = names.filter(n => n && n.name && typeof n.name === 'string');
 
-  if(!n || !n.name){
-    return false;
-  }
+// Step 2: Apply filters BUT keep track of what was filtered
+const filteredByWordCount = names.filter(n => matchesWordCount(n.name, wordCount));
+const filteredByCharLen = names.filter(n => matchesCharLength(n.name, charLength));
 
-  return matchesWordCount(
-    n.name,
-    wordCount
+// Step 3: Use strict filtering only if we have enough results
+let finalNames;
+if (filteredByWordCount.length >= 3 && filteredByCharLen.length >= 3) {
+  // Both filters passed enough names - use strict intersection
+  finalNames = names.filter(n => 
+    matchesWordCount(n.name, wordCount) && 
+    matchesCharLength(n.name, charLength)
   );
-
-});
-
-const targetCount =
-  prov === 'gemini'
-    ? 15
-    : 40;
-
-const invalidCount =
-  names.filter(
-    n =>
-      !matchesWordCount(
-        n.name,
-        wordCount
-      )
-  ).length;
-
-if(invalidCount > 0){
-
-  console.warn(
-    `LLM ignored word count rules for ${invalidCount} names`
-  );
-
+} else if (filteredByWordCount.length >= 3) {
+  // Word count filter has enough - relax char length
+  finalNames = filteredByWordCount;
+  toast('Showing names matching word count (character length relaxed)');
+} else if (filteredByCharLen.length >= 3) {
+  // Char length filter has enough - relax word count  
+  finalNames = filteredByCharLen;
+  toast('Showing names matching character length (word count relaxed)');
+} else {
+  // Neither filter has enough - show all with warnings
+  finalNames = names;
+  toast('Showing all generated names (filters relaxed)');
 }
 
+// Ensure we have at least 1 name to display
+if (finalNames.length === 0 && names.length > 0) {
+  finalNames = names.slice(0, Math.min(5, names.length));
+  toast('Showing top candidates (filters could not be applied)');
 }
 
+names = finalNames;
     // Store for export
     lastGeneratedNames=names.map(n=>({
       ...n,
@@ -1744,52 +1882,7 @@ if(invalidCount > 0){
       _model:mdl
     }));
     
-    pt.textContent =
-  'Checking domain availability…';
-
-const validated =
-  await validateNames(
-    lastGeneratedNames,
-    tlds
-  );
-
-const onlyAvailable =
-  document.getElementById(
-    'onlyAvailable'
-  )?.checked;
-
-if(!validated.length){
-
-  document.getElementById(
-    'results'
-  ).innerHTML = `
-    <div class="empty">
-      <div class="eicon">◈</div>
-      <div class="etitle">
-        No matching domains found
-      </div>
-      <div class="esub">
-        Try:
-        broader styles,
-        mixed TLDs,
-        or generate more candidates.
-      </div>
-    </div>
-  `;
-
-  toast(
-    'No available or premium domains found'
-  );
-
-  return;
-}
-lastGeneratedNames = validated;
-
-
-renderCards(
-  validated,
-  tlds
-);
+    renderCards(lastGeneratedNames,tlds);
     document.getElementById('exportRow').style.display='flex';
     
   }catch(e){
@@ -1809,7 +1902,7 @@ function renderCards(names,tlds){
   
   let h=`<div class="rhdr">
     <div class="rtitle">Brand name candidates</div>
-    <div class="rsub">${names.length} names · ${prov_label} · available + premium domains validated</div>
+    <div class="rsub">${names.length} names · ${prov_label} · domains checking…</div>
   </div>
   <div class="frow">
     <button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>
@@ -1822,51 +1915,19 @@ function renderCards(names,tlds){
   sorted.forEach((n,i)=>{
     const c=n.colors?.[0]||'#c8f04a';
     const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
-   // const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
-    const selectedTld =
-  document.getElementById(
-    'tld'
-  ).value;
-
-
-  const dc = (n._domains || []).map(x => {
-  const domainId = x.domain.replace(/[.]/g, '-');
-  const isCom = x.tld === '.com';
-  const aftermarketMode = document.getElementById('aftermarketMode')?.checked;
-  
-  if(x.status === 'available'){
-    return `<span class="dchip av" id="dc-${domainId}">
-      <a href="https://www.namecheap.com/domains/registration/results/?domain=${x.domain}" target="_blank">
-        ${x.domain} · register ✅
-      </a>
-    </span>`;
-  }
-  if(x.status === 'premium'){
-    const provider = x.provider ? `via ${x.provider}` : '';
-    return `<span class="dchip un" id="dc-${domainId}">
-      <a href="https://${x.domain}" target="_blank" title="Aftermarket candidate">
-        ${x.domain} · aftermarket 💎 ${provider}
-      </a>
-    </span>`;
-  }
-    // Show taken .com in aftermarket mode or mix mode
-  if((isCom && aftermarketMode) || selectedTld === 'mix'){
-    if(x.status === 'taken'){
-      return `<span class="dchip tk" id="dc-${domainId}" title="Registered - check aftermarket">
-        ${x.domain} · taken 🔍
-      </span>`;
-    }
-    if(x.status === 'unknown'){
-      return `<span class="dchip un" id="dc-${domainId}" title="Status unknown - verify manually">
-        <a href="https://www.namecheap.com/domains/registration/results/?domain=${x.domain}" target="_blank">
-          ${x.domain} · verify ❓
-        </a>
-      </span>`;
-    }
-  }
-  return '';
-}).join('');
-
+        // Add availability score badge if present
+    const availScore = n._availabilityScore || calculateAvailabilityScore(n.name, tlds[0]);
+    const availColor = availScore >= 80 ? 'var(--lime)' : availScore >= 60 ? 'var(--amber)' : 'var(--rose)';
+    const availLabel = availScore >= 80 ? 'Likely available' : availScore >= 60 ? 'Possible' : 'Competitive';
+    
+    const availIndicator = `
+      <div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span>
+        <span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span>
+      </div>
+    `;
+    const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
+    
     // Store metadata for filtering
     const meta=JSON.stringify({language_suitability:n.language_suitability||['en'],word_count:n.word_count||1}).replace(/"/g,'&quot;');
     
@@ -1878,32 +1939,6 @@ function renderCards(names,tlds){
       <div class="cwhy">${n.why_it_works||''}</div>
       <div class="scores">${sc}</div>
       <div class="drow">${dc}</div>
-
-      <div class="caution">
-
-${n._counts?.available || 0}
-instant
-
-·
-
-${n._counts?.premium || 0}
-premium
-
-${
-  document.getElementById(
-    'tld'
-  ).value === 'mix'
-
-    ? `
-      ·
-      ${n._counts?.taken || 0}
-      taken
-      `
-
-    : ''
-}
-
-</div>
       ${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}
     </div>`;
   });
@@ -1913,7 +1948,7 @@ ${
   document.getElementById('results').innerHTML=h;
   
   // Start domain checks
- // names.forEach(n=>n._d.forEach(d=>chkDom(d)));
+  names.forEach(n=>n._d.forEach(d=>chkDom(d)));
 }
 
 // ── Filtering ──────────────────────────────────────────────────────
@@ -1921,22 +1956,29 @@ function filt(k,btn){
   pill=k;
   document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');
   document.querySelectorAll('.card').forEach(c=>{
-    let s=k==='all'?true:k==='available'?(c.querySelectorAll('.dchip.av').length>0 || c.querySelectorAll('.dchip.un').length>0):c.dataset.pat===k;
+    let s=k==='all'?true:k==='available'?c.querySelectorAll('.dchip.av').length>0:c.dataset.pat===k;
     c.style.display=s?'':'none';
   });
 }
 
 function filtLang(lang,btn){
-  document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));
+
+  document.querySelectorAll(
+    '.fpill[onclick*="filtLang"]'
+  ).forEach(
+    p => p.classList.remove('on')
+  );
+
   btn.classList.add('on');
-  document.querySelectorAll('.card').forEach(c => {
-    try{
-      const meta=JSON.parse(c.dataset.meta||'{}');
-      const cardLang=meta.language_suitability||['en'];
-      const match=lang==='en'?cardLang.includes('en'):lang==='non-en'?!cardLang.includes('en'):true;
-      c.style.display=(c.style.display!=='none'&&match)?'':'none';
-    }catch{c.style.display='';}
+
+  document.querySelectorAll(
+    '.card'
+  ).forEach(c => {
+
+    c.style.display='';
+
   });
+
 }
 
 function filtWC(wc,btn){
@@ -1945,297 +1987,96 @@ function filtWC(wc,btn){
   document.querySelectorAll('.card').forEach(c => {
     try{
       const meta=JSON.parse(c.dataset.meta||'{}');
-      const cardWC=meta.word_count;
-      const match=wc==='any'||cardWC==wc;
+     // const cardWC=meta.word_count;
+     // const match=wc==='any'||cardWC==wc;
+     const match =
+  matchesWordCount(
+    c.querySelector('.cname')
+      ?.textContent || '',
+    wc
+  );
       c.style.display=(c.style.display!=='none'&&match)?'':'none';
     }catch{c.style.display='';}
   });
 }
 
-async function detectParking(domain){
-  try{
-    // Check nameservers for parking indicators
-    const r = await fetch(`https://dns.google/resolve?name=${domain}&type=NS`, { signal: AbortSignal.timeout(4000) });
-    const data = await r.json();
-    const ns = (data.Answer || []).map(x => x.data?.toLowerCase() || '').join(' ');
-    
-    const parkedPatterns = [
-      'afternic','sedoparking','dan.com','atom.com','hugedomains',
-      'squadhelp','bodis','parkingcrew','undeveloped','cashparking',
-      'namecheap.com','godaddy.com','porkbun.com','dynadot.com'
-    ];
-    
-    const matched = parkedPatterns.find(p => ns.includes(p));
-    if(matched){ 
-      return { status:'premium', confidence:'medium', provider:matched, source:'ns' }; 
-    }
-  }catch(e){}
-  
-  // Fallback: Check for common parking IPs (simplified heuristic)
-  try{
-    const a = await fetch(`https://dns.google/resolve?name=${domain}&type=A`, { signal: AbortSignal.timeout(4000) });
-    const data = await a.json();
-    const ips = (data.Answer || []).map(x => x.data || '').join(',');
-    
-    // Known parking/aftermarket IP ranges (simplified)
-    const parkingIPs = ['192.0.78.24','192.0.78.25','34.102.136.180','216.239.32.21'];
-    const isParkingIP = parkingIPs.some(ip => ips.includes(ip));
-    
-    if(isParkingIP){
-      return { status:'premium', confidence:'low', provider:'ip-heuristic', source:'a-record' };
-    }
-  }catch(e){}
-  
-  return null;
-}
-
-async function detectPremiumLanding(domain){
-
-  try{
-
-    const r = await fetch(
-      `https://${domain}`,
-      {
-        method:'GET',
-        mode:'cors'
-      }
-    );
-
-    const html =
-      (await r.text())
-        .toLowerCase();
-
-    const patterns = [
-
-      'domain is for sale',
-      'buy this domain',
-      'make an offer',
-      'afternic',
-      'sedo',
-      
-      'atom.com',
-      'hugedomains',
-      
-      'brandbucket',
-      'buy now'
-
-    ];
-
-    const matched =
-      patterns.find(
-        p => html.includes(p)
-      );
-
-    if(matched){
-
-      return {
-        status:'premium',
-        confidence:'high',
-        provider:matched
-      };
-
-    }
-
-  }catch(e){}
-
-  return null;
-
-}
 // ── Domain Check (5 TLDs) ──────────────────────────────────────────
 async function chkDom(d){
-  if(domC[d]){ applyDom(d,domC[d]); return domC[d]; }
-  let r='unknown';
+  if(domC[d]){ applyDom(d, domC[d]); return; }
   
-  // Priority 1: RDAP via CORS proxy (more reliable in browser)
+  // Dev mode: skip all checks, mark as "verify manually"
+  if(location.search.includes('dev=1') || location.hostname === 'localhost'){
+    domC[d] = 'unknown';
+    applyDom(d, 'unknown');
+    return 'unknown';
+  }
+  
+  let r = 'unknown';
+  
+  // Try RDAP with silent fail
   try{
-    // Try direct first, then fallback to corsproxy.io if blocked
-    const urls = [
-      `https://rdap.org/domain/${d}`,
-      `https://corsproxy.io/?${encodeURIComponent(`https://rdap.org/domain/${d}`)}`
-    ];
-    
-    for(const url of urls){
-      try{
-        const res = await fetch(url, { 
-          mode: 'cors', 
-          signal: AbortSignal.timeout(8000) // Longer timeout
-        });
-        if(res.status === 404){ r='available'; break; }
-        if(res.status === 200){ 
-          r='taken';
-          const parked = await detectParking(d);
-          if(parked) r='premium';
-          break;
-        }
-      }catch(e){ continue; } // Try next URL
-    }
-  }catch{}
-     
-  // Priority 2: Cloudflare DNS (fast, good for .ai/.xyz)
-  if(r==='unknown')try{
-    const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{
-      headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(5000)
+    const res = await fetch(`https://rdap.org/domain/${d}`, {
+      mode: 'cors',
+      signal: AbortSignal.timeout(4000),
+      credentials: 'omit'
     });
-    if(res.ok){
-      const j=await res.json();
-      r=j.Status===3?'available':j.Answer?.length>0?'taken':'available';
-    }
-  }catch{}
+    if(res.status === 404) r = 'available';
+    else if(res.status === 200) r = 'taken';
+  }catch(e){ /* fail silently */ }
   
-  // Priority 3: Google DNS (backup)
-  if(r==='unknown')try{
-    const res=await fetch(`https://dns.google/resolve?name=${d}&type=NS`,{mode:'cors',signal:AbortSignal.timeout(5000)});
-    if(res.ok){
-      const j=await res.json();
-      r=j.Status===3?'available':j.Answer?.length>0?'taken':'available';
-    }
-  }catch{}
+  // Fallback: Cloudflare DNS (only if RDAP didn't resolve)
+  if(r === 'unknown'){
+    try{
+      const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`, {
+        headers: {'Accept': 'application/dns-json'},
+        mode: 'cors',
+        signal: AbortSignal.timeout(3000)
+      });
+      if(res.ok){
+        const j = await res.json();
+        r = j.Status === 3 ? 'available' : (j.Answer?.length > 0 ? 'taken' : 'unknown');
+      }
+    }catch(e){ /* fail silently */ }
+  }
   
-  domC[d]=r;
-  applyDom(d,r);
+  domC[d] = r;
+  applyDom(d, r);
   return r;
 }
 
-async function validateNames(
-  names,
-  tlds
-){
-
-  const selectedTld =
-    document.getElementById(
-      'tld'
-    ).value;
-
-  const strictSingleTld =
-    selectedTld !== 'mix';
-
-  const checked = await Promise.all(
-
-    names.map(async n => {
-
-      const domains = tlds.map(
-        t =>
-          n.name
-            .toLowerCase()
-            .replace(/\s+/g,'') + t
-      );
-
-      const results = await Promise.all(
-
-        domains.map(async d => {
-
-          const status =
-            await chkDom(d);
-
-          return {
-
-            domain:d,
-
-            tld:d.slice(
-              d.lastIndexOf('.')
-            ),
-
-            status
-
-          };
-
-        })
-
-      );
-
-      
-
-            // SINGLE TLD MODE + AFTERMARKET MODE
-      let filtered = results;
-      const aftermarketMode = document.getElementById('aftermarketMode')?.checked;
-      
-            if(strictSingleTld){
-        if(aftermarketMode){
-          // Aftermarket mode: show all statuses for .com hunting
-          filtered = results;
-        } else {
-          // Standard mode: show available + premium + unknown (unknown might be acquirable)
-          filtered = results.filter(r => 
-            r.status === 'available' || 
-            r.status === 'premium' || 
-            r.status === 'unknown' // Don't hide potentially acquirable domains
-          );
-        }
-      }
-      
-      // ALWAYS keep at least the primary TLD result if nothing else matches
-      if(!filtered.length && results.length > 0){
-        filtered = [results[0]]; // Show first TLD result as fallback
-      }
-      
-      // summary counters
-
-      const counts = {
-
-        available:
-          filtered.filter(
-            x =>
-              x.status === 'available'
-          ).length,
-
-        premium:
-          filtered.filter(
-            x =>
-              x.status === 'premium'
-          ).length,
-
-        taken:
-          filtered.filter(
-            x =>
-              x.status === 'taken'
-          ).length,
-
-      };
-
-      return {
-
-        ...n,
-
-        _domains:filtered,
-
-        _counts:counts,
-
-        _available:
-          counts.available > 0 ||
-          counts.premium > 0
-
-      };
-
-    })
-
-  );
-
-  return checked.filter(Boolean);
-
-}
-
-function applyDom(d,r){
-  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));if(!el)return;
-  const u=`https://www.namecheap.com/domains/registration/results/?domain=${d}`;
+function applyDom(d, r){
+  const el = document.getElementById('dc-' + d.replace(/[.]/g, '-'));
+  if(!el) return;
   
-  if(r==='available'){
-    el.className='dchip av';
-    el.title='Available — click to register!';
-    el.innerHTML=`<a href="${u}" target="_blank">${d} ✅</a>`;
-  }else if(r==='taken'){
-    el.className='dchip tk';
-    el.title='Already registered';
-    el.innerHTML=`${d} ❌`;
-  }else{
-    el.className='dchip un';
-    el.title='Could not verify';
-    el.innerHTML=`<a href="${u}" target="_blank">${d} ❓</a>`;
+  const registerUrl = `https://www.namecheap.com/domains/registration/results/?domain=${d}`;
+  const aftermarketUrl = `https://${d}`;
+  
+  if(r === 'available'){
+    el.className = 'dchip av';
+    el.title = 'Available — register now!';
+    el.innerHTML = `<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;
+  } else if(r === 'taken'){
+    el.className = 'dchip tk';
+    el.title = 'Registered — check aftermarket';
+    el.innerHTML = `<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;
+  } else {
+    // Unknown: provide multiple verification options
+    el.className = 'dchip un';
+    el.title = 'Status unknown — verify manually';
+    el.innerHTML = `
+      <a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">
+        ${d} ❓
+      </a>
+    `;
   }
   
-  // Re-filter if viewing available-only
-  if(pill==='available'){
-    const c=el.closest('.card');
-    if(c)c.style.display=c.querySelectorAll('.dchip.av').length>0?'':'none';
+  // Re-apply filters if viewing "available only"
+  if(pill === 'available'){
+    const card = el.closest('.card');
+    if(card) {
+      const hasAvailable = card.querySelectorAll('.dchip.av').length > 0;
+      card.style.display = hasAvailable ? '' : 'none';
+    }
   }
 }
 

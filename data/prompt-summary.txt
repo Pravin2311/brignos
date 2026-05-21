@@ -1,0 +1,26 @@
+
+
+Startup Naming Intelligence:
+
+- dominant structures:
+invented (852), atomic (433), compound (332), hybrid (22)
+
+- dominant phonetics:
+balanced (1099), hard-minimal (462), soft-vocalic (78)
+
+- common suffixes:
+ing, ion, lth, abs, san, ics,  ai, ent, ter, nce
+
+- common consonant clusters:
+nt, st, ng, nd, ct, nc, th, ll, pr, rt
+
+- avoid oversaturated terms:
+health, labs, therapeutics, winter, summer, games, security, systems, tools, product, space, networks, hunt, intelligence, network, protocol, code, software, technologies, biosciences
+
+Guidance:
+Prefer unique invented phonetics.
+Avoid generic SaaS buzzwords.
+Prioritize globally pronounceable names.
+Prefer 4-8 character brandables.
+Avoid names too similar to existing startups.
+

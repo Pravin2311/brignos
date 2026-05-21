@@ -2,850 +2,1283 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>BrandLab — VC Brand Score</title>
-<link rel="icon" href=",">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>autoDNG — AI auto Name Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#09090b;--bg2:#111114;--card:#141418;--border:#23232a;
-  --text:#f5f5f5;--muted:#a1a1aa;--lime:#c8f04a;--red:#ff6363;
-  --yellow:#ffd95e;--green:#56e39f;--blue:#60a5fa;--purple:#a78bfa;--pink:#f472b6;
-  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:Inter,system-ui,sans-serif;
-  --gradient-elite:linear-gradient(135deg,#c8f04a,#86efac);
-  --gradient-strong:linear-gradient(135deg,#60a5fa,#a78bfa);
-  --gradient-moderate:linear-gradient(135deg,#ffd95e,#fb923c);
-  --gradient-weak:linear-gradient(135deg,#f87171,#fca5a5);
+  --bg:#09090b;--bg2:#111115;--bg3:#18181e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#ededee;--muted:#6b6b72;--muted2:#9898a2;
+  --lime:#c8f04a;--lime-dim:rgba(200,240,74,0.1);--lime-glow:rgba(200,240,74,0.25);
+  --teal:#4af0c0;--teal-dim:rgba(74,240,192,0.1);
+  --rose:#f0506a;--rose-dim:rgba(240,80,106,0.1);
+  --amber:#f0b84a;--amber-dim:rgba(240,184,74,0.1);
+  --purple:#9a6af0;--purple-dim:rgba(154,106,240,0.1);
+  --font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5}
-
-/* Header */
-.header{position:sticky;top:0;z-index:20;background:rgba(9,9,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
-.header-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:18px}
-.logo{font-weight:800;font-size:20px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
-.hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.ptabs{display:flex;gap:8px}.ptab{border:1px solid var(--border);background:var(--bg2);color:var(--muted);padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-family:var(--mono);transition:all .15s}.ptab.on{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}.ptab:hover:not(.on){border-color:var(--border);color:var(--text)}
-.kwrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.kwrap input,.select{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:13px;font-family:var(--sans)}.kwrap input{width:220px}.kwrap input:focus,.select:focus{outline:none;border-color:var(--lime)}
-.kstatus{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.kdot{width:6px;height:6px;border-radius:50%;background:var(--muted)}.kdot.ok{background:var(--lime);box-shadow:0 0 6px rgba(200,240,74,.5)}
-
-/* Buttons */
-.btn{border:none;background:var(--lime);color:#000;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}.btn:hover{opacity:.92;transform:translateY(-1px)}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-secondary{background:var(--bg2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--lime);color:var(--lime)}
-
-/* Layout */
-.wrap{max-width:1200px;margin:auto;padding:42px 22px 70px}
-.hero{margin-bottom:32px;text-align:center}.hero h1{font-size:clamp(32px,5vw,54px);line-height:1;margin:0 0 12px;letter-spacing:-0.05em}.hero p{color:var(--muted);max-width:760px;line-height:1.7;margin:0 auto}
-.grid{display:grid;grid-template-columns:1fr 380px;gap:24px}
-
-/* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;transition:border-color .2s}.card:hover{border-color:var(--lime)}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;display:block;font-weight:600}
-.input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:14px;padding:14px 16px;font-size:15px;font-family:var(--sans);transition:border-color .15s}.input:focus{outline:none;border-color:var(--lime)}
-textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-height:1.6}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
-.actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
-.sec{margin-top:26px}
-
-/* Result Section */
-.result{margin-top:28px;display:none;animation:fadeUp .3s ease}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* Score Header */
-.score-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.brand-display{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--lime)}.tier-badge{padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}.tier-elite{background:var(--gradient-elite);color:#000}.tier-strong{background:var(--gradient-strong);color:#000}.tier-moderate{background:var(--gradient-moderate);color:#000}.tier-weak{background:var(--gradient-weak);color:#000}
-.score-display{text-align:right}.score-amount{font-size:clamp(28px,4vw,42px);font-weight:900;line-height:1}.score-label{color:var(--muted);font-size:12px;margin-top:4px}
-
-/* Animated Gauge */
-.gauge-wrap{margin:20px 0;padding:16px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)}
-.gauge{height:8px;background:var(--border);border-radius:99px;overflow:hidden;position:relative}.gauge-fill{height:100%;border-radius:99px;transition:width .8s ease;position:relative}.gauge-fill::after{content:'';position:absolute;right:0;top:-3px;width:14px;height:14px;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none}
-.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:8px}
-
-/* Factor Bars */
-.factors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
-.factor{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px}.factor-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}.factor-name{font-weight:500}.factor-val{font-family:var(--mono);font-weight:600}.factor-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden}.factor-fill{height:100%;border-radius:99px;transition:width .6s ease}
-
-/* Summary & Lists */
-.summary{background:var(--bg2);border-left:3px solid var(--lime);border-radius:0 12px 12px 0;padding:14px 16px;margin:16px 0;line-height:1.6;font-size:14px}
-.section-title{margin:24px 0 12px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:flex;align-items:center;gap:8px}.section-title::before{content:'';width:3px;height:14px;background:var(--lime);border-radius:2px}
-.list{display:flex;flex-direction:column;gap:8px}.item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;line-height:1.5;font-size:14px;display:flex;align-items:flex-start;gap:10px}.item::before{content:'✓';color:var(--green);font-weight:700;font-size:14px}.item.weak::before{content:'⚠';color:var(--yellow)}.item.exp::before{content:'🚀';color:var(--blue)}.item.comp::before{content:'📊';color:var(--purple)}.item.rec::before{content:'🎯';color:var(--pink)}
-
-/* Comparable Cards */
-.comps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}.comp-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px}.comp-name{font-weight:600;color:var(--lime)}.comp-similarity{color:var(--muted);font-size:12px}
-
-/* Export Row */
-.export-row{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}.export-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;font-family:var(--mono);transition:all .15s;display:flex;align-items:center;gap:6px}.export-btn:hover{border-color:var(--lime);background:var(--lime);color:#000}
-
-/* Loading */
-.loading{display:none;margin-top:18px;color:var(--lime);font-family:var(--mono);font-size:13px;align-items:center;gap:10px}.loading.on{display:flex}.spinner{width:18px;height:18px;border:2px solid rgba(200,240,74,.3);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:13px;z-index:1000;transform:translateY(60px);opacity:0;transition:all .3s;max-width:320px}.toast.on{transform:translateY(0);opacity:1}
-
-/* Note */
-.note{margin-top:20px;color:var(--muted);font-size:12px;line-height:1.6;padding:12px 14px;background:var(--bg2);border-radius:12px;border-left:3px solid var(--yellow)}
-
-/* Info Panel */
-.info-panel{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;height:fit-content;position:sticky;top:90px}.info-title{font-weight:600;margin-bottom:12px;font-size:15px}.info-list{display:flex;flex-direction:column;gap:10px}.info-item{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted)}.info-item::before{content:'';width:6px;height:6px;background:var(--lime);border-radius:50%;margin-top:6px;flex-shrink:0}
-
-/* Responsive */
-@media(max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:40px}.factors{grid-template-columns:1fr}.comps-grid{grid-template-columns:1fr}}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;}
+.app{position:relative;z-index:1}
+.header{position:sticky;top:0;z-index:200;background:rgba(9,9,11,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1140px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
+.logo em{color:var(--lime);font-style:italic}
+.hright{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:nowrap}
+.ptabs{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:3px;flex-shrink:0}
+.ptab{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:6px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.ptab.on{background:var(--bg2);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.ptab:hover:not(.on){color:var(--text)}
+.kwrap{position:relative;flex:1;max-width:250px}
+.kwrap input{width:100%;font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:8px 32px 8px 12px;border-radius:8px;outline:none;transition:border-color .2s,color .2s}
+.kwrap input:focus{border-color:var(--lime);color:var(--text)}
+.kwrap input::placeholder{color:var(--muted)}
+.eyebtn{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0}
+.spill{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:5px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
+.sdot.ok{background:var(--lime);box-shadow:0 0 7px var(--lime-glow)}
+.helpbtn{background:none;border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--muted2);font-family:var(--mono);font-size:13px;cursor:pointer;min-height:44px}
+.helpbtn:hover{border-color:var(--lime);color:var(--lime)}
+.helpbar{position:relative;z-index:300;max-width:1140px;margin:0 auto;padding:10px 24px 0;display:none}
+.helpbar.on{display:block}
+.helpbar-inner{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.hb-txt{font-size:13px;color:var(--muted2);line-height:1.6}
+.hb-txt strong{color:var(--text)}
+.hb-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.hblink{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);text-decoration:none;transition:all .15s;white-space:nowrap}
+.hblink:hover{border-color:var(--lime);color:var(--lime)}
+.hbclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0}
+.hero{max-width:1140px;margin:0 auto;padding:52px 24px 36px;display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:center}
+.hero h1{font-family:var(--serif);font-size:clamp(34px,4.5vw,56px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:12px}
+.hero h1 em{font-style:italic;color:var(--lime)}
+.hero p{font-size:15px;color:var(--muted2);line-height:1.75}
+.chips{display:flex;flex-direction:column;gap:6px}
+.chip{display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--muted2)}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cval{margin-left:auto;color:var(--lime);font-weight:500}
+.fwrap{max-width:1140px;margin:0 auto;padding:0 24px 32px}
+.fcard{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px}
+.flbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
+.fg4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:13px}
+@media(max-width:800px){.fg4{grid-template-columns:1fr}.helpbtn{width:100%;padding:12px;text-align:center;font-size:13px}}
+.fg2{display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:18px}
+.field label{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.field select,.field input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:10px 13px;border-radius:8px;outline:none;appearance:none;transition:border-color .2s}
+.field select:focus,.field input:focus{border-color:var(--lime)}
+.field select option{background:#1a1a22}
+.tld-check{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted2);cursor:pointer}
+.tld-check input{accent-color:var(--lime);width:15px;height:15px}
+.model-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.mchip{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
+.mchip:hover{color:var(--text);border-color:var(--border2)}
+.mchip.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
+.genbtn{width:100%;padding:14px;background:var(--lime);color:#09090b;font-family:var(--font);font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;margin-bottom:12px}
+.genbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-100%);transition:transform .5s}
+.genbtn:hover::after{transform:translateX(100%)}
+.genbtn:hover{opacity:.93}
+.genbtn:active{transform:scale(.99)}
+.genbtn:disabled{opacity:.4;cursor:not-allowed}
+.spin{width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#09090b;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.genbtn.ld .spin{display:block}
+.genbtn.ld .blbl{opacity:.6}
+@keyframes spin{to{transform:rotate(360deg)}}
+.export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.expbtn{flex:1;min-width:120px;padding:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.expbtn:hover{border-color:var(--lime);background:var(--lime-dim)}
+.expbtn:disabled{opacity:.4;cursor:not-allowed}
+.pwrap{max-width:1140px;margin:0 auto;padding:0 24px 26px;display:none}
+.pwrap.on{display:block}
+.pcard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.ptop{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted2);margin-bottom:9px}
+.ppct{color:var(--lime);font-weight:500}
+.pbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:9px}
+.pfill{height:100%;background:var(--lime);border-radius:99px;width:0%;transition:width .4s ease}
+.pstream{font-family:var(--mono);font-size:10px;color:var(--muted);max-height:32px;overflow:hidden;line-height:1.6;word-break:break-all}
+.rwrap{max-width:1140px;margin:0 auto;padding:0 24px 80px}
+.rhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.rtitle{font-family:var(--serif);font-size:26px;font-weight:400}
+.rsub{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.frow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.fpill{font-family:var(--mono);font-size:10px;padding:5px 11px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
+.fpill:hover{border-color:var(--lime);color:var(--lime)}
+.fpill.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
+.cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s,transform .2s;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.card.win{border-color:rgba(200,240,74,.3)}
+.card.win::before{content:'★ TOP PICK';position:absolute;top:0;right:0;font-family:var(--mono);font-size:9px;font-weight:500;background:var(--lime);color:#09090b;padding:4px 11px;border-bottom-left-radius:10px;letter-spacing:.06em}
+.cbar{position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:14px 0 0 14px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.cname{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.5px;margin-bottom:3px;line-height:1}
+.cline{font-size:13px;color:var(--muted2);font-style:italic;line-height:1.5;margin-bottom:13px}
+.ctags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;letter-spacing:.02em}
+.tp{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(154,106,240,.2)}
+.tv{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(74,240,192,.2)}
+.cwhy{font-size:13px;color:var(--muted2);line-height:1.65;margin-bottom:14px}
+.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+.slbl{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.snum{font-family:var(--mono);font-size:13px;font-weight:500;margin-bottom:3px}
+.sbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden}
+.sfill{height:100%;border-radius:99px}
+.drow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.dchip{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);display:inline-flex;align-items:center;gap:4px;transition:all .2s}
+.dchip.ck{animation:pulse 1.4s ease infinite}
+.dchip.av{border-color:rgba(200,240,74,.4);color:var(--lime);background:var(--lime-dim);cursor:pointer}
+.dchip.av:hover{background:rgba(200,240,74,.2)}
+.dchip.tk{border-color:rgba(240,80,106,.3);color:var(--rose);opacity:.6}
+.dchip.un{border-color:rgba(240,184,74,.3);color:var(--amber);cursor:pointer}
+.dchip a{color:inherit;text-decoration:none}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.caution{font-family:var(--mono);font-size:10px;color:var(--muted);padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;line-height:1.5}
+.empty{text-align:center;padding:72px 24px;border:1px dashed var(--border2);border-radius:14px}
+.eicon{font-size:36px;margin-bottom:12px;opacity:.35}
+.etitle{font-family:var(--serif);font-size:22px;margin-bottom:8px}
+.esub{font-size:14px;color:var(--muted2)}
+.footer{max-width:1140px;margin:0 auto;padding:18px 24px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 16px;font-family:var(--mono);font-size:12px;color:var(--text);transform:translateY(70px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;max-width:300px}
+.toast.on{transform:translateY(0);opacity:1}
+.modal{position:fixed;inset:0;z-index:1000;background:rgba(9,9,11,0.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+.modal.on{display:flex}
+.modal-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;padding:24px;animation:fadeUp .3s ease}
+.modal-title{font-family:var(--serif);font-size:22px;margin-bottom:8px}
+.modal-sub{font-size:13px;color:var(--muted2);margin-bottom:16px;line-height:1.6}
+.modal-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.modal-opt{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;transition:all .15s}
+.modal-opt:hover{border-color:var(--lime);background:var(--lime-dim)}
+.modal-opt input{accent-color:var(--lime)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-btn{padding:9px 18px;border-radius:8px;border:none;font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s}
+.modal-btn.primary{background:var(--lime);color:#09090b;font-weight:600}
+.modal-btn.secondary{background:var(--bg3);border:1px solid var(--border2);color:var(--text)}
+.modal-btn:hover{opacity:.92}
 @media(max-width:800px){
-  .header-inner{flex-direction:column;align-items:stretch;gap:14px;padding:12px 14px;height:auto}
-  .hright{width:100%;flex-direction:column;gap:12px}
-  .ptabs{width:100%;display:flex;gap:8px}.ptab{flex:1;text-align:center;padding:12px 8px;font-size:11px}
-  .kwrap{width:100%;flex-direction:column;align-items:stretch}.kwrap input,.select{width:100}
-  .row{grid-template-columns:1fr}.hero h1{font-size:34px;line-height:1.05}
-  .wrap{padding:28px 14px 60px}.card{padding:18px;border-radius:18px}
-  .actions{flex-direction:column}.btn{width:100%;justify-content:center}
-  .score-header{flex-direction:column;align-items:flex-start;gap:12px}.score-display{text-align:left}
-  .info-panel{position:static}
+  .hero{grid-template-columns:1fr}
+  .chips{display:none}
+  .fg3,.fg2{grid-template-columns:1fr}
+  .cgrid{grid-template-columns:1fr}
+  .scores{grid-template-columns:repeat(2,1fr)}
+  .ptabs{display:flex;width:100%;justify-content:space-between}
+  .ptab{flex:1;text-align:center}
+  .header-inner{height:auto;padding:10px 24px;flex-wrap:wrap}
+  .hright{width:100%;flex-wrap:wrap}
+  .kwrap{flex:1;max-width:none}
+  .modal-opts{grid-template-columns:1fr}
 }
-
-/* Animations */
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-.animate-pulse{animation:pulse 2s infinite}
-.fade-in{animation:fadeUp .4s ease both}
-
-/* Utility */
-.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.text-lime{color:var(--lime)}.text-green{color:var(--green)}.text-yellow{color:var(--yellow)}.text-red{color:var(--red)}
-.mt-4{margin-top:16px}.mb-4{margin-bottom:16px}.flex{display:flex}.gap-2{gap:8px}.items-center{align-items:center}
+.footer{margin-top:60px;border-top:1px solid var(--border);background:rgba(9,9,11,.95);backdrop-filter:blur(10px)}
+.footer-inner{max-width:1100px;margin:auto;padding:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.fbtn{text-decoration:none;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;transition:.2s ease}
+.fbtn:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-1px)}
+.tools-section{margin-top:34px;padding-top:28px;border-top:1px solid var(--border)}
+.tools-head{font-family:var(--serif);font-size:28px;margin-bottom:18px}
+.tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.tool-card{text-decoration:none;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;transition:.2s ease;display:block}
+.tool-card:hover{border-color:var(--lime);transform:translateY(-2px)}
+.tool-icon{font-size:28px;margin-bottom:14px}
+.tool-title{color:var(--text);font-size:18px;font-weight:600;margin-bottom:8px}
+.tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
+.tool-card.soon{opacity:.55;pointer-events:none}
+@media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
 </style>
 </head>
-<body>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PVV83DRSFT');
+</script>
+<body><div class="app">
 
-<header class="header">
-  <div class="header-inner">
-    <div class="logo">Brand<span>Lab</span></div>
-    <div class="hright">
-      <div class="ptabs" role="tablist">
-        <button class="ptab on" onclick="switchProv('openrouter',this)">OpenRouter</button>
-        <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
-        <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
-        <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-      </div>
-      <div class="kwrap">
-        <label for="apikey" class="visually-hidden">API Key</label>
-        <input id="apikey" type="password" placeholder="API Key" autocomplete="off">
-        <label for="model" class="visually-hidden">Model</label>
-        <select id="model" class="select"></select>
-        <div class="kstatus"><span class="kdot" id="kdot"></span><span id="ktext">no key</span></div>
-      </div>
+<!-- HEADER -->
+<div class="header"><div class="header-inner">
+  <div class="logo">auto<em>DNG</em></div>
+  <div class="hright">
+    <div class="ptabs" id="ptabs">
+      <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
+      <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
+      <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+      <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
+    </div>
+    <div class="kwrap">
+      <input type="password" id="akey" placeholder="Paste API key…" autocomplete="off" oninput="onKey()">
+      <button class="eyebtn" onclick="toggleEye()">👁</button>
+    </div>
+    <div class="spill"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
+    <button class="helpbtn" onclick="toggleHelp()">get key ?</button>
+  </div>
+</div></div>
+
+<!-- HELP BANNER -->
+<div class="helpbar" id="helpbar"><div class="helpbar-inner">
+  <div class="hb-txt">
+    <strong>Get your free API key</strong> — choose a provider in the header, then grab a key:
+    <div class="hb-links">
+      <a class="hblink" href="https://openrouter.ai/keys" rel="noopener">→ OpenRouter</a>
+      <a class="hblink" href="https://console.anthropic.com/settings/keys" rel="noopener">→ Anthropic Console</a>
+      <a class="hblink" href="https://platform.openai.com/api-keys" rel="noopener">→ OpenAI Platform</a>
+      <a class="hblink" href="https://aistudio.google.com/app/apikey" rel="noopener">→ Google AI Studio (free)</a>
+      <a class="hblink" href="https://console.groq.com/keys" rel="noopener">→ Groq Console</a>
+    </div>
+    <div style="margin-top:8px;font-size:12px">OpenRouter: starts with <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-or-</code> &nbsp;|&nbsp; OpenAI: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-</code> &nbsp;|&nbsp; Gemini: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">AIza</code></div>
+  </div>
+  <button class="hbclose" onclick="toggleHelp()">×</button>
+</div></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <h1>Names that get<br><em>funded.</em><br>Domains actually available.</h1>
+    <p>Real-time AI brand generator trained on a16z, YC, NameBio & Crunchbase data — with live .com, .ai, .io, .xyz, .co availability. Works with Claude, GPT-4o, or Gemini.</p>
+  </div>
+  <div class="chips">
+    <div class="chip"><span class="cdot" style="background:var(--lime)"></span>a16z + YC naming patterns<span class="cval">6,130+</span></div>
+    <div class="chip"><span class="cdot" style="background:var(--teal)"></span>NameBio sales intelligence<span class="cval">live</span></div>
+    <div class="chip"><span class="cdot" style="background:var(--amber)"></span>5 TLDs checked: .com .ai .io .xyz .co<span class="cval">RDAP</span></div>
+    <div class="chip"><span class="cdot" style="background:var(--purple)"></span>LLM providers<span class="cval">Claude · GPT · Gemini · Groq · OpenRouter</span></div>
+    <div class="chip"><span class="cdot" style="background:var(--rose)"></span>Global + English modes<span class="cval">new</span></div>
+  </div>
+</section>
+
+<!-- FORM -->
+<div class="fwrap"><div class="fcard">
+  <div class="flbl">Configure your brand search</div>
+  
+  <!-- Model row -->
+  <div style="margin-bottom:18px">
+    <label style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:7px">AI Model</label>
+    <div class="model-row" id="mrow"></div>
+  </div>
+  
+  <!-- Row 1: Industry, Archetype, Language, Char Length -->
+  <div class="fg4">
+    <div class="field">
+      <label>Industry</label>
+      <select id="industry">
+        <option value="">— select —</option>
+        <option>AI Agents & Automation</option>
+        <option>Healthcare AI</option>
+        <option>Fintech & Neobanking</option>
+        <option>Developer Tools</option>
+        <option>B2B SaaS / Enterprise</option>
+        <option>Defense & Aerospace</option>
+        <option>Biotech & Life Sciences</option>
+        <option>Climate & CleanTech</option>
+        <option>Consumer & E-commerce</option>
+        <option>Education & EdTech</option>
+        <option>Cybersecurity</option>
+        <option>Logistics & Supply Chain</option>
+        <option>Crypto & Web3</option>
+        <option>Food & FoodTech</option>
+        <option>Mental Health & Wellness</option>
+        <option>Real Estate & PropTech</option>
+        <option>Gaming & Esports</option>
+        <option>Legal Tech</option>
+        <option>HR & Future of Work</option>
+        <option>Supply Chain & Robotics</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Brand Archetype</label>
+      <select id="archetype">
+        <option value="">Mix styles (recommended)</option>
+        <option value="linear">Linear-style (clean SaaS)</option>
+        <option value="stripe">Stripe-style (premium fintech)</option>
+        <option value="figma">Figma-style (creative modern)</option>
+        <option value="cursor">Cursor-style (AI-native)</option>
+        <option value="anduril">Anduril-style (deep-tech)</option>
+        <option value="palantir">Palantir-style (intelligence)</option>
+        <option value="vanta">Vanta-style (security SaaS)</option>
+        <option value="vercel">Vercel-style (developer infra)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Language Focus</label>
+      <select id="language">
+        <option value="global" selected>🌍 Global-friendly</option>
+        <option value="en">🇺🇸 English-only</option>
+        <option value="non-en">🗾 Non-English optimized</option>
+        <option value="multilingual">🌐 Multilingual adaptable</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Character Length</label>
+      <select id="charlen" onchange="onFilterChange()">
+        <option value="any" selected>Any length</option>
+        <option value="3-5">3–5 chars</option>
+        <option value="4-6">4–6 chars</option>
+        <option value="5-8">5–8 chars</option>
+        <option value="6-10">6–10 chars</option>
+        <option value="10+">10+ chars</option>
+     </select>
     </div>
   </div>
-</header>
-
-<div class="wrap">
-  <section class="hero">
-    <h1>VC Brand Score</h1>
-    <p>Analyze investor perception, startup readiness, memorability, and venture-scale branding potential — with AI-powered scoring trained on YC, a16z, and top-tier startup naming patterns.</p>
-  </section>
-
-  <div class="grid">
-    <div class="card">
-      <div>
-        <label class="label" for="brand">Startup Brand *</label>
-        <input id="brand" class="input" placeholder="e.g. Linear" required>
-      </div>
-
-      <div class="row">
-        <div>
-          <label class="label" for="industry">Industry</label>
-          <input id="industry" class="input" placeholder="e.g. Developer Tools">
-        </div>
-        <div>
-          <label class="label" for="region">Target Region</label>
-          <select id="region" class="input">
-            <option value="global">🌍 Global</option>
-            <option value="us">🇺🇸 United States</option>
-            <option value="eu">🇪🇺 Europe</option>
-            <option value="asia">🌏 Asia-Pacific</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="sec">
-        <label class="label" for="context">Product Context (optional)</label>
-        <textarea id="context" class="input" rows="4" placeholder="Describe your product, audience, or use case..."></textarea>
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="analyzeBtn" onclick="analyzeVC()">
-          <span class="btn-text">Analyze VC Score</span>
-          <span class="spinner" style="display:none"></span>
-        </button>
-        <a href="index.html" style="text-decoration:none">
-          <button class="btn btn-secondary">← Back to Generator</button>
-        </a>
-      </div>
-
-      <div id="loading" class="loading">
-        <span class="spinner"></span>
-        <span>analyzing investor perception...</span>
-      </div>
-
-      <div id="result" class="result">
-        <!-- Score Header -->
-        <div class="score-header">
-          <div>
-            <div id="brandDisplay" class="brand-display">Linear</div>
-            <div id="tierBadge" class="tier-badge tier-moderate" style="margin-top:8px">
-              <span id="tierIcon">✨</span>
-              <span id="tierText">Moderate VC Signal</span>
-            </div>
-          </div>
-          <div class="score-display">
-            <div id="score" class="score-amount">68</div>
-            <div class="score-label">investor appeal score</div>
-          </div>
-        </div>
-
-        <!-- Animated Gauge -->
-        <div class="gauge-wrap">
-          <div class="gauge"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div>
-          <div class="gauge-labels">
-            <span>Weak</span><span>Moderate</span><span>Strong</span><span>Elite</span>
-          </div>
-        </div>
-
-        <!-- Factor Breakdown -->
-        <div class="factors">
-          <div class="factor">
-            <div class="factor-head"><span class="factor-name">Memorability</span><span class="factor-val" id="f1">—</span></div>
-            <div class="factor-bar"><div class="factor-fill" id="f1b" style="width:0%"></div></div>
-          </div>
-          <div class="factor">
-            <div class="factor-head"><span class="factor-name">Credibility</span><span class="factor-val" id="f2">—</span></div>
-            <div class="factor-bar"><div class="factor-fill" id="f2b" style="width:0%"></div></div>
-          </div>
-          <div class="factor">
-            <div class="factor-head"><span class="factor-name">Scalability</span><span class="factor-val" id="f3">—</span></div>
-            <div class="factor-bar"><div class="factor-fill" id="f3b" style="width:0%"></div></div>
-          </div>
-          <div class="factor">
-            <div class="factor-head"><span class="factor-name">Differentiation</span><span class="factor-val" id="f4">—</span></div>
-            <div class="factor-bar"><div class="factor-fill" id="f4b" style="width:0%"></div></div>
-          </div>
-        </div>
-
-        <!-- Summary -->
-        <div class="section-title">Analysis Summary</div>
-        <div id="summary" class="summary">Loading analysis...</div>
-
-        <!-- Investor Signals -->
-        <div class="section-title">Investor Signals</div>
-        <div id="signals" class="list"></div>
-
-        <!-- Weaknesses -->
-        <div class="section-title">Considerations</div>
-        <div id="weaknesses" class="list"></div>
-
-        <!-- Expansion Potential -->
-        <div class="section-title">Category Expansion</div>
-        <div id="expansion" class="list"></div>
-
-        <!-- Comparable Brands -->
-        <div class="section-title">Comparable Brands</div>
-        <div id="comparables" class="comps-grid"></div>
-
-        <!-- Recommendations -->
-        <div class="section-title">Action Plan</div>
-        <div id="recommendations" class="list"></div>
-
-        <!-- Export -->
-        <div class="export-row">
-          <button class="export-btn" onclick="copyResults()">📋 Copy Report</button>
-          <button class="export-btn" onclick="exportJSON()">⚙️ Export JSON</button>
-          <button class="export-btn" onclick="showInsights()">💡 View Insights</button>
-        </div>
-
-        <div class="note">⚠️ AI-generated investor perception analysis for informational purposes only. Not financial advice. Always validate with human experts before major branding decisions.</div>
-      </div>
+  
+  <!-- Row 2: Style, TLD, Audience -->
+  <div class="fg3">
+    <div class="field">
+      <label>Naming style</label>
+      <select id="style" onchange="onFilterChange()">
+        <option value="">Mixed styles (recommended)</option>
+        <option value="ultra_short">Ultra-short (4–5 letters)</option>
+        <option value="invented">Premium invented brandables</option>
+        <option value="real_adjacent">Real-word adjacent</option>
+        <option value="infra">Technical infrastructure</option>
+        <option value="luxury">Luxury minimal</option>
+        <option value="enterprise">Enterprise-grade</option>
+        <option value="playful">Playful modern startup</option>
+        <option value="future">Futuristic AI-native</option>
+        <option value="mythic">Mythological / powerful</option>
+      </select>
     </div>
+    <div class="field">
+      <label>Primary TLD</label>
+      <select id="tld" onchange="onFilterChange()">
+        <option value="mix">Mixed TLDs (recommended)</option>
+        <option value="com">.com (universal)</option>
+        <option value="ai">.ai (AI-native)</option>
+        <option value="io">.io (SaaS / dev)</option>
+        <option value="co">.co (modern)</option>
+        <option value="xyz">.xyz (Web3 / emerging)</option>
+      </select>
+      <label class="tld-check">
+        <input type="checkbox" id="strictTld">
+        <span>Prioritize available primary TLD names</span>
+      </label>
+      
+      <!-- Two-word names checkbox 
+      <label class="tld-check" style="margin-top:6px">
+        <input type="checkbox" id="twoWordNames" onchange="onFilterChange()">
+        <span>🔤 Generate two-word names only</span>
+      </label> -->
 
-    <!-- Info Panel -->
-    <div class="info-panel">
-      <div class="info-title">🔍 What We Evaluate</div>
-      <div class="info-list">
-        <div class="info-item">Investor perception & startup credibility</div>
-        <div class="info-item">Memorability after first hearing</div>
-        <div class="info-item">Venture-scale naming potential</div>
-        <div class="info-item">SaaS & AI startup naming alignment</div>
-        <div class="info-item">Global pronunciation quality</div>
-        <div class="info-item">Category expansion flexibility</div>
-        <div class="info-item">Modern founder-brand compatibility</div>
-      </div>
+      <!-- Brand Structure -->
+<label style="display:block;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">
+  Brand Structure
+</label>
 
-      <div class="section-title mt-4">📊 VC Score Tiers</div>
-      <div class="info-list">
-        <div class="info-item"><span class="tier-badge tier-elite" style="padding:4px 10px;font-size:11px">Elite</span> 90–100 — Premium, highly fundable, strong brand moat</div>
-        <div class="info-item"><span class="tier-badge tier-strong" style="padding:4px 10px;font-size:11px">Strong</span> 75–89 — Solid startup potential, good investor appeal</div>
-        <div class="info-item"><span class="tier-badge tier-moderate" style="padding:4px 10px;font-size:11px">Moderate</span> 50–74 — Niche appeal, may need brand refinement</div>
-        <div class="info-item"><span class="tier-badge tier-weak" style="padding:4px 10px;font-size:11px">Weak</span> &lt;50 — High risk, likely to face investor skepticism</div>
-      </div>
+<select id="brandStructure" onchange="onFilterChange()" style="margin-top:6px">
+  <option value="flex">Flexible AI mode</option>
+  <option value="atomic">Atomic (Ramp, Stripe)</option>
+  <option value="compound">Compound (BindEcho)</option>
+  <option value="invented">Invented (Klyro)</option>
+  <option value="hybrid">Hybrid startup (NotionFlow)</option>
+</select>
+    </div>
+    <div class="field">
+      <label>Target audience</label>
+      <select id="aud">
+        <option>B2B Enterprise</option><option>B2C Consumer</option>
+        <option>Developers</option><option>VC / Investor pitch</option>
+        <option>Global / Multilingual</option><option>SMB / Mid-market</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Keywords -->
+  <div class="fg2" style="margin-bottom:18px">
+    <div class="field" style="grid-column:1/-1">
+      <label>Product idea / keywords (optional)</label>
+      <input type="text" id="kw" placeholder="e.g. agentic AI for medical records, zero-trust security…" onkeydown="if(event.key==='Enter')go()">
+    </div>
+  </div>
+  
+  <button class="genbtn" id="gbtn" onclick="go()">
+    <div class="spin"></div><span class="blbl">Generate brand names →</span>
+  </button>
+  
+  <!-- Export buttons -->
+  <div class="export-row" id="exportRow" style="display:none">
+    <button class="expbtn" onclick="exportCSV()">📄 Export CSV</button>
+    <button class="expbtn" onclick="exportPDF()">📕 Export PDF</button>
+    <button class="expbtn" onclick="exportJSON()">⚙️ Export JSON</button>
+    <button class="expbtn" onclick="copyAll()">📋 Copy All Names</button>
+  </div>
+</div></div>
 
-      <div class="section-title mt-4">🎯 Recommended Workflow</div>
-      <div class="info-list">
-        <div class="info-item">1. Generate startup names in BrandLab</div>
-        <div class="info-item">2. Check trademark risk</div>
-        <div class="info-item">3. Evaluate domain valuation</div>
-        <div class="info-item">4. Analyze VC brand score</div>
-        <div class="info-item">5. Secure social handles & domains</div>
-        <div class="info-item">6. Pitch with confidence</div>
-      </div>
+<!-- PROGRESS -->
+<div class="pwrap" id="pw"><div class="pcard">
+  <div class="ptop"><span id="ptxt">Researching VC naming patterns…</span><span class="ppct" id="ppct">0%</span></div>
+  <div class="pbar"><div class="pfill" id="pfill"></div></div>
+  <div class="pstream" id="pstream"></div>
+</div></div>
+
+<!-- RESULTS -->
+<div class="rwrap" id="results">
+  <div class="empty">
+    <div class="eicon">◈</div>
+    <div class="etitle">Pick a provider, add your key &amp; select an industry</div>
+    <div class="esub">Claude, GPT-4o, or Gemini generates 10 VC-vetted brand names with live .com/.ai/.io/.xyz/.co checks</div>
+  </div>
+</div>
+
+<!-- Tools Section -->
+<div class="rwrap">
+  <div class="tools-section">
+    <div class="tools-head">autoDNG Tools</div>
+    <div class="tools-grid">
+      <a href="trademarks.html" class="tool-card">
+        <div class="tool-icon">™</div>
+        <div class="tool-title">Trademark Checker</div>
+        <div class="tool-sub">Analyze legal conflict probability, startup overlap, and safer alternatives.</div>
+      </a>
+      <a href="valuation.html" class="tool-card">
+        <div class="tool-icon">💎</div>
+        <div class="tool-title">Domain Valuation</div>
+        <div class="tool-sub">Estimate startup brand value, liquidity, and aftermarket potential.</div>
+      </a>
+      <a href="handles.html" class="tool-card">
+        <div class="tool-icon">🌐</div>
+        <div class="tool-title">Social Handle Checker</div>
+        <div class="tool-sub">Analyze username, startup branding consistency, and social identity strength.</div>
+      </a>
+      <a href="vc-score.html" class="tool-card">
+        <div class="tool-icon">📈</div>
+        <div class="tool-title">VC Brand Score</div>
+        <div class="tool-sub">Analyze investor perception, startup readiness, memorability, and venture-scale branding potential.</div>
+      </a>
     </div>
   </div>
 </div>
 
+<footer class="footer">
+  <span>autoDNG — Multi-provider AI naming engine</span>
+  <span>Training: a16z · YC · NameBio · Crunchbase · TechCrunch · GoDaddy Auctions</span>
+</footer>
+
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+  <div class="modal-card">
+    <div class="modal-title">Export Options</div>
+    <div class="modal-sub">Select which names to export and format preferences:</div>
+    <div class="modal-opts">
+      <label class="modal-opt"><input type="checkbox" id="expAll" checked> All names (10)</label>
+      <label class="modal-opt"><input type="checkbox" id="expAvail" onchange="document.getElementById('expAll').checked=false"> Available domains only</label>
+      <label class="modal-opt"><input type="checkbox" id="expTop" onchange="document.getElementById('expAll').checked=false"> Top 3 picks only</label>
+      <label class="modal-opt"><input type="checkbox" id="expScores" checked> Include scoring metrics</label>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeExportModal()">Cancel</button>
+      <button class="modal-btn primary" id="modalExportBtn" onclick="confirmExport()">Export</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ── Provider Config ───────────────────────────────────────────────
+// ── Config ─────────────────────────────────────────────────────────
 const PROVS = {
-  openrouter: { ph: 'sk-or-...', models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct'], val: k => k.startsWith('sk-or-') },
-  openai: { ph: 'sk-...', models: ['gpt-4o', 'gpt-4.1-mini'], val: k => k.startsWith('sk-') },
-  gemini: { ph: 'AIza...', models: ['gemini-2.5-flash', 'gemini-2.5-pro'], val: k => k.startsWith('AIza') },
-  groq: { ph: 'gsk_...', models: ['llama-3.3-70b-versatile', 'meta-llama/llama-4-scout-17b-16e-instruct'], val: k => k.startsWith('gsk_') }
+  openrouter:{ph:'sk-or-…',val:k=>k.startsWith('sk-or-'),models:[{id:'deepseek/deepseek-chat',l:'DeepSeek Chat'},{id:'meta-llama/llama-3.3-70b-instruct',l:'Llama 3.3'},{id:'google/gemini-2.0-flash-001',l:'Gemini Flash'}]},
+  openai:{ph:'sk-proj-…',val:k=>k.startsWith('sk-'),models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'}]},
+  gemini:{ph:'AIzaSy…',val:k=>k.startsWith('AIza'),models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
+  groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
 };
 
-// ── State ─────────────────────────────────────────────────────────
-let prov = localStorage.getItem('vc_p') || 'openrouter';
-let lastAnalysis = null;
+const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
+const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
+const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
+function normalizeBrandName(name){
 
-// ── Init ──────────────────────────────────────────────────────────
-function init() {
-  document.querySelectorAll('.ptab').forEach(btn => {
-    btn.classList.toggle('on', btn.textContent.toLowerCase().includes(prov));
-  });
+  return name
+    .toLowerCase()
 
-  const key = localStorage.getItem('vc_k_' + prov) || '';
-  document.getElementById('apikey').value = key;
-  document.getElementById('apikey').placeholder = PROVS[prov].ph;
-  updateKeyStatus(key);
-  renderModels();
+    // remove symbols
+    .replace(/[^a-z]/g,'')
 
-  document.getElementById('apikey').addEventListener('input', e => {
-    const val = e.target.value.trim();
-    localStorage.setItem('vc_k_' + prov, val);
-    updateKeyStatus(val);
-  });
-  document.getElementById('model').addEventListener('change', e => {
-    localStorage.setItem('vc_m_' + prov, e.target.value);
-  });
-  document.getElementById('brand').addEventListener('keydown', e => {
-    if (e.key === 'Enter') analyzeVC();
-  });
+    // phonetic normalization
+    .replace(/ph/g,'f')
+    .replace(/x/g,'ks')
+    .replace(/z/g,'s')
+    .replace(/q/g,'k')
+
+    // collapse vowels
+    .replace(/[aeiou]+/g,'a')
+
+    // collapse repeats
+    .replace(/(.)\1+/g,'$1');
+
 }
 
-function updateKeyStatus(key) {
-  const dot = document.getElementById('kdot');
-  const text = document.getElementById('ktext');
-  const isValid = key && PROVS[prov]?.val?.(key);
-  dot.className = 'kdot' + (isValid ? ' ok' : '');
-  text.textContent = isValid ? 'key ready' : (key ? 'invalid format' : 'no key');
+function similarityScore(a,b){
+
+  const na =
+    normalizeBrandName(a);
+
+  const nb =
+    normalizeBrandName(b);
+
+  if(na===nb)return 100;
+
+  let matches = 0;
+
+  const len =
+    Math.min(
+      na.length,
+      nb.length
+    );
+
+  for(let i=0;i<len;i++){
+
+    if(na[i]===nb[i]){
+
+      matches++;
+
+    }
+
+  }
+
+  return Math.round(
+    (matches /
+    Math.max(
+      na.length,
+      nb.length
+    )) * 100
+  );
+
 }
 
-function renderModels() {
-  const sel = document.getElementById('model');
-  sel.innerHTML = '';
-  PROVS[prov].models.forEach(m => {
-    const o = document.createElement('option');
-    o.value = m; o.textContent = m;
-    sel.appendChild(o);
-  });
-  const stored = localStorage.getItem('vc_m_' + prov);
-  sel.value = PROVS[prov].models.includes(stored) ? stored : PROVS[prov].models[0];
+function isNearDuplicate(a,b){
+
+  const score =
+    similarityScore(a,b);
+
+  return score >= 72;
+
+}
+function getWordCount(name){return name.trim().split(/\s+/).filter(Boolean).length;}
+function matchesCharLength(name,range){if(range==='any')return true;const len=name.replace(/\s+/g,'').length;if(range==='10+')return len>=10;const[min,max]=range.split('-').map(Number);return len>=min&&len<=max;}
+
+// ── State ──────────────────────────────────────────────────────────
+let prov=localStorage.getItem('bl_p')||'openrouter';
+let key=localStorage.getItem('bl_k_'+prov)||'';
+let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
+if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
+// let busy=false,domC={},pill='all',helpOn=false,language='global',charLength='any',filtersChanged=false,lastGenFilters={},twoWordMode=false;
+let busy=false,
+domC={},
+pill='all',
+helpOn=false,
+language='global',
+charLength='any',
+brandStructure='flex',
+filtersChanged=false,
+lastGenFilters={};
+let lastGeneratedNames=[];
+
+// Session cache to avoid repeats (persists for this tab session)
+const recentNamesCache =
+  new Set(
+    JSON.parse(
+      localStorage.getItem(
+        'dng_recent_names'
+      ) || '[]'
+    )
+  );
+const MAX_CACHE_SIZE = 50;
+
+// ── Boot ───────────────────────────────────────────────────────────
+(function init(){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
+  document.querySelector(`.ptab[onclick*="${prov}"]`)?.classList.add('on');
+  document.getElementById('akey').value=key;
+  document.getElementById('akey').placeholder=PROVS[prov].ph;
+  setKeyUI(key);renderModels();
+  language=localStorage.getItem('bl_lang')||'global';
+  charLength=localStorage.getItem('bl_charlen')||'any';
+  // twoWordMode = localStorage.getItem('bl_twoWord') === 'true';
+  document.getElementById('language').value=language;
+  document.getElementById('charlen').value=charLength;
+  brandStructure =
+  localStorage.getItem('bl_structure')
+  || 'flex';
+
+document.getElementById(
+  'brandStructure'
+).value = brandStructure;
+})();
+
+function switchProv(p,el){
+  localStorage.setItem('bl_k_'+prov,key);prov=p;localStorage.setItem('bl_p',p);
+  key=localStorage.getItem('bl_k_'+p)||'';mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
+  if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  document.getElementById('akey').value=key;document.getElementById('akey').placeholder=PROVS[p].ph;
+  setKeyUI(key);renderModels();
+}
+function renderModels(){document.getElementById('mrow').innerHTML=PROVS[prov].models.map(m=>`<button class="mchip ${m.id===mdl?'on':''}" data-id="${m.id}" onclick="selMdl('${m.id}',this)">${m.l}</button>`).join('');}
+function selMdl(id,el){mdl=id;localStorage.setItem('bl_m_'+prov,id);document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
+function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';}
+function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
+function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
+
+// Track filter changes to trigger regeneration
+function onFilterChange(){
+  filtersChanged = true;
+  const btn = document.getElementById('gbtn');
+  if(btn && !btn.disabled){
+    btn.querySelector('.blbl').textContent = 'Regenerate with new filters →';
+    btn.style.background = 'var(--amber)';
+    toast('Filters updated — click Generate for new names');
+  }
+  lastGenFilters = {
+    charLength: document.getElementById('charlen').value,
+    style: document.getElementById('style').value,
+    tld: document.getElementById('tld').value,
+    twoWord: document.getElementById('twoWordNames')?.checked || false
+  };
 }
 
-function switchProv(p, el) {
-  localStorage.setItem('vc_k_' + prov, document.getElementById('apikey').value.trim());
-  prov = p; localStorage.setItem('vc_p', p);
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('apikey').placeholder = PROVS[p].ph;
-  document.getElementById('apikey').value = localStorage.getItem('vc_k_' + p) || '';
-  updateKeyStatus(document.getElementById('apikey').value);
-  renderModels();
+// Reset filter changed state after successful generation
+function resetFilterState(){
+  filtersChanged = false;
+  const btn = document.getElementById('gbtn');
+  if(btn){
+    btn.querySelector('.blbl').textContent = 'Generate brand names →';
+    btn.style.background = 'var(--lime)';
+  }
 }
 
-// ── System Prompts ────────────────────────────────────────────────
-const SYS = `You are a venture-scale startup branding analyst trained on:
-- Y Combinator naming patterns & portfolio analysis
-- a16z branding heuristics & investment thesis
-- SaaS startup psychology & naming conventions
-- AI startup naming systems & trend analysis
-- Investor perception research & pitch deck psychology
-- Startup memorability science & cognitive load theory
-- Global pronunciation patterns & linguistic accessibility
-
-Analyze startup brand quality for venture funding potential.
-
-Return ONLY valid JSON with this exact schema:
-{
-  "tier": "weak" | "moderate" | "strong" | "elite",
-  "score": 0-100,
-  "summary": "concise 1-2 sentence investor-focused summary",
-  "factors": {
-    "memorability": 0-100,
-    "credibility": 0-100,
-    "scalability": 0-100,
-    "differentiation": 0-100
-  },
-  "signals": ["string"],
-  "weaknesses": ["string"],
-  "expansion": ["string"],
-  "comparables": [
-    {"name":"Linear","similarity":"high","reason":"Similar minimalist SaaS naming pattern"}
-  ],
-  "recommendations": ["string"],
-  "insights": ["string"]
+// ── Two-Phase Generation Helpers ──────────────────────────────────
+function generateHeuristicExamples(industry,count=8){
+  const roots={'AI Agents & Automation':['auto','agent','flow','sync','mind'],'Fintech & Neobanking':['pay','coin','vault','flux','mint'],'Developer Tools':['code','dev','stack','build','deploy'],'Healthcare AI':['med','care','health','vital','pulse']};
+  const industryRoots=roots[industry]||['tech','labs','sys','net'];
+  const prefixes=['z','k','v','x','q','kr','vy','zyl','vex'],suffixes=['ox','ra','on','ix','or','ex','al','en'],examples=[];
+  for(let p of prefixes.slice(0,4)){for(let s of suffixes.slice(0,3)){if(examples.length>=count)break;examples.push((p+s).charAt(0).toUpperCase()+(p+s).slice(1));}}
+  for(let r of industryRoots.slice(0,3)){if(examples.length>=count)break;examples.push((r+'ix').charAt(0).toUpperCase()+(r+'ix').slice(1));}
+  return examples;
 }
+
+function calculateAvailabilityScore(name,tld='.com'){
+  let score=70;const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
+  const commonWords=['cloud','data','sync','flow','core','labs','tech','app','web','net','ai','bot','meta','quantum','nova','prime','elite'];
+  if(commonWords.includes(lower))score-=40;if(len<=4&&/^[a-z]+$/.test(lower))score-=30;if(/(ify|ly|able|io|ai|app)$/.test(lower))score-=20;if(/[-\d]/.test(name))score-=25;
+  if(/[xzqvk]/.test(lower))score+=15;if(/[^aeiou]{3,}/.test(lower))score+=10;if(len>=5&&len<=7)score+=10;if(/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower))score+=8;
+  return Math.max(5,Math.min(99,score));
+}
+
+async function generateRawCandidates(industry,style,kw,targetCount=25){
+  const heuristicExamples=generateHeuristicExamples(industry,6),exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
+  
+  // Add random seed + timestamp + batch ID for true uniqueness
+  const randomSeed = Math.random().toString(36).slice(2, 10);
+  const batchId = `${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*999)}`;
+  const variationPhrases = [
+    "Focus on completely fresh phonetic patterns not seen in previous batches",
+    "Explore unconventional letter combinations and syllable structures",
+    "Prioritize names with unique vowel-consonant rhythms",
+    "Generate names that feel distinct from typical tech startup naming conventions",
+    "Use diverse linguistic roots: latin, greek, slavic, east-asian phonetics"
+  ];
+  const randomVariation = variationPhrases[Math.floor(Math.random() * variationPhrases.length)];
+  
+  // Add exclusion list for recently generated names
+  const exclusionList = recentNamesCache.size > 0 
+    ? `\n🚫 AVOID THESE RECENTLY GENERATED NAMES (do not repeat):\n${Array.from(recentNamesCache).slice(-15).map(n => `- ${n}`).join('\n')}`
+    : '';
+  
+  const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
+
+🎯 STYLE EXAMPLES (emulate these patterns, but create FRESH variations):
+${exampleList}
+
+🔄 BATCH ${batchId} VARIATION INSTRUCTION:
+${randomVariation}
+
+🎲 RANDOM SEED: ${randomSeed} (use this to generate truly unique outputs)
+${exclusionList}
 
 Rules:
-- No markdown, no code fences, no explanations outside JSON
-- Score 0-100 where higher = better VC appeal
-- Factors should sum to ~400 total (100 each)
-- Comparables should be real or plausible startup brands with similarity rationale
-- Insights should be actionable, non-obvious strategic observations
-- Be conservative: flag risks even if uncertain (better false positive than false negative)`;
+- 4-8 characters, globally pronounceable  
+- Each generated name must sound DISTINCT from the others
+- Use varied consonant structures
+- Avoid repeating prefixes/suffixes
+- Avoid phonetic similarity across outputs
+- No exact dictionary words under 6 letters
+- Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs
+- Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation
+Style DNA:
+${style ? STYLE_DNA[style] : `
+Mix:
+- 30% invented
+- 30% compound
+- 20% atomic
+- 20% hybrid
+Use varied phonetic structures.
+`}
 
-const GEMINI_SYS = `You are an elite VC startup branding strategist. Return ONLY valid JSON.
+Brand Structure:
+${
+  brandStructure==='atomic'
+  ? 'single-token minimal brands like Stripe, Ramp, Arc'
+  : brandStructure==='compound'
+  ? 'compound semantic brands like BindEcho, ClearPath'
+  : brandStructure==='invented'
+  ? 'invented phonetic brands like Klyro, Vexa'
+  : brandStructure==='hybrid'
+  ? 'hybrid startup names mixing semantic + invented roots'
+  : 'mixed varied structures'
+}
+${kw?`Incorporate creatively: ${kw}`:''}
 
-Schema:
-{"tier":"weak|moderate|strong|elite","score":85,"summary":"...","factors":{"memorability":90,"credibility":75,"scalability":88,"differentiation":92},"signals":["..."],"weaknesses":["..."],"expansion":["..."],"comparables":[{"name":"...","similarity":"high|medium|low","reason":"..."}],"recommendations":["..."],"insights":["..."]}
+Return ONLY a JSON array:
+[{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
 
-No markdown. No explanations. Pure JSON only.`;
+No markdown, no explanations.`;
+  const sys=`You are a startup naming expert. Return ONLY valid JSON array.`;
+  try{
+    let response;
+    if(prov==='gemini')response=await callGemini(sys,prompt,()=>{});
+    else if(prov==='openai')response=await callOpenAI(sys,prompt,()=>{});
+    else if(prov==='groq')response=await callGroq(sys,prompt,()=>{});
+    else response=await callOpenRouter(sys,prompt,()=>{});
+    
+    const clean=String(response||'').replace(/```json|```/g,'').trim();let names=null;
+    try{names=JSON.parse(clean);}catch(e){const start=clean.indexOf('['),end=clean.lastIndexOf(']');if(start!==-1&&end!==-1)names=JSON.parse(clean.slice(start,end+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));}
+    return Array.isArray(names)?names.filter(n=>n?.name):[];
+  }catch(e){console.error('Phase 1 generation error:',e);return [];}
+}
 
-// ── API Callers ───────────────────────────────────────────────────
-async function fetchWithRetry(url, options, retries = 2) {
-  for (let i = 0; i <= retries; i++) {
+async function scoreCandidates(rawNames,tlds,config){
+  if(rawNames.length===0)return[];
+  return rawNames.map(n=>{const availScore=calculateAvailabilityScore(n.name,tlds[0]),brandScore=n.score?Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length:70;return{...n,_availabilityScore:availScore,_brandScore:brandScore,_combinedScore:(availScore*0.6)+(brandScore*0.4)};});
+}
+
+// ── Prompts ───────────────────────────────────────────────────────
+const SYS=`You are an elite startup naming strategist. Generate structurally distinct startup brand names.
+Prioritize phonetic diversity and archetype fidelity.
+Rules: memorable, globally pronounceable, clean phonetics, strong brandability, avoid generic AI buzzwords, avoid trademark-heavy names, avoid hyphens and numbers.
+Avoid overused startup terms: AI, Nova, Core, Flow, Labs, Nexus, Meta, Quantum, Bot, Sync, Cloud, Data.
+Each output name must belong to a DIFFERENT phonetic family.
+Avoid repeating:
+- prefixes
+- suffixes
+- syllable patterns
+- vowel cadence
+across outputs.
+Return ONLY raw JSON array. Format: [{"name":"","tagline":"","naming_pattern":"","vc_signal":"","why_it_works":"","score":{"brand_strength":90,"memorability":90,"global_fit":90,"trend_alignment":90}}]`;
+
+const GEMINI_SYS=`You are an elite VC startup naming strategist. Return ONLY valid raw JSON. RULES: No markdown, No explanations, No code fences, EXACTLY 5 objects, Compact JSON only, Finish complete JSON, No trailing commas. FORMAT: [{"name":"Klyro","tagline":"AI workflows simplified","naming_pattern":"Abstract","vc_signal":"VC-ready","why_it_works":"Short memorable modern","score":{"brand_strength":90,"memorability":91,"global_fit":88,"trend_alignment":89}}]`;
+
+// const STYLE_DNA={ultra_short:`Generate: 4-5 character names, highly memorable, premium startup feel. Examples: Brex, Ramp, Arc`,invented:`Generate: invented premium brandables, low dictionary overlap, VC-backable feel. Examples: Vanta, Stripe, Figma`,real_adjacent:`Generate: names inspired by real words, trustworthy and simple, globally pronounceable. Examples: Notion, Mercury, Plaid`,infra:`Generate: technical infrastructure feel, developer-tool energy, hard consonants. Examples: Vercel, Supabase, Datadog`,luxury:`Generate: elegant minimalist names, premium phonetics, smooth syllables. Examples: Avenza, Velora`,enterprise:`Generate: serious B2B credibility, trusted enterprise tone, scalable naming structure. Examples: Okta, Workday, ServiceNow`,playful:`Generate: modern startup friendliness, softer memorable phonetics, creative energy. Examples: Canva, Figma, Loom`,future:`Generate: futuristic AI-native names, modern technical energy, uncommon phonetics. Examples: Anthropic, OpenAI, Replit`,mythic:`Generate: powerful memorable names, legendary undertones, deep-tech seriousness. Examples: Palantir, Anduril`};
+const STYLE_DNA = {
+
+  ultra_short: `
+Structure:
+- 4-5 characters
+- single token
+- hard consonants
+- minimal vowels
+- no semantic meaning
+Examples:
+Brex, Ramp, Deel, Arc
+`,
+
+  invented: `
+Structure:
+- invented phonetics
+- balanced vowels/consonants
+- globally pronounceable
+- modern SaaS energy
+- no direct dictionary roots
+Examples:
+Figma, Vanta, Asana
+`,
+
+  real_adjacent: `
+Structure:
+- inspired by real words
+- softened semantics
+- trust-oriented
+- easy pronunciation
+- emotionally neutral
+Examples:
+Notion, Mercury, Plaid
+`,
+
+  infra: `
+Structure:
+- technical/devtool feel
+- hard consonants
+- compressed syllables
+- infrastructure energy
+- slightly mechanical
+Examples:
+Vercel, Datadog, HashiCorp
+`,
+
+  luxury: `
+Structure:
+- elegant phonetics
+- flowing vowels
+- premium cadence
+- soft consonants
+- fashion/luxury feel
+Examples:
+Velora, Aurelia, Rivian
+`,
+
+  enterprise: `
+Structure:
+- trustworthy
+- stable
+- scalable corporate tone
+- strong endings
+- conservative phonetics
+Examples:
+Okta, Workday, ServiceNow
+`,
+
+  playful: `
+Structure:
+- softer consonants
+- memorable rhythm
+- consumer-friendly
+- emotionally warm
+Examples:
+Canva, Loom, Duolingo
+`,
+
+  future: `
+Structure:
+- futuristic phonetics
+- uncommon syllables
+- AI-native feel
+- strong distinctiveness
+Examples:
+Anthropic, Replit, OpenAI
+`,
+
+  mythic: `
+Structure:
+- powerful tone
+- legendary cadence
+- deep-tech seriousness
+- strong syllables
+Examples:
+Anduril, Palantir, Oracle
+`
+
+};
+// Function definition now includes intelData parameter
+function USR(industry,style,aud,kw,tlds,lang,charlen,strictTld=false,twoWord=false,intelData=null){
+  const langInstructions={'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.','global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.','non-en':'Generate names optimized for non-English markets. May include adapted Latin characters. Prioritize .ai/.io/.xyz TLDs.','multilingual':'Generate names that work across 3+ languages. Avoid homophones with negative meanings in major languages.'};
+  
+  const charInstructions={'3-5':'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".','4-6':'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".','5-8':'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".','6-10':'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".','10+':'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".','any':'Mix of lengths; prioritize memorability and brandability over strict count.'};
+  
+  // Two-word mode: VERY strict instructions
+  const twoWordRule = twoWord ? `
+🔒🔒🔒 TWO-WORD MODE — ABSOLUTE REQUIREMENTS 🔒🔒🔒
+CRITICAL: You are in STRICT TWO-WORD MODE. Follow these rules EXACTLY:
+
+1. FORMAT: [Word1] [Word2] — EXACTLY ONE SPACE between words
+2. EXAMPLES OF VALID OUTPUT: "Git Hub", "Pay Pal", "Linear App", "Super Human"
+3. EXAMPLES OF INVALID OUTPUT (REJECT THESE IMMEDIATELY):
+   - "GitHub" (no space = REJECT)
+   - "Git-Hub" (hyphen = REJECT)
+   - "Git Hub Pro" (3 words = REJECT)
+   - "Zylox" (single word = REJECT)
+4. VERIFICATION STEP: Before including any name in your JSON output, COUNT THE SPACES:
+   - Exactly 1 space = ✅ INCLUDE
+   - 0 spaces or 2+ spaces = ❌ REJECT AND GENERATE ANOTHER
+5. PENALTY: Names that don't follow this rule will be DISCARDED and waste API credits.
+
+If you are unsure whether a name has exactly one space, DO NOT INCLUDE IT.
+` : '';
+
+  // Inject intelligence if available
+  let intelPrompt = '';
+  if (intelData) {
+    const patterns = intelData.patterns.map(p => `${p.naming_pattern} (${p.count} startups)`).join(', ');
+    const tlds = intelData.tlds.map(t => `${t.tld}`).join(', ');
+    const avoid = intelData.competitors.join(', ');
+    intelPrompt = `
+🧠 LOCAL INTELLIGENCE DATA (Industry: ${industry}):
+• Proven Naming Patterns: ${patterns}
+• Common TLDs: ${tlds}
+• AVOID THESE (Existing Startups): ${avoid}
+• Generate names that match proven patterns but use UNIQUE phonetics to avoid confusion.
+`;
+  }
+
+  return `Create ${prov==='gemini'?5:10} brand names for a "${industry}" startup.${intelPrompt}
+Language: ${lang} — ${langInstructions[lang]}
+${twoWordRule}
+Character Length: ${charInstructions[charlen]}
+Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
+Audience: ${aud} | TLDs: ${tlds.join(', ')}
+${strictTld&&tlds[0]!=='.com'?`CRITICAL HARD REQUIREMENT: ALL generated names MUST prioritize ${tlds[0]} availability. Rules: Avoid common dictionary words, Avoid existing startup-style names, Prefer invented brandables, Prefer uncommon phonetics, Prefer low-competition naming structures, Assume user wants domains AVAILABLE in ${tlds[0]}. At least 80% of generated names should likely have ${tlds[0]} available.`:strictTld?`🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE. Strategy for available .com domains: 1. INVENTED BRANDABLES (highest availability): 5-7 letters, no dictionary words, Uncommon consonant clusters: xv, zq, kr, vy, Vowel patterns: a-e-i-o-u rotated unusually, Examples: "Zylox", "Krevu", "Vexor". 2. COMPOUND INNOVATIONS: Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly", Avoid common suffixes: -ify, -ly, -able, -ify, Use uncommon prefixes: "Vor-", "Zyn-", "Kael-". 3. PHONETIC UNIQUENESS: Names that sound distinctive when spoken, Pass the "radio test": spellable after hearing once, Avoid homophones with existing brands. 4. AVOID (high registration probability): Exact dictionary words under 6 letters, Common tech terms: cloud, data, sync, flow, nexus, Popular startup patterns: get[word], [word]app, [word]io. Output guidance: 70% invented brandables (highest .com availability), 20% novel compounds (medium availability), 10% creative risks (low availability but high brand potential). ${kw?'\nKeywords to incorporate creatively: '+kw:''}`:''}
+${kw?'\nKeywords: '+kw:''}
+Rules:
+• Modern VC-backable startup feel
+• Strong phonetic distinction
+• Avoid repetitive prefixes/suffixes
+• Avoid overused AI buzzwords
+• Prioritize memorability
+• Ensure names sound distinct when spoken aloud
+
+
+${prov==='gemini'?'Return compact JSON array of exactly 5 objects.':'Return JSON array of exactly 10 objects.'}
+${style?`Name Shape DNA: ${STYLE_DNA[style]}`:''}
+Raw JSON only.`;
+}
+
+// ── API Callers with Retry Logic ──────────────────────────────────
+async function fetchWithRetry(url, options, retries = 3) {
+  for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url, options);
-      if (res.status === 402) throw new Error('PAYMENT_REQUIRED: Add credits at provider billing page or switch to free tier (Gemini).');
-      if (res.status === 401) throw new Error('INVALID_KEY: API key is incorrect or expired.');
-      if (res.status === 429) throw new Error('RATE_LIMIT: Too many requests. Wait 30 seconds.');
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `HTTP ${res.status}`);
+      if (res.ok) return res;
+      if (res.status === 503 && i < retries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        continue;
       }
-      return res;
-    } catch (err) {
-      if (err.message?.includes('PAYMENT_REQUIRED') || err.message?.includes('INVALID_KEY')) throw err;
-      if (i === retries) throw err;
-      await new Promise(r => setTimeout(r, 500 * Math.pow(2, i)));
+      throw new Error(`HTTP ${res.status}`);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 1000 * (i + 1)));
     }
   }
 }
 
-async function callOpenRouter(key, model, sys, usr) {
-  const res = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json', 
-      'Authorization': 'Bearer ' + key,
-      'HTTP-Referer': window.location.origin,
-      'X-Title': 'BrandLab VC Score'
-    },
-    body: JSON.stringify({ 
-      model, 
-      temperature: 0.2, 
-      max_tokens: 3000,
-      messages: [
-        { role: 'system', content: sys }, 
-        { role: 'user', content: usr }
-      ] 
-    })
-  });
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content || '';
+async function callOpenRouter(sys,usr,cb){
+  const baseTemp = TLDS[document.getElementById('tld').value]?.[0] === '.com' ? 0.85 : 0.7;
+  const varietyBoost = Math.random() * 0.15;
+  const finalTemp = Math.min(1.0, baseTemp + varietyBoost);
+  
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});const data=await r.json();if(!r.ok)throw new Error(`OpenRouter ${r.status}: ${data.error?.message||'Unknown error'}`);const text=data.choices?.[0]?.message?.content||'';cb(text);return text;
 }
-
-async function callOpenAI(key, model, sys, usr) {
-  const res = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-    body: JSON.stringify({ 
-      model, 
-      temperature: 0.2, 
-      max_tokens: 3000,
-      messages: [
-        { role: 'system', content: sys }, 
-        { role: 'user', content: usr }
-      ] 
-    })
-  });
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content || '';
+async function callOpenAI(sys,usr,cb){
+  const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});if(!r.ok)throw new Error(`OpenAI ${r.status}: ${await r.text()}`);return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
 }
-
-async function callGemini(key, model, sys, usr) {
-  const res = await fetchWithRetry(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: sys }] },
-        contents: [{ role: 'user', parts: [{ text: usr }] }],
-        generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 4096, responseMimeType: 'application/json' }
-      })
-    }
-  );
-  const d = await res.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+async function callGemini(sys,usr,cb){
+  const baseTemp = TLDS[document.getElementById('tld').value]?.[0] === '.com' ? 0.7 : 0.4;
+  const varietyBoost = Math.random() * 0.2;
+  const finalTemp = Math.min(1.0, baseTemp + varietyBoost);
+  
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:finalTemp,topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})});const data=await r.json();if(!r.ok)throw new Error(`Gemini ${r.status}: ${data.error?.message||'Unknown error'}`);const parts=data.candidates?.[0]?.content?.parts||[];const text=parts.map(p=>p.text||'').join('');cb(text);return text;
 }
-
-async function callGroq(key, model, sys, usr) {
-  const res = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-    body: JSON.stringify({ 
-      model, 
-      temperature: 0.2, 
-      max_tokens: 3000,
-      messages: [
-        { role: 'system', content: sys }, 
-        { role: 'user', content: usr }
-      ] 
-    })
-  });
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content || '';
+async function callGroq(sys,usr,cb){
+  const baseTemp = TLDS[document.getElementById('tld').value]?.[0] === '.com' ? 0.9 : 0.7;
+  const varietyBoost = Math.random() * 0.1;
+  const finalTemp = Math.min(1.0, baseTemp + varietyBoost);
+  
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,temperature:finalTemp,max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});const data=await r.json();if(!r.ok)throw new Error(`Groq ${r.status}: ${data.error?.message||'Unknown error'}`);const text=data.choices?.[0]?.message?.content||'';cb(text);return text;
 }
+async function readSSE(resp,extract){const reader=resp.body.getReader(),dec=new TextDecoder();let buf='',full='';while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines){if(!l.startsWith('data: '))continue;const raw=l.slice(6).trim();if(raw==='[DONE]')continue;try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}}}return full;}
 
-// ── JSON Parser with Truncation Recovery ──────────────────────────
-function parseVCJSON(raw, provider = null) {
-  if (!raw || typeof raw !== 'string') return null;
-  let clean = String(raw).trim().replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '').trim();
-
-  // Strategy 1: Direct parse
-  try { return JSON.parse(clean); } catch {}
-
-  // Strategy 2: Extract JSON object
-  const first = clean.indexOf('{'), last = clean.lastIndexOf('}');
-  if (first !== -1 && last !== -1) {
-    try { return JSON.parse(clean.slice(first, last + 1)); } catch {}
-  }
-
-  // Strategy 3: Fix syntax errors
-  let fixed = clean.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']').replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '"$1"').replace(/[“”]/g, '"').trim();
-  try { return JSON.parse(fixed); } catch {}
-
-  // Strategy 4: Handle truncation
+// ── Generate (TWO-PHASE) ───────────────────────────────────────────
+async function go(){
+  if(busy)return;
+  const ind=document.getElementById('industry').value;if(!ind){toast('Please select an industry');return;}
+  if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}
+  
+  language=document.getElementById('language').value;
+  charLength=document.getElementById('charlen').value;
+  twoWordMode = document.getElementById('twoWordNames')?.checked || false;
+  localStorage.setItem('bl_charlen',charLength);
+  localStorage.setItem('bl_lang',language);
+  localStorage.setItem('bl_twoWord', twoWordMode);
+  
+  busy=true;domC={};const btn=document.getElementById('gbtn');btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';
+  const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');
+  pw.classList.add('on');pf.style.width='0%';ps.textContent='';document.getElementById('results').innerHTML='';document.getElementById('exportRow').style.display='none';
+  
+  // Fetch local intelligence (graceful fallback)
+  let intelData = null;
   try {
-    let recovered = fixed;
-    const openBraces = (recovered.match(/\{/g) || []).length, closeBraces = (recovered.match(/\}/g) || []).length;
-    const openBrackets = (recovered.match(/\[/g) || []).length, closeBrackets = (recovered.match(/\]/g) || []).length;
-    if (openBrackets > closeBrackets) recovered += ']'.repeat(openBrackets - closeBrackets);
-    if (openBraces > closeBraces) recovered += '}'.repeat(openBraces - closeBraces);
-    if (recovered.endsWith('"') && !recovered.endsWith('\\"')) {
-      const lastQuote = recovered.lastIndexOf('"', recovered.length - 2);
-      if (lastQuote !== -1 && (recovered.slice(lastQuote + 1).match(/"/g) || []).length % 2 === 1) {
-        recovered = recovered.slice(0, -1) + '"';
+    const res = await fetch(`http://localhost:3002/api/intelligence/${encodeURIComponent(ind)}`, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) intelData = (await res.json()).data;
+  } catch (e) {
+    // Intentionally silent: local intelligence server optional
+  }
+  
+  const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];let pi=0;const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
+  
+  const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;
+  const sys=prov==='gemini'?GEMINI_SYS:SYS;
+  
+  try{
+    pt.textContent='Generating candidate names…';pp.textContent='48%';
+    const targetCount=prov==='gemini'?15:25;
+    const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,targetCount);
+    if(!rawCandidates.length)throw new Error('No candidates generated. Try different settings or provider.');
+    
+    pt.textContent='Scoring for availability…';pp.textContent='72%';
+    const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};
+    let scored=await scoreCandidates(rawCandidates,tlds,config);
+    
+    // Two-word mode validation (if enabled)
+let filteredNames = scored;
+if (twoWordMode) {
+  // Stricter validation: exactly 2 words, no hyphens, no extra spaces
+  filteredNames = scored.filter(n => {
+    const name = n.name.trim();
+    const words = name.split(/\s+/).filter(w => w.length > 0);
+    const hasHyphen = name.includes('-');
+    const hasMultipleSpaces = /\s{2,}/.test(name);
+    return words.length === 2 && !hasHyphen && !hasMultipleSpaces;
+  });
+  
+  const complianceRate = filteredNames.length / scored.length;
+  
+  // If zero compliance, generate two-word compounds from single words
+  if (filteredNames.length === 0) {
+    toast('⚠️ No two-word names generated. Creating compounds from single words...');
+    
+    // Extract single-word names and create compounds
+    const singleWords = scored
+      .filter(n => getWordCount(n.name) === 1)
+      .map(n => n.name)
+      .slice(0, 10); // Take top 10 single words
+    
+    const compounds = [];
+    for (let i = 0; i < singleWords.length && compounds.length < (prov==='gemini'?3:5); i++) {
+      for (let j = i + 1; j < singleWords.length && compounds.length < (prov==='gemini'?3:5); j++) {
+        const compound = `${singleWords[i]} ${singleWords[j]}`;
+        if (compound.length <= 18) { // Keep it reasonable
+          compounds.push({
+            ...scored[i],
+            name: compound,
+            tagline: `Auto-generated: ${singleWords[i]} + ${singleWords[j]}`,
+            naming_pattern: 'compound-fallback',
+            _availabilityScore: 65,
+            _combinedScore: 65
+          });
+        }
       }
     }
-    return JSON.parse(recovered);
-  } catch {}
-
-  // Strategy 5: Regex fallback for key fields
-  try {
-    const extracted = {};
-    const tierMatch = clean.match(/"tier"\s*:\s*"([^"]+)"/);
-    if (tierMatch) extracted.tier = tierMatch[1];
-    const scoreMatch = clean.match(/"score"\s*:\s*(\d+)/);
-    if (scoreMatch) extracted.score = parseInt(scoreMatch[1]);
-    const summaryMatch = clean.match(/"summary"\s*:\s*"([^"]*(?:\.[^"]*)?)"/);
-    if (summaryMatch) extracted.summary = summaryMatch[1];
     
-    if (extracted.tier && extracted.score != null) {
-      return {
-        tier: extracted.tier, score: extracted.score,
-        summary: extracted.summary || 'Partial analysis completed',
-        factors: { memorability: 70, credibility: 65, scalability: 75, differentiation: 80 },
-        signals: [], weaknesses: [], expansion: [], comparables: [], recommendations: [], insights: []
-      };
+    if (compounds.length > 0) {
+      filteredNames = compounds;
+      scored = compounds;
+    } else {
+      // Last resort: show single words with warning
+      toast('Tip: Try "real_adjacent" style or add keywords like "web3 wallet" for better results');
+      scored = scored.slice(0, prov==='gemini'?3:5);
     }
-  } catch {}
-
-  console.warn('❌ All JSON parsing strategies failed');
-  return null;
-}
-
-// ── Main Analysis ─────────────────────────────────────────────────
-async function analyzeVC() {
-  const btn = document.getElementById('analyzeBtn');
-  const btnText = btn.querySelector('.btn-text');
-  const spinner = btn.querySelector('.spinner');
-  
-  const key = document.getElementById('apikey').value.trim();
-  if (!key || !PROVS[prov]?.val?.(key)) { showToast('Please enter a valid API key'); return; }
-  
-  const brand = document.getElementById('brand').value.trim();
-  if (!brand) { showToast('Please enter a startup brand'); return; }
-  
-  // Loading state
-  btn.disabled = true; btnText.textContent = 'Analyzing...'; spinner.style.display = 'inline-block';
-  document.getElementById('loading').classList.add('on');
-  document.getElementById('result').style.display = 'none';
-  
-  const industry = document.getElementById('industry').value.trim() || 'General Tech';
-  const region = document.getElementById('region').value;
-  const context = document.getElementById('context').value.trim();
-  const model = document.getElementById('model').value;
-  
-  const usr = `Brand: ${brand}
-Industry: ${industry}
-Region: ${region}
-Context: ${context || 'None'}
-
-Evaluate for venture-scale startup branding:
-- Investor perception & pitch deck readiness
-- Memorability after first hearing (cognitive load test)
-- Venture-scale naming potential (can this brand scale to $100M+ ARR?)
-- Pronunciation quality across English, Spanish, Mandarin, Hindi
-- SaaS/AI startup naming alignment (2026 trends)
-- Category expansion flexibility (can this brand work beyond current niche?)
-- Founder-brand compatibility (does this feel authentic for a technical founder?)
-
-Provide conservative, investor-focused analysis. Flag risks even if uncertain.`;
-  
-  try {
-    let raw = '';
-    const sys = prov === 'gemini' ? GEMINI_SYS : SYS;
-    
-    if (prov === 'openai') raw = await callOpenAI(key, model, sys, usr);
-    else if (prov === 'openrouter') raw = await callOpenRouter(key, model, sys, usr);
-    else if (prov === 'gemini') raw = await callGemini(key, model, sys, usr);
-    else if (prov === 'groq') raw = await callGroq(key, model, sys, usr);
-    else throw new Error('Unknown provider');
-    
-    let data = parseVCJSON(raw, prov);
-    if (!data || !data.tier || data.score == null) throw new Error('Invalid response format');
-    
-    // Normalize data
-    data = normalizeVCData(data);
-    
-    lastAnalysis = { ...data, brand, timestamp: new Date().toISOString() };
-    renderResult(data);
-    showToast('✓ VC analysis complete');
-    
-  } catch (err) {
-    console.error('VC analysis error:', err);
-    const userMsg = err.message?.includes('PAYMENT_REQUIRED') 
-      ? '⚠️ Credits exhausted. Add funds or switch to Gemini (free tier).'
-      : err.message?.includes('INVALID_KEY')
-        ? '⚠️ Invalid API key. Check format or get a new key.'
-        : 'Analysis failed: ' + (err.message || 'Unknown error');
-    showToast(userMsg, 6000);
-    renderFallback(brand);
-  } finally {
-    btn.disabled = false; btnText.textContent = 'Analyze VC Score'; spinner.style.display = 'none';
-    document.getElementById('loading').classList.remove('on');
-  }
-}
-
-function normalizeVCData(data) {
-  data.score = Math.max(0, Math.min(100, Number(data.score ?? 50)));
-  
-  if (!data.factors) {
-    const base = data.score;
-    data.factors = {
-      memorability: Math.min(100, base + 5),
-      credibility: Math.max(40, base - 10),
-      scalability: Math.min(100, base + 15),
-      differentiation: Math.min(100, base + 10)
-    };
+  } else if (complianceRate < 0.5) {
+    toast(`⚠️ Only ${filteredNames.length}/${scored.length} names matched two-word format.`);
+    scored = filteredNames;
   } else {
-    Object.keys(data.factors).forEach(k => {
-      data.factors[k] = Math.max(0, Math.min(100, Number(data.factors[k] ?? 50)));
-    });
+    scored = filteredNames;
   }
-  
-  data.signals = Array.isArray(data.signals) ? data.signals : [];
-  data.weaknesses = Array.isArray(data.weaknesses) ? data.weaknesses : [];
-  data.expansion = Array.isArray(data.expansion) ? data.expansion : [];
-  data.comparables = Array.isArray(data.comparables) ? data.comparables : [];
-  data.recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
-  data.insights = Array.isArray(data.insights) ? data.insights : [];
-  
-  return data;
 }
+    
+    // Apply character length filter
+    const filteredByCharLen = scored.filter(n => matchesCharLength(n.name, charLength));
+    
+    // Select final names
+    let finalNames, minResults = prov==='gemini'?3:5;
+    if (filteredByCharLen.length >= minResults) {
+      finalNames = filteredByCharLen;
+    } else if (scored.length >= minResults) {
+      finalNames = scored;
+      toast('Relaxed character length filter');
+    } else {
+      finalNames = [...scored].sort((a,b) => (b.score?.brand_strength||0) - (a.score?.brand_strength||0)).slice(0, prov==='gemini'?5:10);
+      toast('Limited results — try broader filters');
+    }
+    
+    const uniqueNames = [];
 
-// ── Render Results ────────────────────────────────────────────────
-function renderResult(data) {
-  const result = document.getElementById('result');
-  result.style.display = 'block';
-  
-  // Brand display
-  const brand = lastAnalysis?.brand || 'Brand';
-  document.getElementById('brandDisplay').textContent = brand;
-  
-  // Tier badge
-  const tier = String(data.tier || 'moderate').toLowerCase();
-  const badge = document.getElementById('tierBadge');
-  const tierIcon = document.getElementById('tierIcon');
-  const tierText = document.getElementById('tierText');
-  
-  const tierConfig = {
-    elite: { class: 'tier-elite', icon: '🏆', label: 'Elite VC Signal' },
-    strong: { class: 'tier-strong', icon: '⭐', label: 'Strong VC Signal' },
-    moderate: { class: 'tier-moderate', icon: '✨', label: 'Moderate VC Signal' },
-    weak: { class: 'tier-weak', icon: '⚠️', label: 'Weak VC Signal' }
-  };
-  const cfg = tierConfig[tier] || tierConfig.moderate;
-  badge.className = `tier-badge ${cfg.class}`;
-  tierIcon.textContent = cfg.icon;
-  tierText.textContent = cfg.label;
-  
-  // Score with animation
-  const score = data.score || 50;
-  document.getElementById('score').textContent = score;
-  setTimeout(() => {
-    document.getElementById('gaugeFill').style.width = `${score}%`;
-  }, 100);
-  
-  // Factors
-  const factors = data.factors || {};
-  updateFactor('f1', 'f1b', factors.memorability ?? 70, 'Memorability');
-  updateFactor('f2', 'f2b', factors.credibility ?? 65, 'Credibility');
-  updateFactor('f3', 'f3b', factors.scalability ?? 75, 'Scalability');
-  updateFactor('f4', 'f4b', factors.differentiation ?? 80, 'Differentiation');
-  
-  // Summary
-  document.getElementById('summary').textContent = data.summary || 'AI investor perception analysis completed.';
-  
-  // Lists
-  renderList('signals', data.signals || [], '');
-  renderList('weaknesses', data.weaknesses || [], 'weak');
-  renderList('expansion', data.expansion || [], 'exp');
-  
-  // Comparables with similarity badges
-  const compsEl = document.getElementById('comparables');
-  compsEl.innerHTML = '';
-  (data.comparables || []).slice(0, 4).forEach(c => {
-    const simClass = c.similarity === 'high' ? 'text-green' : c.similarity === 'medium' ? 'text-yellow' : 'text-red';
-    const div = document.createElement('div');
-    div.className = 'comp-card';
-    div.innerHTML = `
-      <div class="comp-name">${c.name || '—'}</div>
-      <div class="comp-similarity ${simClass}">${c.similarity || 'unknown'} similarity</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px">${c.reason || ''}</div>
-    `;
-    compsEl.appendChild(div);
-  });
-  if (!data.comparables?.length) compsEl.innerHTML = '<div class="item comp">No direct comparables found</div>';
-  
-  // Recommendations
-  renderList('recommendations', data.recommendations || [], 'rec');
-  
-  // Scroll to results
-  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+for(const item of finalNames){
 
-function renderFallback(brand) {
-  renderResult({
-    tier: 'moderate', score: 55,
-    summary: `Unable to complete full VC analysis for "${brand}". This may be due to API limits or response formatting.`,
-    factors: { memorability: 60, credibility: 50, scalability: 65, differentiation: 70 },
-    signals: ['Short and memorable', 'Easy to pronounce'],
-    weaknesses: ['Limited comparable data', 'Potential category confusion'],
-    expansion: ['Could work in adjacent SaaS categories', 'May need refinement for enterprise'],
-    comparables: [{ name: 'Linear', similarity: 'medium', reason: 'Similar minimalist naming pattern' }],
-    recommendations: ['Validate with target investors', 'Test pronunciation with global team'],
-    insights: ['Consider securing .com domain early', 'Avoid AI suffix saturation in 2026']
-  });
-}
+  let similarityHits = 0;
 
-function updateFactor(id, barId, value, label) {
-  document.getElementById(id).textContent = `${value}/100`;
-  const bar = document.getElementById(barId);
-  bar.style.width = `${value}%`;
-  bar.style.background = value >= 80 ? 'var(--green)' : value >= 60 ? 'var(--lime)' : value >= 40 ? 'var(--yellow)' : 'var(--red)';
-}
+  // compare against current batch
+  for(const existing of uniqueNames){
 
-function renderList(id, items, extraClass) {
-  const el = document.getElementById(id);
-  el.innerHTML = '';
-  if (!items?.length) {
-    el.innerHTML = `<div class="item${extraClass ? ' ' + extraClass : ''}">No items to display</div>`;
-    return;
+    if(
+      isNearDuplicate(
+        item.name,
+        existing.name
+      )
+    ){
+
+      similarityHits++;
+
+    }
+
   }
-  items.forEach(item => {
-    const div = document.createElement('div');
-    div.className = `item${extraClass ? ' ' + extraClass : ''}`;
-    div.textContent = typeof item === 'string' ? item : (item.reason || item.name || '—');
-    el.appendChild(div);
-  });
+
+  // compare against previous sessions
+  for(const oldName of recentNamesCache){
+
+    if(
+      isNearDuplicate(
+        item.name,
+        oldName
+      )
+    ){
+
+      similarityHits++;
+
+    }
+
+  }
+
+  // SOFT filtering instead of hard rejection
+  if(similarityHits <= 1){
+
+    item.diversityPenalty =
+      similarityHits * 8;
+
+    item.finalScore =
+      (
+        item._combinedScore || 70
+      ) - item.diversityPenalty;
+
+    uniqueNames.push(item);
+
+    recentNamesCache.add(
+      item.name
+    );
+
+    localStorage.setItem(
+  'dng_recent_names',
+  JSON.stringify(
+    Array.from(
+      recentNamesCache
+    ).slice(-120)
+  )
+);
+  }
+
+}
+    
+    // If we removed too many, fill back from raw candidates
+    if (uniqueNames.length < (prov==='gemini'?3:5) && rawCandidates.length > finalNames.length) {
+      const extras = rawCandidates
+        .filter(c => {
+          const norm = normalize(c.name);
+          return ![...seen, ...recentNamesCache].some(s => 
+            norm === s || (Math.abs(norm.length - s.length) <= 1 && [...norm].filter((c, i) => c === s[i]).length / Math.max(norm.length, s.length) > 0.8)
+          );
+        })
+        .slice(0, (prov==='gemini'?3:5) - uniqueNames.length);
+      uniqueNames.push(...extras);
+    }
+    
+    // Shuffle final results for display variety
+    names =
+  uniqueNames
+    .sort(
+      (a,b)=>
+      (b.finalScore||70)
+      -
+      (a.finalScore||70)
+    )
+    .slice(
+      0,
+      prov==='gemini'
+      ? 5
+      : 10
+    );
+    if(!names.length)throw new Error('No names passed filters. Try broader settings.');
+    
+    lastGeneratedNames=names.map(n=>({...n,_d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),_id:n.name.replace(/\s+/g,'-'),_generated:new Date().toISOString(),_provider:prov,_model:mdl}));
+    
+    clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;
+    renderCards(lastGeneratedNames,tlds);document.getElementById('exportRow').style.display='flex';
+    
+    const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);
+    if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);
+    resetFilterState();
+  }catch(e){
+    clearInterval(tick);pw.classList.remove('on');
+    document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;
+    toast('Error: '+e.message);console.error('Generation failed:',e);
+  }finally{
+    busy=false;btn.disabled=false;btn.classList.remove('ld');
+    if(!filtersChanged){
+      btn.querySelector('.blbl').textContent = 'Generate brand names →';
+      btn.style.background = 'var(--lime)';
+    }
+  }
 }
 
-// ── Utilities ─────────────────────────────────────────────────────
-function showToast(msg, duration = 3000) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('on');
-  setTimeout(() => toast.classList.remove('on'), duration);
-}
-
-function copyResults() {
-  if (!lastAnalysis) { showToast('No analysis to copy'); return; }
-  const text = `VC Brand Analysis: ${lastAnalysis.brand}
-Tier: ${lastAnalysis.tier.toUpperCase()} | Score: ${lastAnalysis.score}/100
-
-Summary: ${lastAnalysis.summary}
-
-Factors:
-• Memorability: ${lastAnalysis.factors?.memorability || '--'}/100
-• Credibility: ${lastAnalysis.factors?.credibility || '--'}/100
-• Scalability: ${lastAnalysis.factors?.scalability || '--'}/100
-• Differentiation: ${lastAnalysis.factors?.differentiation || '--'}/100
-
-Investor Signals:
-${(lastAnalysis.signals || []).map(s => '• ' + s).join('\n') || 'None'}
-
-Considerations:
-${(lastAnalysis.weaknesses || []).map(w => '• ' + w).join('\n') || 'None'}
-
-Category Expansion:
-${(lastAnalysis.expansion || []).map(e => '• ' + e).join('\n') || 'None'}
-
-Comparable Brands:
-${(lastAnalysis.comparables || []).map(c => `• ${c.name}: ${c.similarity} similarity — ${c.reason}`).join('\n') || 'None'}
-
-Recommendations:
-${(lastAnalysis.recommendations || []).map(r => '• ' + r).join('\n') || 'None'}
-
-Strategic Insights:
-${(lastAnalysis.insights || []).map(i => '• ' + i).join('\n') || 'None'}
-
----
-Generated by BrandLab VC Brand Score`;
+// ── Render Results ─────────────────────────────────────────────────
+function renderCards(names,tlds){
+  const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));
+  const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
   
-  navigator.clipboard.writeText(text).then(() => showToast('✓ Copied to clipboard')).catch(() => showToast('✗ Copy failed'));
+  let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;
+  
+  sorted.forEach((n,i)=>{
+    const c=n.colors?.[0]||'#c8f04a';
+    const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
+    const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';
+    const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;
+    
+    // Two-word indicator if mode is active
+    const isTwoWord = twoWordMode && getWordCount(n.name) === 2;
+    const twoWordBadge = twoWordMode ? 
+      `<div style="margin-top:4px;font-family:var(--mono);font-size:9px;color:${isTwoWord?'var(--lime)':'var(--rose)'};display:flex;align-items:center;gap:4px">
+        ${isTwoWord ? '✅ 2-word' : `⚠️ ${getWordCount(n.name)}-word (filtered)`}
+      </div>` : '';
+    
+    const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
+    const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');
+    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${n.tagline||''}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${n.vc_signal||''}</span></div><div class="cwhy">${n.why_it_works||''}</div><div class="scores">${sc}</div>${availIndicator}${twoWordBadge}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;
+  });
+  h+='</div>';document.getElementById('results').innerHTML=h;
+  names.forEach(n=>n._d.forEach(d=>chkDom(d)));
 }
 
-function exportJSON() {
-  if (!lastAnalysis) { showToast('No analysis to export'); return; }
-  const blob = new Blob([JSON.stringify(lastAnalysis, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `vc-analysis-${lastAnalysis.brand.toLowerCase().replace(/\W+/g, '-')}.json`;
-  a.click(); URL.revokeObjectURL(url);
-  showToast('✓ Exported JSON');
+// ── Filtering ──────────────────────────────────────────────────────
+function filt(k,btn){pill=k;document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.card').forEach(c=>{let s=k==='all'?true:k==='available'?c.querySelectorAll('.dchip.av').length>0:c.dataset.pat===k;c.style.display=s?'':'none';});}
+function filtLang(lang,btn){document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.card').forEach(c=>{c.style.display='';});}
+
+// ── Domain Check ───────────────────────────────────────────────────
+async function chkDom(d){
+  if(domC[d]){applyDom(d,domC[d]);return;}
+  if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}
+  let r='unknown';
+  try{const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});if(res.status===404)r='available';else if(res.status===200)r='taken';}catch(e){}
+  if(r==='unknown')try{const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}}catch(e){}
+  domC[d]=r;applyDom(d,r);return r;
 }
 
-function showInsights() {
-  if (!lastAnalysis?.insights?.length) { showToast('No additional insights available'); return; }
-  showToast(lastAnalysis.insights.join(' • '), 6000);
+function applyDom(d,r){
+  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));if(!el)return;
+  const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;
+  if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
+  else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}
+  else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}
+  if(pill==='available'){const card=el.closest('.card');if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}}
 }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); analyzeVC(); }
-  if (e.key === 'Escape') document.getElementById('result').style.display = 'none';
-});
+// ── Export ─────────────────────────────────────────────────────────
+let exportFormat='csv',exportOpts={all:true,avail:false,top3:false,scores:true};
+function openExportModal(format){exportFormat=format;document.getElementById('expAll').checked=true;document.getElementById('expAvail').checked=false;document.getElementById('expTop').checked=false;document.getElementById('expScores').checked=true;document.getElementById('exportModal').classList.add('on');}
+function closeExportModal(){document.getElementById('exportModal').classList.remove('on');}
+function confirmExport(){exportOpts={all:document.getElementById('expAll').checked,avail:document.getElementById('expAvail').checked,top3:document.getElementById('expTop').checked,scores:document.getElementById('expScores').checked};closeExportModal();let names=lastGeneratedNames;if(exportOpts.avail){names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));}
+// Add two-word filter for export if mode was active during generation
+if(twoWordMode){
+  names = names.filter(n => getWordCount(n.name) === 2);
+}
+if(exportOpts.top3){names=names.slice(0,3);}if(exportFormat==='csv')downloadCSV(names);else if(exportFormat==='pdf')downloadPDF(names);else if(exportFormat==='json')downloadJSON(names);toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);}
+function exportCSV(){openExportModal('csv');}function exportPDF(){openExportModal('pdf');}function exportJSON(){openExportModal('json');}
+function copyAll(){const names=lastGeneratedNames.map(n=>n.name).join('\n');navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!'));}
+function downloadCSV(names){const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];const rows=names.map(n=>{const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';return[n.name,n.tagline||'',n.naming_pattern||'',n.vc_signal||'',avail,scoreAvg,(n.why_it_works||'').replace(/,/g,';')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');});const csv=[headers.join(','),...rows].join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);}
+function downloadJSON(names){const exportData={exportedAt:new Date().toISOString(),provider:prov,model:mdl,config:{industry:document.getElementById('industry').value,language,charLength},names:names.map(n=>{const base={...n};if(!exportOpts.scores)delete base.score;return base;})};const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);}
+function downloadPDF(names){const{jsPDF}=window.jspdf;const doc=new jsPDF();doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('autoDNG — Brand Name Report',14,20);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);doc.text(`Industry: ${document.getElementById('industry').value} | Language: ${language} | Length: ${charLength}`,14,34);let y=45;names.forEach((n,i)=>{if(y>270){doc.addPage();y=20;}doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(`${i+1}. ${n.name}`,14,y);y+=6;doc.setFont('helvetica','italic');doc.setFontSize(10);doc.text(n.tagline||'',14,y);y+=5;doc.setFont('helvetica','normal');doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);y+=5;if(exportOpts.scores&&n.score){const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  ');doc.text(scores,14,y);y+=5;}const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';doc.text(`Available: ${avail}`,14,y);y+=5;doc.text(`Why: ${n.why_it_works||'—'}`,14,y);y+=12;doc.setDrawColor(200,240,74);doc.line(14,y-3,196,y-3);y+=5;});doc.setFontSize(8);doc.setTextColor(100);doc.text('autoDNG — AI Brand Name Generator • brandlab.example.com',14,285);doc.save(`brandlab-export-${new Date().toISOString().slice(0,10)}.pdf`);}
 
-// Init
-init();
+// ── Utilities ──────────────────────────────────────────────────────
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200);}
+document.getElementById('exportModal').addEventListener('click',(e)=>{if(e.target.id==='exportModal')closeExportModal();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeExportModal();if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();if(lastGeneratedNames.length)openExportModal('csv');}});
 </script>
 </body>
 </html>
