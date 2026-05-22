@@ -1,117 +1,158 @@
 {
-  "_README": "Inject this JSON into your LLM system prompt or generation pipeline. Use generation_weights for probabilistic sampling, constraints for hard filtering, and quality_signals for post-generation scoring.",
+  "_README": "Hybrid Balance Mode: Invented names with semantic hints + short metaphorical real words. Optimized for brandability, memorability, and trademark safety.",
   "metadata": {
-    "version": "2.1.0",
+    "version": "2.2.0-hybrid",
+    "mode": "hybrid_balance",
     "last_updated": "2026-05-22",
     "dataset_size": 1639,
-    "geographic_focus": "Global (EN/ES/DE/FR/JP optimized)",
-    "primary_use_case": "LLM-driven startup name generation with brand safety & differentiation constraints"
+    "target_regions": ["EN", "ES", "DE", "FR", "JP"]
   },
   "generation_weights": {
-    "structure": { "invented": 0.60, "atomic": 0.25, "compound": 0.12, "hybrid": 0.03 },
-    "phonetics": { "balanced": 0.72, "hard_minimal": 0.26, "soft_vocalic": 0.02 },
-    "length_distribution": { "4-6": 0.45, "7-8": 0.40, "9-10": 0.15 },
+    "structure": { "invented": 0.55, "atomic": 0.30, "compound": 0.12, "hybrid": 0.03 },
+    "phonetics": { "balanced": 0.70, "hard_minimal": 0.28, "soft_vocalic": 0.02 },
+    "length_distribution": { "4-6": 0.50, "7-8": 0.40, "9-10": 0.10 },
     "syllable_preference": { "min": 1, "max": 3, "ideal": 2 },
-    "stress_pattern": "primary_on_first_syllable"
+    "stress_pattern": "primary_on_first_syllable",
+    "lexicality": {
+      "mode": "hybrid_balance",
+      "invented_with_semantic_hint": 0.60,
+      "atomic_metaphorical_real": 0.30,
+      "compound_safe": 0.10
+    }
+  },
+  "semantic_roots": {
+    "latin_greek": [
+      { "root": "lum/luc", "meaning": "light, clarity", "brand_fit": ["analytics", "AI", "visibility"] },
+      { "root": "ver", "meaning": "truth, authenticity", "brand_fit": ["security", "identity", "data integrity"] },
+      { "root": "stra/struct", "meaning": "build, strategy", "brand_fit": ["infrastructure", "workflow", "planning"] },
+      { "root": "nex/nexa", "meaning": "connection, network", "brand_fit": ["APIs", "collaboration", "integration"] },
+      { "root": "vel/vent", "meaning": "speed, momentum", "brand_fit": ["automation", "performance", "logistics"] },
+      { "root": "form/fig", "meaning": "shape, design", "brand_fit": ["design tools", "no-code", "creative"] },
+      { "root": "apt/act", "meaning": "action, capability", "brand_fit": ["productivity", "execution", "ops"] }
+    ],
+    "nature_metaphors": [
+      { "root": "arc", "meaning": "bridge, trajectory", "brand_fit": ["platforms", "middleware", "strategy"] },
+      { "root": "tide", "meaning": "momentum, rhythm", "brand_fit": ["finance", "analytics", "workflow"] },
+      { "root": "forge", "meaning": "creation, strength", "brand_fit": ["developer tools", "manufacturing", "AI training"] },
+      { "root": "loom", "meaning": "weaving, emergence", "brand_fit": ["collaboration", "data pipelines", "creative"] },
+      { "root": "rift", "meaning": "disruption, differentiation", "brand_fit": ["disruptive tech", "security", "innovation"] }
+    ],
+    "tech_metaphors": [
+      { "root": "pixel", "meaning": "precision, digital", "brand_fit": ["design", "media", "visualization"] },
+      { "root": "node", "meaning": "connection point", "brand_fit": ["infrastructure", "APIs", "distributed systems"] },
+      { "root": "flux", "meaning": "flow, adaptability", "brand_fit": ["real-time data", "automation", "dynamic systems"] }
+    ]
   },
   "morphology": {
     "suffixes": [
-      { "term": "ics", "count": 22, "weight": 0.085, "differentiation": "high", "global_safety": 0.92, "phonetic_role": "technical_closure" },
-      { "term": "ent", "count": 19, "weight": 0.073, "differentiation": "medium", "global_safety": 0.95, "phonetic_role": "agentive_suffix" },
-      { "term": "ion", "count": 29, "weight": 0.112, "differentiation": "low", "global_safety": 0.88, "phonetic_role": "formal_closure" },
-      { "term": "lth", "count": 28, "weight": 0.108, "differentiation": "high", "global_safety": 0.85, "phonetic_role": "consonant_stack_termination" },
-      { "term": "abs", "count": 26, "weight": 0.100, "differentiation": "high", "global_safety": 0.90, "phonetic_role": "crisp_termination" },
-      { "term": "san", "count": 23, "weight": 0.088, "differentiation": "medium", "global_safety": 0.89, "phonetic_role": "open_vowel_ending" },
-      { "term": "ter", "count": 18, "weight": 0.069, "differentiation": "medium", "global_safety": 0.93, "phonetic_role": "agentive_suffix" },
-      { "term": "nce", "count": 16, "weight": 0.062, "differentiation": "medium", "global_safety": 0.91, "phonetic_role": "abstract_noun_closure" },
-      { "term": "ing", "count": 33, "weight": 0.127, "differentiation": "low", "global_safety": 0.87, "phonetic_role": "gerund/action_suffix" },
-      { "term": "ai", "count": 21, "weight": 0.081, "differentiation": "low", "global_safety": 0.78, "phonetic_role": "diphthong_ending", "soft_penalty": 0.6 }
+      { "term": "ics", "weight": 0.12, "semantic_hint": "technical/systemic", "global_safety": 0.92 },
+      { "term": "ent", "weight": 0.10, "semantic_hint": "agentive/active", "global_safety": 0.95 },
+      { "term": "ion", "weight": 0.09, "semantic_hint": "action/result", "global_safety": 0.88 },
+      { "term": "abs", "weight": 0.08, "semantic_hint": "absolute/core", "global_safety": 0.90 },
+      { "term": "lth", "weight": 0.07, "semantic_hint": "strength/health", "global_safety": 0.85 },
+      { "term": "nex", "weight": 0.07, "semantic_hint": "connection", "global_safety": 0.89, "position": "prefix_or_root" },
+      { "term": "ver", "weight": 0.07, "semantic_hint": "truth", "global_safety": 0.91, "position": "prefix_or_root" },
+      { "term": "lum", "weight": 0.06, "semantic_hint": "light/clarity", "global_safety": 0.93, "position": "prefix_or_root" },
+      { "term": "stra", "weight": 0.06, "semantic_hint": "strategy/structure", "global_safety": 0.90, "position": "prefix_or_root" }
     ],
     "prefixes": [
-      { "term": "pro", "count": 23, "weight": 0.095, "differentiation": "low", "global_safety": 0.82, "phonetic_role": "forward_onset" },
-      { "term": "sta", "count": 16, "weight": 0.066, "differentiation": "medium", "global_safety": 0.94, "phonetic_role": "crisp_onset" },
-      { "term": "con", "count": 10, "weight": 0.041, "differentiation": "low", "global_safety": 0.85, "phonetic_role": "connecting_onset" },
-      { "term": "fin", "count": 10, "weight": 0.041, "differentiation": "low", "global_safety": 0.79, "phonetic_role": "precision_onset" },
-      { "term": "com", "count": 12, "weight": 0.049, "differentiation": "low", "global_safety": 0.76, "phonetic_role": "commercial_onset", "soft_penalty": 0.5 },
-      { "term": "bra", "count": 9, "weight": 0.037, "differentiation": "high", "global_safety": 0.91, "phonetic_role": "open_onset" },
-      { "term": "tru", "count": 8, "weight": 0.033, "differentiation": "medium", "global_safety": 0.88, "phonetic_role": "trust_onset" },
-      { "term": "sky", "count": 7, "weight": 0.029, "differentiation": "medium", "global_safety": 0.84, "phonetic_role": "aspirational_onset" },
-      { "term": "met", "count": 7, "weight": 0.029, "differentiation": "low", "global_safety": 0.80, "phonetic_role": "structural_onset", "soft_penalty": 0.4 }
+      { "term": "pro", "weight": 0.08, "semantic_hint": "forward/professional", "global_safety": 0.82 },
+      { "term": "sta", "weight": 0.07, "semantic_hint": "stability/start", "global_safety": 0.94 },
+      { "term": "ver", "weight": 0.07, "semantic_hint": "truth", "global_safety": 0.91 },
+      { "term": "lum", "weight": 0.06, "semantic_hint": "light", "global_safety": 0.93 },
+      { "term": "nex", "weight": 0.06, "semantic_hint": "connection", "global_safety": 0.89 },
+      { "term": "arc", "weight": 0.05, "semantic_hint": "bridge/trajectory", "global_safety": 0.95 },
+      { "term": "for", "weight": 0.05, "semantic_hint": "forward/forge", "global_safety": 0.88 }
     ],
     "clusters": [
-      { "term": "nt", "count": 107, "weight": 0.152, "position_preference": "medial", "phonetic_profile": "nasal+alveolar" },
-      { "term": "st", "count": 66, "weight": 0.094, "position_preference": "onset/medial", "phonetic_profile": "fricative+alveolar" },
-      { "term": "ng", "count": 60, "weight": 0.085, "position_preference": "coda", "phonetic_profile": "velar+nasal" },
-      { "term": "nd", "count": 50, "weight": 0.071, "position_preference": "medial", "phonetic_profile": "nasal+alveolar" },
-      { "term": "ct", "count": 48, "weight": 0.068, "position_preference": "medial/coda", "phonetic_profile": "alveolar+alveolar" },
-      { "term": "nc", "count": 48, "weight": 0.068, "position_preference": "medial", "phonetic_profile": "nasal+velar" },
-      { "term": "th", "count": 42, "weight": 0.060, "position_preference": "onset/coda", "phonetic_profile": "fricative+alveolar", "global_risk": "JP/FR/DE" },
-      { "term": "ll", "count": 42, "weight": 0.060, "position_preference": "coda/medial", "phonetic_profile": "lateral+liquid", "global_risk": "EN/ES" },
-      { "term": "pr", "count": 41, "weight": 0.058, "position_preference": "onset", "phonetic_profile": "plosive+liquid" },
-      { "term": "rt", "count": 40, "weight": 0.057, "position_preference": "coda", "phonetic_profile": "liquid+alveolar" }
+      { "term": "nt", "weight": 0.15, "position": "medial", "phonetic_profile": "crisp_professional" },
+      { "term": "st", "weight": 0.12, "position": "onset/medial", "phonetic_profile": "forward_momentum" },
+      { "term": "ct", "weight": 0.09, "position": "medial/coda", "phonetic_profile": "precise_closure" },
+      { "term": "pr", "weight": 0.08, "position": "onset", "phonetic_profile": "professional_onset" },
+      { "term": "nd", "weight": 0.07, "position": "medial", "phonetic_profile": "grounded_flow" },
+      { "term": "rt", "weight": 0.06, "position": "coda", "phonetic_profile": "resolved_strength" }
+    ],
+    "atomic_words": [
+      { "word": "arc", "meaning": "trajectory, bridge", "brand_fit": ["platforms", "strategy", "middleware"], "global_safety": 0.96 },
+      { "word": "loom", "meaning": "weave, emerge", "brand_fit": ["collaboration", "creative", "data"], "global_safety": 0.94 },
+      { "word": "rift", "meaning": "differentiate, disrupt", "brand_fit": ["security", "innovation", "disruptive tech"], "global_safety": 0.92 },
+      { "word": "forge", "meaning": "build, strengthen", "brand_fit": ["dev tools", "AI training", "manufacturing"], "global_safety": 0.90 },
+      { "word": "tide", "meaning": "momentum, rhythm", "brand_fit": ["finance", "analytics", "workflow"], "global_safety": 0.93 },
+      { "word": "apex", "meaning": "peak, excellence", "brand_fit": ["performance", "premium", "leadership"], "global_safety": 0.89 },
+      { "word": "keen", "meaning": "sharp, eager", "brand_fit": ["analytics", "AI", "user insight"], "global_safety": 0.95 },
+      { "word": "pivot", "meaning": "adapt, redirect", "brand_fit": ["agile tools", "strategy", "consulting"], "global_safety": 0.87 }
     ]
   },
   "constraints": {
     "hard_exclusions": [
-      "health", "labs", "therapeutics", "winter", "summer", "games", "security", "systems", "tools", "product", "space", "networks", "hunt", "intelligence", "network", "protocol", "code", "software", "technologies", "biosciences", "power", "finance", "infrastructure", "consumer", "management", "startup"
+      "health", "labs", "therapeutics", "winter", "summer", "games", "security", "systems", "tools", "product", "space", "networks", "hunt", "intelligence", "network", "protocol", "code", "software", "technologies", "biosciences", "power", "finance", "infrastructure", "consumer", "management", "startup", "cloud", "sync", "flow", "hub", "stack", "core", "pulse", "spark", "vault", "meta", "quantum", "neo"
     ],
     "soft_penalties": [
-      { "pattern": "io$", "penalty_weight": 0.65, "condition": "domain saturation risk" },
-      { "pattern": "ly$", "penalty_weight": 0.80, "condition": "overused SaaS trope" },
-      { "pattern": "ify$", "penalty_weight": 0.80, "condition": "overused SaaS trope" },
-      { "pattern": "ai$", "penalty_weight": 0.60, "condition": "trend saturation, use only if AI-native" },
-      { "pattern": "meta", "penalty_weight": 0.75, "condition": "overloaded semantic space" }
+      { "pattern": "io$", "penalty": 0.60, "reason": "domain saturation" },
+      { "pattern": "ly$", "penalty": 0.75, "reason": "SaaS trope" },
+      { "pattern": "ify$", "penalty": 0.75, "reason": "SaaS trope" },
+      { "pattern": "ai$", "penalty": 0.50, "reason": "trend saturation, use only if AI-native" }
     ],
     "combination_rules": {
       "high_affinity": [
-        { "prefix": "sta", "suffix": "ics", "rationale": "Crisp onset + technical closure" },
-        { "prefix": "pro", "cluster": "nt", "suffix": "ion", "rationale": "Forward momentum + professional cadence" },
-        { "cluster": "st", "suffix": "abs", "rationale": "Hard-minimal consonant stack + clean termination" },
-        { "prefix": "tru", "cluster": "st", "suffix": "ent", "rationale": "Trust signaling + structural balance" }
+        { "root": "lum", "suffix": "ent", "example": "Lument", "rationale": "Light + agentive = clarity enabler" },
+        { "root": "ver", "cluster": "st", "suffix": "ics", "example": "Verstics", "rationale": "Truth + structure + technical = trusted system" },
+        { "root": "nex", "suffix": "ion", "example": "Nexion", "rationale": "Connection + action = integration platform" },
+        { "atomic": "arc", "suffix": "ent", "example": "Arcant", "rationale": "Trajectory + agentive = strategic enabler" }
       ],
       "avoid_combinations": [
-        { "prefix": "bio", "suffix": "bio", "reason": "Redundant, high trademark conflict risk" },
-        { "cluster": "ll", "suffix": "ing", "reason": "Phonetically muddy, hard to articulate globally" },
-        { "prefix": "win", "suffix": "ter", "reason": "Forms excluded word 'winter'" },
-        { "prefix": "com", "suffix": "ics", "reason": "Overlaps with generic 'comics' or 'computics'" }
+        { "root": "lum",  "reason": "Redundant, hard to trademark" },
+        { "atomic": "forge", "suffix": "ing", "reason": "Forms common verb 'forging', reduces distinctiveness" },
+        { "root": "ver", "suffix": "ify", "reason": "Creates 'verify', too literal for hybrid mode" }
       ]
     },
     "anti_patterns": {
-      "structural": ["compound + compound (e.g., 'cloudstack')", "hybrid with >2 morphemes", "exact dictionary words >6 chars"],
-      "phonetic": ["trailing schwa without stress", "consecutive plosives without vowel buffer", "silent letters or ambiguous digraphs"],
-      "orthographic": ["double letters at start/end", "ambiguous casing (l/I/1/0/O)", "vowel clusters >2", "non-Latin diacritics"]
+      "structural": ["invented names with >3 morphemes", "atomic words >6 characters", "compound names with >2 real words"],
+      "phonetic": ["consecutive plosives without vowel buffer", "ambiguous digraphs (xq, zt)", "silent letters"],
+      "orthographic": ["double letters at boundaries", "ambiguous casing (l/I/1/0/O)", "non-Latin characters"]
     }
   },
   "localization": {
     "target_regions": ["EN", "ES", "DE", "FR", "JP"],
     "risk_patterns": [
-      { "pattern": "th", "risk_in": ["JP", "FR", "DE"], "mitigation": "Substitute with 't' or 's' if targeting APAC/EU" },
-      { "pattern": "rr", "risk_in": ["EN", "ES"], "mitigation": "Ensure vowel buffer or use single 'r'" },
-      { "pattern": "ng", "risk_in": ["JP", "FR"], "mitigation": "Prefer 'nk' or 'n' if targeting these markets" },
-      { "pattern": "sch", "risk_in": ["EN", "ES"], "mitigation": "Avoid unless German-market specific" }
+      { "pattern": "th", "risk_in": ["JP", "FR", "DE"], "mitigation": "Prefer 't' or 's' substitution for APAC/EU targeting" },
+      { "pattern": "ll", "risk_in": ["ES", "EN"], "mitigation": "Ensure vowel buffer or use single 'l'" },
+      { "pattern": "ng", "risk_in": ["JP", "FR"], "mitigation": "Prefer 'nk' or 'n' coda if targeting these markets" }
     ],
-    "stress_rules": "Prefer primary stress on first syllable. Avoid unstressed initial syllables >1."
+    "spellability_rules": "Prefer CVCV or CVCCV patterns. Avoid >2 consecutive consonants. Favor familiar onsets (st, pr, tr, cl)."
   },
   "exemplars": {
     "positive": {
-      "invented_balanced": ["Notion", "Linear", "Ramp", "Plaid", "Figma"],
-      "atomic_hard_minimal": ["Vercel", "Arc", "Stripe", "Loom"],
-      "compound_safe": ["GitHub", "Shopify", "Airbnb"],
-      "hybrid": ["Netflix", "Spotify", "Pinterest"]
+      "invented_with_hint": ["Linear", "Notion", "Vercel", "Plaid", "Figma", "Ramp", "Coda", "Miro", "Retool", "Astra"],
+      "atomic_metaphorical": ["Arc", "Loom", "Rift", "Forge", "Tide", "Apex", "Keen", "Pivot", "Halo", "Verve"],
+      "hybrid_success": ["Stripe", "Linear", "Notion", "Plaid", "Ramp", "Figma", "Vercel", "Coda", "Miro", "Astra"]
     },
-    "negative": ["HealthTech Labs", "WinterSecurity", "CodeProtocol", "AIify", "CloudSync", "DataStack", "SmartFlow"]
+    "negative": ["Xqzrl", "Bvntk", "Qwylp", "HealthTech Labs", "CloudSyncPro", "AIify", "DataStack", "SmartFlow"]
   },
   "quality_signals": {
     "scoring_rubric": {
-      "brandability": { "weight": 0.40, "criteria": ["uniqueness", "phonetic_clarity", "length_fit", "memorability"] },
-      "safety": { "weight": 0.30, "criteria": ["exclusion_compliance", "global_pronounceability", "trademark_distance"] },
+      "brandability": { "weight": 0.40, "criteria": ["uniqueness", "phonetic_clarity", "length_fit", "memorability", "semantic_hint_strength"] },
+      "safety": { "weight": 0.30, "criteria": ["exclusion_compliance", "global_pronounceability", "trademark_distance", "domain_heuristic"] },
       "differentiation": { "weight": 0.30, "criteria": ["structural_novelty", "avoidance_of_trends", "semantic_flexibility"] }
     },
     "thresholds": {
       "min_score_for_output": 7.5,
       "max_syllables": 3,
-      "preferred_cvcv_ratio": 0.60,
+      "min_spellability_score": 0.80,
+      "min_semantic_hint_strength": 0.40,
       "domain_heuristic": "prefer .com/.io/.ai availability >70% match probability"
+    },
+    "spellability_heuristic": {
+      "method": "rule_based",
+      "rules": [
+        "+1 for CVCV or CVCCV pattern",
+        "+1 for familiar onset clusters (st, pr, tr, cl, str)",
+        "+1 for semantic root from approved list",
+        "-1 for ambiguous digraphs (xq, zt, qv, kn, wr)",
+        "-1 for >2 consecutive consonants without vowel buffer",
+        "-1 for silent-letter patterns"
+      ],
+      "min_threshold": 0.80
     }
   }
 }

@@ -1,33 +1,43 @@
 ACT AS: Expert Startup Naming Strategist & Computational Linguist
-TASK: Generate [NUMBER] high-potential startup names based on data-driven constraints and brand parameters.
+MODE: Hybrid Balance (Invented + Semantic Hints + Atomic Metaphors)
 
-📥 BRAND CONTEXT (Fill before running):
-- Industry/Vertical: [e.g., AI infrastructure, climate fintech, B2B workflow automation]
-- Target Audience: [e.g., enterprise operators, developer teams, SMB founders]
-- Core Value/Vibe: [e.g., precision, speed, trust, scalability, elegance]
-- Preferred Tone: [e.g., modern, authoritative, minimalist, forward-leaning]
+📥 BRAND CONTEXT (Required):
+- Industry/Vertical: {{vertical}}
+- Target Audience: {{audience}}
+- Core Value/Vibe: {{vibe}} (e.g., precision, speed, trust, elegance)
+- Preferred Tone: {{tone}} (e.g., modern, authoritative, minimalist)
 
-📊 NAMING CONSTRAINTS & WEIGHTING:
-• Structure Priority: 60% Invented/Neologism | 25% Atomic (1-2 syllables) | 15% Compound/Hybrid
-• Phonetic Preference: Balanced or Hard-Minimal (crisp consonants + open vowels). Avoid soft-vocalic unless explicitly requested.
-• Length: Strictly 4–8 characters.
-• Morphology: Strategically deploy these suffixes: -ics, -ai, -ent, -ter, -nce, -abs, -san, -lth, -ion, -ing. Use these consonant clusters for internal rhythm: nt, st, ng, nd, ct, nc, th, ll, pr, rt.
-• Global Pronounceability: Must be intuitively readable/speakable across EN, ES, DE, FR, JP. Avoid ambiguous stress patterns, silent letters, or culture-specific traps.
+🎯 GENERATION RULES:
+1. STRUCTURE: 55% invented-with-hint, 30% atomic-metaphorical, 12% compound-safe
+2. LENGTH: Strictly 4-8 characters. Ideal: 2 syllables, stress on first.
+3. PHONETICS: Balanced (70%) or Hard-Minimal (28%). Avoid soft-vocalic.
+4. SEMANTIC ANCHORS: Use roots from `semantic_roots` (lum=light, ver=truth, nex=connect, arc=bridge, etc.)
+5. SPELLABILITY: Must pass spellability_heuristic (≥0.80). Prefer CVCV/CVCCV patterns.
+6. GLOBAL SAFETY: Intuitively pronounceable in EN/ES/DE/FR/JP. Avoid "th", "ll", "ng" risks per localization rules.
 
-🚫 STRICT EXCLUSIONS:
-- Zero usage of: health, labs, therapeutics, winter, summer, games, security, systems, tools, product, space, networks, hunt, intelligence, network, protocol, code, software, technologies, biosciences
-- Avoid generic SaaS/tech tropes: -ly, -ify, -io, cloud, sync, flow, hub, stack, next, pro, meta, quantum, neo, core, pulse, spark, vault, ai (as standalone suffix unless contextually justified)
-- No names phonetically, orthographically, or conceptually similar to VC-backed startups or established brands.
+🚫 HARD EXCLUSIONS:
+{{hard_exclusions_list}}
+
+🚫 SOFT PENALTIES (avoid unless contextually justified):
+{{soft_penalties_list}}
 
 ✅ OUTPUT FORMAT (Per Name):
 1. Name
-2. Structure Type: [Invented / Atomic / Compound / Hybrid]
-3. Phonetic Style: [Balanced / Hard-Minimal]
-4. Pronunciation: [Simple phonetic breakdown]
-5. Rationale: [≤2 sentences: linguistic strength, brand alignment, memorability]
-6. Viability Note: [Domain heuristic, trademark risk flag, global pronunciation caveat if any]
+2. Type: [invented_with_hint | atomic_metaphorical | compound_safe]
+3. Semantic Root: [e.g., "lum=light", "arc=bridge", or "none" for pure atomic]
+4. Phonetic Style: [balanced | hard_minimal]
+5. Pronunciation: [simple phonetic: e.g., "LOO-ment"]
+6. Rationale: [≤2 sentences: linguistic strength + brand alignment + semantic hint]
+7. Viability: [Domain heuristic + trademark risk flag + global caveat if any]
+8. Score: [0-10 based on scoring_rubric]
 
-🔍 SELF-EVALUATION PROTOCOL:
-Before outputting, run each candidate through: length (4-8), exclusion list, phonetic clarity, structural weighting, and uniqueness. Discard weak candidates. Output ONLY names that pass all filters. If fewer than [NUMBER] pass, explain why and offer a refined batch.
+🔍 SELF-EVALUATION (Run before output):
+- Passes length (4-8 chars)? ✓
+- Passes hard exclusions? ✓
+- Spellability score ≥0.80? ✓
+- Semantic hint strength ≥0.40 (if invented)? ✓
+- Global pronounceability check? ✓
+- Not phonetically/orthographically similar to exemplars.negative? ✓
+→ Discard if any fail. Output ONLY names scoring ≥7.5.
 
-Generate now.
+Generate {{count}} names now.
