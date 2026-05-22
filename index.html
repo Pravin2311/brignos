@@ -732,7 +732,155 @@ async function callGroq(sys,usr,cb){const strict=document.getElementById('strict
 async function readSSE(resp,extract){const reader=resp.body.getReader(),dec=new TextDecoder();let buf='',full='';while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines){if(!l.startsWith('data: '))continue;const raw=l.slice(6).trim();if(raw==='[DONE]')continue;try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}}}return full;}
 
 // ── Generate (TWO-PHASE) ───────────────────────────────────────────
-async function go(){if(busy)return;const ind=document.getElementById('industry').value;if(!ind){toast('Please select an industry');return;}if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}language=document.getElementById('language').value;charLength=document.getElementById('charlen').value;localStorage.setItem('bl_charlen',charLength);localStorage.setItem('bl_lang',language);busy=true;domC={};const btn=document.getElementById('gbtn');btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');pw.classList.add('on');pf.style.width='0%';ps.textContent='';document.getElementById('results').innerHTML='';document.getElementById('exportRow').style.display='none';let intelData=null;try{const res=await fetch(`http://localhost:3002/api/intelligence/${encodeURIComponent(ind)}`,{signal:AbortSignal.timeout(3000)});if(res.ok)intelData=(await res.json()).data;}catch(e){}const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];let pi=0;const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;const sys=prov==='gemini'?GEMINI_SYS:SYS;try{pt.textContent='Generating candidate names…';pp.textContent='48%';const targetCount=prov==='gemini'?15:25;const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,targetCount);if(!rawCandidates.length)throw new Error('No candidates generated. Try different settings or provider.');pt.textContent='Scoring for availability…';pp.textContent='72%';const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};let scored=await scoreCandidates(rawCandidates,tlds,config);const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));let finalNames,minResults=prov==='gemini'?3:5;if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;}else if(scored.length>=minResults){finalNames=scored;toast('Relaxed character length filter');}else{finalNames=[...scored].sort((a,b)=>(b.score?.brand_strength||0)-(a.score?.brand_strength||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}const uniqueNames=[];for(const item of finalNames){let similarityHits=0;for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}if(similarityHits<=1){item.diversityPenalty=similarityHits*8;item.finalScore=(item._combinedScore||70)-item.diversityPenalty;uniqueNames.push(item);recentNamesCache.add(item.name);localStorage.setItem('dng_recent_names',JSON.stringify(Array.from(recentNamesCache).slice(-120)));}}if(uniqueNames.length<(prov==='gemini'?3:5)&&rawCandidates.length>finalNames.length){const extras=rawCandidates.filter(c=>{const norm=normalizeBrandName(c.name);return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));}).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);uniqueNames.push(...extras);}names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);if(!names.length)throw new Error('No names passed filters. Try broader settings.');lastGeneratedNames=names.map(n=>({...n,_d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),_id:n.name.replace(/\s+/g,'-'),_generated:new Date().toISOString(),_provider:prov,_model:mdl}));clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;renderCards(lastGeneratedNames,tlds);document.getElementById('exportRow').style.display='flex';const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);resetFilterState();}catch(e){clearInterval(tick);pw.classList.remove('on');document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;toast('Error: '+e.message);console.error('Generation failed:',e);}finally{busy=false;btn.disabled=false;btn.classList.remove('ld');if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}}
+async function go(){if(busy)return;const ind=document.getElementById('industry').value;if(!ind){toast('Please select an industry');return;}if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}language=document.getElementById('language').value;charLength=document.getElementById('charlen').value;localStorage.setItem('bl_charlen',charLength);localStorage.setItem('bl_lang',language);busy=true;domC={};const btn=document.getElementById('gbtn');btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');pw.classList.add('on');pf.style.width='0%';ps.textContent='';document.getElementById('results').innerHTML='';document.getElementById('exportRow').style.display='none';let intelData=null;try{const res=await fetch(`http://localhost:3002/api/intelligence/${encodeURIComponent(ind)}`,{signal:AbortSignal.timeout(3000)});if(res.ok)intelData=(await res.json()).data;}catch(e){}const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];let pi=0;const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;const sys=prov==='gemini'?GEMINI_SYS:SYS;try{pt.textContent='Generating candidate names…';pp.textContent='48%';const targetCount=prov==='gemini'?15:25;const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,targetCount);if(!rawCandidates.length)throw new Error('No candidates generated. Try different settings or provider.');pt.textContent='Scoring for availability…';pp.textContent='72%';const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};let scored=await scoreCandidates(rawCandidates,tlds,config);const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));let finalNames,minResults=prov==='gemini'?3:5;if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;}else if(scored.length>=minResults){finalNames=scored;toast('Relaxed character length filter');}else{finalNames=[...scored].sort((a,b)=>(b.score?.brand_strength||0)-(a.score?.brand_strength||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}const uniqueNames=[];for(const item of finalNames){let similarityHits=0;for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}if(similarityHits<=1){item.diversityPenalty=similarityHits*8;item.finalScore=(item._combinedScore||70)-item.diversityPenalty;uniqueNames.push(item);recentNamesCache.add(item.name);localStorage.setItem('dng_recent_names',JSON.stringify(Array.from(recentNamesCache).slice(-120)));}}if(uniqueNames.length<(prov==='gemini'?3:5)&&rawCandidates.length>finalNames.length){const extras=rawCandidates.filter(c=>{const norm=normalizeBrandName(c.name);return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));}).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);uniqueNames.push(...extras);}names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);if(!names.length)throw new Error('No names passed filters. Try broader settings.');lastGeneratedNames=names.map(n=>({...n,_d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),_id:n.name.replace(/\s+/g,'-'),_generated:new Date().toISOString(),_provider:prov,score: computeScores(n),_model:mdl}));clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;renderCards(lastGeneratedNames,tlds);document.getElementById('exportRow').style.display='flex';const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);resetFilterState();}catch(e){clearInterval(tick);pw.classList.remove('on');document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;toast('Error: '+e.message);console.error('Generation failed:',e);}finally{busy=false;btn.disabled=false;btn.classList.remove('ld');if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}}
+
+function computeScores(nameObj){
+
+  const name =
+    nameObj.name || '';
+
+  const lower =
+    name.toLowerCase();
+
+  const clean =
+    lower.replace(/[^a-z]/g,'');
+
+  const len =
+    clean.length;
+
+  const vowels =
+    (clean.match(/[aeiou]/g)||[]).length;
+
+  const consonants =
+    len - vowels;
+
+  const vowelRatio =
+    vowels / Math.max(1,len);
+
+  const repeated =
+    /(.)\1{1,}/.test(clean);
+
+  const rareLetters =
+    (clean.match(/[zxqkv]/g)||[]).length;
+
+  // ─────────────────────────
+  // Brand Strength
+  // ─────────────────────────
+
+  let brand = 70;
+
+  if(len>=4 && len<=8)
+    brand += 12;
+
+  if(rareLetters>=1)
+    brand += 6;
+
+  if(!repeated)
+    brand += 4;
+
+  if(vowelRatio>=0.3 && vowelRatio<=0.6)
+    brand += 6;
+
+  // ─────────────────────────
+  // Memorability
+  // ─────────────────────────
+
+  let memory = 65;
+
+  if(len<=6)
+    memory += 12;
+
+  if(rareLetters>=1)
+    memory += 8;
+
+  if(clean.length!==new Set(clean).size)
+    memory -= 4;
+
+  if(/^[bcdfghjklmnpqrstvwxz]/.test(clean))
+    memory += 5;
+
+  // ─────────────────────────
+  // Global Fit
+  // ─────────────────────────
+
+  let global = 75;
+
+  if(!/[^\w]/.test(clean))
+    global += 5;
+
+  if(vowelRatio>=0.28 && vowelRatio<=0.58)
+    global += 10;
+
+  if(!/[qzx]{2,}/.test(clean))
+    global += 6;
+
+  // ─────────────────────────
+  // Trend Alignment
+  // ─────────────────────────
+
+  let trend = 60;
+
+  const modernSuffixes = [
+    'ly','io','ra','ex','iq',
+    'or','on','ix','al','os'
+  ];
+
+  const modernPrefixes = [
+    'ka','zy','ve','qy',
+    'xa','vo','kr'
+  ];
+
+  if(
+    modernSuffixes.some(s=>clean.endsWith(s))
+  ){
+    trend += 12;
+  }
+
+  if(
+    modernPrefixes.some(s=>clean.startsWith(s))
+  ){
+    trend += 10;
+  }
+
+  if(rareLetters>=1)
+    trend += 8;
+
+  if(len>=5 && len<=7)
+    trend += 8;
+
+  // ─────────────────────────
+  // Clamp
+  // ─────────────────────────
+
+  brand =
+    Math.min(98,Math.max(45,brand));
+
+  memory =
+    Math.min(98,Math.max(45,memory));
+
+  global =
+    Math.min(98,Math.max(45,global));
+
+  trend =
+    Math.min(98,Math.max(45,trend));
+
+  return {
+
+    brand_strength:
+      Math.round(brand),
+
+    memorability:
+      Math.round(memory),
+
+    global_fit:
+      Math.round(global),
+
+    trend_alignment:
+      Math.round(trend)
+
+  };
+
+}
 
 // ── Render Results ─────────────────────────────────────────────────
 function renderCards(names,tlds){const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;sorted.forEach((n,i)=>{const c=n.colors?.[0]||'#c8f04a';const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;});h+='</div>';document.getElementById('results').innerHTML=h;names.forEach(n=>n._d.forEach(d=>chkDom(d)));}
