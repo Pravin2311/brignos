@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>autoDNG — AI auto Name Generator</title>
+<title>autoDNG — AI Auto Name Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
@@ -354,24 +354,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
         <span>Prioritize available primary TLD names</span>
       </label>
       
-      <!-- Two-word names checkbox 
-      <label class="tld-check" style="margin-top:6px">
-        <input type="checkbox" id="twoWordNames" onchange="onFilterChange()">
-        <span>🔤 Generate two-word names only</span>
-      </label> -->
-
       <!-- Brand Structure -->
-<label style="display:block;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">
-  Brand Structure
-</label>
-
-<select id="brandStructure" onchange="onFilterChange()" style="margin-top:6px">
-  <option value="flex">Flexible AI mode</option>
-  <option value="atomic">Atomic (Ramp, Stripe)</option>
-  <option value="compound">Compound (BindEcho)</option>
-  <option value="invented">Invented (Klyro)</option>
-  <option value="hybrid">Hybrid startup (NotionFlow)</option>
-</select>
+      <label style="display:block;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">
+        Brand Structure
+      </label>
+      <select id="brandStructure" onchange="onFilterChange()" style="margin-top:6px">
+        <option value="flex">Flexible AI mode</option>
+        <option value="atomic">Atomic (Ramp, Stripe)</option>
+        <option value="compound">Compound (BindEcho)</option>
+        <option value="invented">Invented (Klyro)</option>
+        <option value="hybrid">Hybrid startup (NotionFlow)</option>
+      </select>
     </div>
     <div class="field">
       <label>Target audience</label>
@@ -487,6 +480,8 @@ const PROVS = {
 const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
 const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
 const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
+
+// ── Phonetic Utilities ─────────────────────────────────────────────
 function normalizeBrandName(name){
   return name.toLowerCase().replace(/[^a-z]/g,'').replace(/ph/g,'f').replace(/x/g,'ks').replace(/z/g,'s').replace(/q/g,'k').replace(/[aeiou]+/g,'a').replace(/(.)\1+/g,'$1');
 }
@@ -495,76 +490,676 @@ function diceCoefficient(a,b){const bgA=bigrams(normalizeBrandName(a));const bgB
 function similarityScore(a,b){return Math.round(diceCoefficient(a,b)*100);}
 function isNearDuplicate(a,b){return similarityScore(a,b)>=72;}
 function getPhoneticRoot(name){return normalizeBrandName(name).slice(0,4);}
-function escapeHtml(str=''){
-  return str
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
-}
+function escapeHtml(str=''){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 function getWordCount(name){return name.trim().split(/\s+/).filter(Boolean).length;}
 function matchesCharLength(name,range){if(range==='any')return true;const len=name.replace(/\s+/g,'').length;if(range==='10+')return len>=10;const[min,max]=range.split('-').map(Number);return len>=min&&len<=max;}
+function hasCVCVPattern(str){const s=str.toLowerCase().replace(/[^a-z]/g,'');return /^[^aeiou][aeiou][^aeiou][aeiou]/i.test(s)||/[aeiou][^aeiou][aeiou][^aeiou]/i.test(s);}
+function pickWeighted(arr){if(!arr.length)return null;const total=arr.reduce((sum,i)=>sum+(i.weight||1),0);let rand=Math.random()*total;for(const item of arr){if(rand<(item.weight||1))return item;rand-=(item.weight||1);}return arr[arr.length-1];}
+function capitalize(str){return str.charAt(0).toUpperCase()+str.slice(1).toLowerCase();}
 
 // ── State ──────────────────────────────────────────────────────────
 let prov=localStorage.getItem('bl_p')||'openrouter';
 let key=localStorage.getItem('bl_k_'+prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
 if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
-const twoWordMode = false;
-let busy=false,domC={},pill='all',helpOn=false,language='global',charLength='any',brandStructure='flex',filtersChanged=false,lastGenFilters={};
-let lastGeneratedNames=[];
-
-function deduplicateFinal(list){const out=[];for(const item of list){const exists=out.some(x=>{const dup=isNearDuplicate(x.name,item.name);const sameRoot=getPhoneticRoot(x.name)===getPhoneticRoot(item.name);return dup||sameRoot;});if(!exists){out.push(item);}}return out;}
-let namingIntel=null;let industryIntel={};let promptSummary='';
+let busy=false,domC={},pill='all',helpOn=false,language='global',charLength='any',brandStructure='flex',filtersChanged=false;
+let lastGeneratedNames=[],rufloIntel=null,namingIntel=null,industryIntel={},promptSummary='';
 const recentNamesCache=new Set(JSON.parse(localStorage.getItem('dng_recent_names')||'[]'));
-const MAX_CACHE_SIZE=50;
 
-async function loadNamingIntel(){try{const intelRes=await fetch('./data/naming-intelligence.json');namingIntel=await intelRes.json();const promptRes=await fetch('./data/prompt-summary.txt');promptSummary=await promptRes.text();const industryRes=await fetch('./data/industry-intelligence.json');industryIntel=await industryRes.json();console.log('✓ naming intelligence loaded');}catch(err){console.warn('Could not load naming intelligence',err);}}
+// ── Intelligence Loading ───────────────────────────────────────────
+async function loadIntelligence(){try{
+  const intelRes=await fetch('./data/naming-intelligence.json');
+  const rufloRes=await fetch('./data/ruflo-intelligence.json');
+  const promptRes=await fetch('./data/prompt-summary.txt');
+  const industryRes=await fetch('./data/industry-intelligence.json');
+  
+  namingIntel=await intelRes.json();
+  rufloIntel=await rufloRes.json();
+  promptSummary=await promptRes.text();
+  industryIntel=await industryRes.json();
+  
+  window.rufloIntel=rufloIntel;
+  console.log('✓ Intelligence loaded:',rufloIntel.metadata?.version);
+}catch(err){console.warn('Could not load intelligence',err);}}
 
 // ── Boot ───────────────────────────────────────────────────────────
-(async function init(){await loadNamingIntel();document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));document.querySelector(`.ptab[onclick*="${prov}"]`)?.classList.add('on');document.getElementById('akey').value=key;document.getElementById('akey').placeholder=PROVS[prov].ph;setKeyUI(key);renderModels();language=localStorage.getItem('bl_lang')||'global';charLength=localStorage.getItem('bl_charlen')||'any';document.getElementById('language').value=language;document.getElementById('charlen').value=charLength;brandStructure=localStorage.getItem('bl_structure')||'flex';document.getElementById('brandStructure').value=brandStructure;})();
+(async function init(){
+  await loadIntelligence();
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
+  document.querySelector(`.ptab[onclick*="${prov}"]`)?.classList.add('on');
+  document.getElementById('akey').value=key;
+  document.getElementById('akey').placeholder=PROVS[prov].ph;
+  setKeyUI(key);
+  renderModels();
+  language=localStorage.getItem('bl_lang')||'global';
+  charLength=localStorage.getItem('bl_charlen')||'any';
+  brandStructure=localStorage.getItem('bl_structure')||'flex';
+  document.getElementById('language').value=language;
+  document.getElementById('charlen').value=charLength;
+  document.getElementById('brandStructure').value=brandStructure;
+})();
 
-function switchProv(p,el){localStorage.setItem('bl_k_'+prov,key);prov=p;localStorage.setItem('bl_p',p);key=localStorage.getItem('bl_k_'+p)||'';mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.getElementById('akey').value=key;document.getElementById('akey').placeholder=PROVS[p].ph;setKeyUI(key);renderModels();}
-function renderModels(){document.getElementById('mrow').innerHTML=PROVS[prov].models.map(m=>`<button class="mchip ${m.id===mdl?'on':''}" data-id="${m.id}" onclick="selMdl('${m.id}',this)">${m.l}</button>`).join('');}
-function selMdl(id,el){mdl=id;localStorage.setItem('bl_m_'+prov,id);document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+// ── Provider/Model Switching ───────────────────────────────────────
+function switchProv(p,el){
+  localStorage.setItem('bl_k_'+prov,key);
+  prov=p;localStorage.setItem('bl_p',p);
+  key=localStorage.getItem('bl_k_'+p)||'';
+  mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
+  if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('akey').value=key;
+  document.getElementById('akey').placeholder=PROVS[p].ph;
+  setKeyUI(key);
+  renderModels();
+}
+function renderModels(){
+  document.getElementById('mrow').innerHTML=PROVS[prov].models.map(m=>
+    `<button class="mchip ${m.id===mdl?'on':''}" data-id="${m.id}" onclick="selMdl('${m.id}',this)">${m.l}</button>`
+  ).join('');
+}
+function selMdl(id,el){
+  mdl=id;localStorage.setItem('bl_m_'+prov,id);
+  document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
 function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
 function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';}
 function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
 function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
-
-function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}lastGenFilters={charLength:document.getElementById('charlen').value,style:document.getElementById('style').value,tld:document.getElementById('tld').value,twoWord:false};}
+function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
 function resetFilterState(){filtersChanged=false;const btn=document.getElementById('gbtn');if(btn){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}
 
-// ── Two-Phase Generation Helpers ──────────────────────────────────
-function generateHeuristicExamples(industry,count=8){const roots={'AI Agents & Automation':['auto','agent','flow','sync','mind'],'Fintech & Neobanking':['pay','coin','vault','flux','mint'],'Developer Tools':['code','dev','stack','build','deploy'],'Healthcare AI':['med','care','health','vital','pulse']};const industryRoots=roots[industry]||['tech','labs','sys','net'];const prefixes=['z','k','v','x','q','kr','vy','zyl','vex'],suffixes=['ox','ra','on','ix','or','ex','al','en'],examples=[];for(let p of prefixes.slice(0,4)){for(let s of suffixes.slice(0,3)){if(examples.length>=count)break;examples.push((p+s).charAt(0).toUpperCase()+(p+s).slice(1));}}for(let r of industryRoots.slice(0,3)){if(examples.length>=count)break;examples.push((r+'ix').charAt(0).toUpperCase()+(r+'ix').slice(1));}return examples;}
 
-function calculateAvailabilityScore(name,tld='.com'){let score=70;const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;const commonWords=namingIntel?.oversaturated_terms?.slice(0,40)?.map(x=>x[0])||['cloud','data','sync','flow','core','labs','tech','app','web','net'];if(commonWords.some(w=>lower.includes(w))){score-=40;}if(len<=4&&/^[a-z]+$/.test(lower)){score-=20;}if(/(ify|ly|able|verse|base|flow|cloud|sync|labs)$/i.test(lower)){score-=25;}if(/[-\d]/.test(name))score-=25;if(/[xzqvk]/.test(lower))score+=6;if(/[^aeiou]{3,}/.test(lower))score+=10;if(len>=5&&len<=7)score+=10;if(/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower))score+=8;return Math.max(5,Math.min(99,score));}
+// ── UPDATED: Procedural Generation with Optional Suffixes + Industry Filtering ───────────────────────────────────
+function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
+  const { phonetic_inventory, structural_patterns, invented_endings, pattern_weights, suffix_probability, atomic_mode_rules } = grammar;
+  const { prefixes, suffixes, clusters, combination_affinity } = morphology;
+  
+  // Get industry-appropriate suffixes
+  const availableSuffixes = getIndustryAppropriateSuffixes(industry, suffixes);
+  
+  const candidates = [];
+  const seen = new Set();
+  const suffixCounts = {};
+  const prefixCounts = {};
+  
+  // Determine if we're in atomic mode
+  const brandStructure = document.getElementById('brandStructure')?.value || 'flex';
+  const isAtomicMode = brandStructure === 'atomic' || Math.random() < (atomic_mode_rules?.force_atomic_probability || 0);
+  
+  while (candidates.length < count) {
+    // Apply pattern weights
+    const weightedPatterns = structural_patterns.map(p => ({
+      pattern: p,
+      weight: pattern_weights?.[p] || 1
+    }));
+    const pattern = pickWeighted(weightedPatterns)?.pattern || structural_patterns[0];
+    
+    // Atomic mode: force suffix-free patterns
+    let effectivePattern = pattern;
+    if (isAtomicMode && atomic_mode_rules?.force_no_suffix) {
+      if (pattern.includes('{suffix}') || pattern.includes('{ending}')) {
+        effectivePattern = pattern.replace('{suffix}', '').replace('{ending}', '');
+      }
+    }
+    
+    let name = effectivePattern
+      .replace(/{onset}/, () => pickWeighted(phonetic_inventory.safe_onsets))
+      .replace(/{vowel}/, () => pickWeighted(phonetic_inventory.vowels))
+      .replace(/{coda}/, () => pickWeighted(phonetic_inventory.safe_codas))
+      .replace(/{prefix}/, () => {
 
-async function generateRawCandidates(industry,style,kw,targetCount=25){const heuristicExamples=generateHeuristicExamples(industry,6),exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');const randomSeed=Math.random().toString(36).slice(2,10);const batchId=`${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*999)}`;const variationPhrases=["Focus on completely fresh phonetic patterns not seen in previous batches","Explore unconventional letter combinations and syllable structures","Prioritize names with unique vowel-consonant rhythms","Generate names that feel distinct from typical tech startup naming conventions","Use diverse linguistic roots: latin, greek, slavic, east-asian phonetics"];const randomVariation=variationPhrases[Math.floor(Math.random()*variationPhrases.length)];const exclusionList=recentNamesCache.size>0?`\n🚫 AVOID THESE RECENTLY GENERATED NAMES (do not repeat):\n${Array.from(recentNamesCache).slice(-15).map(n=>`- ${n}`).join('\n')}`:'';const intel=industryIntel[industry]||{};const topClusters=(intel.top_clusters||[]).slice(0,8).join(', ');const topSuffixes=(intel.top_suffixes||[]).slice(0,8).join(', ');const topPrefixes=(intel.top_prefixes||[]).slice(0,8).join(', ');const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
+  const usable =
+    prefixes.filter(p => {
+
+      if(p.trend === 'saturating')
+        return false;
+
+      const used =
+        prefixCounts[p.term] || 0;
+
+      return used < 1;
+
+    });
+
+  const p =
+    pickWeighted(
+      usable.length
+        ? usable
+        : prefixes
+    );
+
+  if(p?.term){
+    prefixCounts[p.term] =
+      (prefixCounts[p.term] || 0) + 1;
+  }
+
+  return p?.term || '';
+
+})
+      .replace(/{suffix}/, () => {
+        // Optional suffix: 55% chance to include one
+        if (Math.random() > (suffix_probability || 0.55)) return '';
+        const s = pickWeighted(availableSuffixes.filter(s => s.trend !== 'saturating'));
+        if (s?.term) suffixCounts[s.term] = (suffixCounts[s.term] || 0) + 1;
+        return s?.term || '';
+      })
+      .replace(/{cluster}/, () => pickWeighted(clusters))
+      .replace(/{semantic_root}/, () => {
+        const roots = Object.keys(rufloIntel?.semantic_taxonomy?.high_value_roots || {});
+        // Filter roots by industry fit
+        const filtered = roots.filter(r => {
+          const rootData = rufloIntel?.semantic_taxonomy?.high_value_roots?.[r];
+          if (!rootData?.consumer_health_fit) return true;
+          if (isConsumerHealthIndustry(industry) && rootData.consumer_health_fit === 'avoid') return false;
+          return true;
+        });
+        return (filtered.length ? filtered : roots)[Math.floor(Math.random() * (filtered.length || roots.length))];
+      })
+      .replace(/{invented_ending}/, () => {
+        // Optional ending: include empty string with weight
+        const endingsWithEmpty = [...(invented_endings || []), ""];
+        const weighted = endingsWithEmpty.map(e => ({ term: e, weight: e === "" ? 0.45 : 1 }));
+        return pickWeighted(weighted)?.term || "";
+      });
+    
+    name = capitalize(name.replace(/\s+/g, '').slice(0, 10));
+    const key = normalizeBrandName(name);
+    const len = name.replace(/\s+/g, '').length;
+    
+    // Apply length pressure
+    const lengthPressure = grammar.length_pressure;
+    const lengthPenalty = len > 6 && lengthPressure?.penalty_per_char_over_6 
+      ? Math.pow(1 - lengthPressure.penalty_per_char_over_6, len - 6) 
+      : 1;
+    
+    // Apply suffix diversity penalty
+    const suffix = name.match(/(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum)$/)?.[0];
+    const diversityPenalty = suffix && suffixCounts[suffix] > (grammar.suffix_diversity?.max_same_suffix_in_batch || 3)
+      ? Math.pow(0.7, suffixCounts[suffix] - 3)
+      : 1;
+    
+    if (
+      !seen.has(key) &&
+      passesLocalFilters(name, rufloIntel?.constraints, rufloIntel?.negative_similarity_filters) &&
+      Math.random() < lengthPenalty * diversityPenalty
+    ) {
+      seen.add(key);
+      candidates.push({ name, source: 'procedural', _length: len });
+    }
+  }
+  return candidates;
+}
+// Helper: Check if industry is consumer health
+function isConsumerHealthIndustry(industry) {
+  const consumerHealth = ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"];
+  return consumerHealth.includes(industry);
+}
+
+// Helper: Get industry-appropriate suffixes
+function getIndustryAppropriateSuffixes(industry, suffixes) {
+  if (!rufloIntel?.industry_overrides) return suffixes;
+  
+  // Check healthcare consumer override
+  const consumerOverride = rufloIntel.industry_overrides.healthcare_consumer;
+  if (consumerOverride?.industries?.includes(industry) && consumerOverride?.suffix_adjustments) {
+    return suffixes.map(s => {
+      const adj = consumerOverride.suffix_adjustments[s.term];
+      return adj ? { ...s, weight: (s.weight || 1) * (adj.weight_multiplier || 1) } : s;
+    }).filter(s => {
+      const rootData = rufloIntel?.semantic_taxonomy?.high_value_roots?.[s.term];
+      return !(rootData?.consumer_health_fit === 'avoid');
+    });
+  }
+  
+  // Check healthcare technical override
+  const techOverride = rufloIntel.industry_overrides.healthcare_technical;
+  if (techOverride?.industries?.includes(industry) && techOverride?.suffix_adjustments) {
+    return suffixes.map(s => {
+      const adj = techOverride.suffix_adjustments[s.term];
+      return adj ? { ...s, weight: (s.weight || 1) * (adj.weight_multiplier || 1) } : s;
+    });
+  }
+  
+  return suffixes;
+}
+function passesLocalFilters(name,constraints,filters){
+  if(!name)return false;
+
+const len =
+  name.replace(/\s+/g,'').length;
+
+if(len < 4)return false;
+
+if(len > 8)return false;
+  if(constraints?.hard_exclusions?.some(e=>name.toLowerCase().includes(e)))return false;
+  if(filters?.overused_prefixes?.some(p=>name.toLowerCase().startsWith(p)))return false;
+  if(filters?.overused_suffixes?.some(s=>name.toLowerCase().endsWith(s)))return false;
+  if(filters?.forbidden_combinations?.some(c=>name.toLowerCase().includes(c)))return false;
+  if(/[^\w]/.test(name))return false;
+  return true;
+}
+
+function getAffinityBoost(prefix,suffix,affinityRules){
+  if(!affinityRules?.high_value_pairs)return 0.5;
+  const pair=affinityRules.high_value_pairs.find(p=>p.prefix===prefix&&p.suffix===suffix);
+  return pair?pair.affinity:0.5;
+}
+
+// ── Scoring Engine (Rubric-Based) ──────────────────────────────────
+function computeRubricScore(nameObj,config=rufloIntel){
+  if(!config?.scoring_rubric)return 70;
+  const name=(nameObj.name||'').toLowerCase().replace(/[^a-z]/g,'');
+  const{scoring_rubric,global_pronounceability,risk_heuristics,semantic_taxonomy}=config;
+  
+  // Brandability (40%)
+  const brandability={
+    uniqueness:Math.min(1,name.length/8),
+    phonetic_clarity:evaluatePronounceability(name,global_pronounceability),
+    length_fit:name.length>=4&&name.length<=8?1:0.5,
+    memorability:hasCVCVPattern(name)?1:0.7
+  };
+  
+  // Commercial Viability (35%)
+  const commercial={
+    trademark_distance:assessTMRisk(name,risk_heuristics?.trademark_risk),
+    domain_availability:(nameObj._availabilityScore||70)/100,
+    vertical_alignment:assessVerticalFit(name,semantic_taxonomy)
+  };
+  
+  // Differentiation (25%)
+  const differentiation={
+    trend_alignment:config.predictive_signals?.trend_weights?.rising_patterns||1,
+    structural_novelty:recentNamesCache.has(name)?0:1,
+    semantic_flexibility:countApplicableVerticals(name,semantic_taxonomy)
+  };
+  
+  const brandScore=Object.values(brandability).reduce((a,b)=>a+b,0)/4;
+  const commScore=Object.values(commercial).reduce((a,b)=>a+b,0)/3;
+  const diffScore=Object.values(differentiation).reduce((a,b)=>a+b,0)/3;
+  
+  return Math.round((brandScore*0.40+commScore*0.35+diffScore*0.25)*100);
+}
+function morphologyKey(name){
+  return name
+    .toLowerCase()
+    .slice(0,3);
+}
+function evaluatePronounceability(name,config){
+  if(!config?.risk_patterns)return 0.85;
+  let score=1.0;
+  for(const risk of config.risk_patterns){
+    if(new RegExp(risk.pattern).test(name)){score-=0.15;}
+  }
+  return Math.max(0.3,Math.min(1,score));
+}
+
+function assessTMRisk(name,riskConfig){
+  if(!riskConfig)return 0.7;
+  if(riskConfig.high_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.4;
+  if(riskConfig.low_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.9;
+  return 0.7;
+}
+
+function assessVerticalFit(name,taxonomy){
+  if(!taxonomy?.high_value_roots)return 0.5;
+  const roots=Object.keys(taxonomy.high_value_roots);
+  const matches=roots.filter(r=>name.toLowerCase().includes(r)).length;
+  return Math.min(1,0.4+matches*0.3);
+}
+
+function countApplicableVerticals(name,taxonomy){
+  if(!taxonomy?.high_value_roots)return 1;
+  let count=0;
+  for(const[root,data]of Object.entries(taxonomy.high_value_roots)){
+    if(name.toLowerCase().includes(root)){count+=data.verticals?.length||1;}
+  }
+  return Math.min(3,count);
+}
+
+// ── Global Pronounceability Check ──────────────────────────────────
+function passesGlobalPronounceability(name,config){
+  if(!config?.global_pronounceability)return true;
+  const{risk_patterns,min_threshold}=config.global_pronounceability;
+  let score=1.0;
+  for(const risk of risk_patterns){
+    if(new RegExp(risk.pattern).test(name.toLowerCase())){score-=0.15;}
+  }
+  return score>=min_threshold;
+}
+
+// ── Domain Availability Heuristic ──────────────────────────────────
+function calculateAvailabilityScore(name,tld='.com'){
+  let score=70;
+  const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
+  const commonWords=namingIntel?.oversaturated_terms?.slice(0,40)?.map(x=>x[0])||['cloud','data','sync','flow','core','labs','tech','app','web','net'];
+  if(commonWords.some(w=>lower.includes(w))){score-=40;}
+  if(len<=4&&/^[a-z]+$/.test(lower)){score-=20;}
+  if(/(ify|ly|able|verse|base|flow|cloud|sync|labs)$/i.test(lower)){score-=25;}
+  if(/[-\d]/.test(name))score-=25;
+  if(/[xzqvk]/.test(lower))score+=6;
+  if(/[^aeiou]{3,}/.test(lower))score+=10;
+  if(len>=5&&len<=7)score+=10;
+  if(/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower))score+=8;
+  return Math.max(5,Math.min(99,score));
+}
+
+// ── Prompts ───────────────────────────────────────────────────────
+const SYS=`You are an elite startup naming strategist. Generate structurally distinct startup brand names.
+Prioritize phonetic diversity and archetype fidelity.
+Rules: memorable, globally pronounceable, clean phonetics, strong brandability, avoid generic AI buzzwords, avoid trademark-heavy names, avoid hyphens and numbers.
+Avoid overused startup terms: AI, Nova, Core, Flow, Labs, Nexus, Meta, Quantum, Bot, Sync, Cloud, Data.
+Each output name must belong to a DIFFERENT phonetic family.
+Avoid repeating: prefixes, suffixes, syllable patterns, vowel cadence across outputs.
+Return ONLY raw JSON array. Format: [{"name":"","tagline":"","naming_pattern":"","vc_signal":"","why_it_works":"","score":{"brand_strength":90,"memorability":90,"global_fit":90,"trend_alignment":90}}]`;
+
+const GEMINI_SYS=`You are an elite VC startup naming strategist. Return ONLY valid raw JSON. RULES: No markdown, No explanations, No code fences, EXACTLY 5 objects, Compact JSON only, Finish complete JSON, No trailing commas. FORMAT: [{"name":"Klyro","tagline":"AI workflows simplified","naming_pattern":"Abstract","vc_signal":"VC-ready","why_it_works":"Short memorable modern","score":{"brand_strength":90,"memorability":91,"global_fit":88,"trend_alignment":89}}]`;
+
+const STYLE_DNA={
+  ultra_short:`Structure: 4-5 characters, single token, hard consonants, minimal vowels, no semantic meaning. Examples: Brex, Ramp, Deel, Arc`,
+  invented:`Structure: invented phonetics, balanced vowels/consonants, globally pronounceable, modern SaaS energy, no direct dictionary roots. Examples: Figma, Vanta, Asana`,
+  real_adjacent:`Structure: inspired by real words, softened semantics, trust-oriented, easy pronunciation, emotionally neutral. Examples: Notion, Mercury, Plaid`,
+  infra:`Structure: technical/devtool feel, hard consonants, compressed syllables, infrastructure energy, slightly mechanical. Examples: Vercel, Datadog, HashiCorp`,
+  luxury:`Structure: elegant phonetics, flowing vowels, premium cadence, soft consonants, fashion/luxury feel. Examples: Velora, Aurelia, Rivian`,
+  enterprise:`Structure: trustworthy, stable, scalable corporate tone, strong endings, conservative phonetics. Examples: Okta, Workday, ServiceNow`,
+  playful:`Structure: softer consonants, memorable rhythm, consumer-friendly, emotionally warm. Examples: Canva, Loom, Duolingo`,
+  future:`Structure: futuristic phonetics, uncommon syllables, AI-native feel, strong distinctiveness. Examples: Anthropic, Replit, OpenAI`,
+  mythic:`Structure: powerful tone, legendary cadence, deep-tech seriousness, strong syllables. Examples: Anduril, Palantir, Oracle`
+};
+
+function USR(industry,style,aud,kw,tlds,lang,charlen,strictTld=false,intelData=null){
+  const langInstructions={'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.','global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.','non-en':'Generate names optimized for non-English markets. May include adapted Latin characters. Prioritize .ai/.io/.xyz TLDs.','multilingual':'Generate names that work across 3+ languages. Avoid homophones with negative meanings in major languages.'};
+  const charInstructions={'3-5':'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".','4-6':'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".','5-8':'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".','6-10':'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".','10+':'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".','any':'Mix of lengths; prioritize memorability and brandability over strict count.'};
+  
+  let intelPrompt='';
+  if(intelData){
+    const patterns=intelData.patterns?.map(p=>`${p.naming_pattern} (${p.count} startups)`).join(', ')||'';
+    const tlds=intelData.tlds?.map(t=>`${t.tld}`).join(', ')||'';
+    const avoid=intelData.competitors?.join(', ')||'';
+    intelPrompt=`\n🧠 LOCAL INTELLIGENCE DATA (Industry: ${industry}):\n• Proven Naming Patterns: ${patterns}\n• Common TLDs: ${tlds}\n• AVOID THESE (Existing Startups): ${avoid}\n• Generate names that match proven patterns but use UNIQUE phonetics to avoid confusion.\n`;
+  }
+  
+  return `Create ${prov==='gemini'?5:10} brand names for a "${industry}" startup.${intelPrompt}
+Language: ${lang} — ${langInstructions[lang]}
+Character Length: ${charInstructions[charlen]}
+Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
+Audience: ${aud} | TLDs: ${tlds.join(', ')}
+${strictTld&&tlds[0]!=='.com'?`CRITICAL HARD REQUIREMENT: ALL generated names MUST prioritize ${tlds[0]} availability. Rules: Avoid common dictionary words, Avoid existing startup-style names, Prefer invented brandables, Prefer uncommon phonetics, Prefer low-competition naming structures, Assume user wants domains AVAILABLE in ${tlds[0]}. At least 80% of generated names should likely have ${tlds[0]} available.`:strictTld?`🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE. Strategy for available .com domains: 1. INVENTED BRANDABLES (highest availability): 5-7 letters, no dictionary words, Uncommon consonant clusters: xv, zq, kr, vy, Vowel patterns: a-e-i-o-u rotated unusually, Examples: "Zylox", "Krevu", "Vexor". 2. COMPOUND INNOVATIONS: Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly", Avoid common suffixes: -ify, -ly, -able, -ify, Use uncommon prefixes: "Vor-", "Zyn-", "Kael-". 3. PHONETIC UNIQUENESS: Names that sound distinctive when spoken, Pass the "radio test": spellable after hearing once, Avoid homophones with existing brands. 4. AVOID (high registration probability): Exact dictionary words under 6 letters, Common tech terms: cloud, data, sync, flow, nexus, Popular startup patterns: get[word], [word]app, [word]io. Output guidance: 70% invented brandables (highest .com availability), 20% novel compounds (medium availability), 10% creative risks (low availability but high brand potential). ${kw?'\nKeywords to incorporate creatively: '+kw:''}`:''}
+${kw?'\nKeywords: '+kw:''}
+${promptSummary?`\n\nREAL STARTUP NAMING INTELLIGENCE:\n${promptSummary}\n`:''}
+Rules:
+• Modern VC-backable startup feel
+• Strong phonetic distinction
+• Avoid repetitive prefixes/suffixes
+• Avoid overused AI buzzwords
+• Prioritize memorability
+• Ensure names sound distinct when spoken aloud
+${prov==='gemini'?'Return compact JSON array of exactly 5 objects.':'Return JSON array of exactly 10 objects.'}
+${style?`Name Shape DNA: ${STYLE_DNA[style]}`:''}
+Raw JSON only.`;}
+
+// ── API Callers with Retry Logic ──────────────────────────────────
+async function fetchWithRetry(url,options,retries=3){
+  for(let i=0;i<retries;i++){
+    try{
+      const res=await fetch(url,options);
+      if(res.ok)return res;
+      if(res.status===503&&i<retries-1){await new Promise(r=>setTimeout(r,1000*(i+1)));continue;}
+      throw new Error(`HTTP ${res.status}`);
+    }catch(e){if(i===retries-1)throw e;await new Promise(r=>setTimeout(r,1000*(i+1)));}
+  }
+}
+
+async function callOpenRouter(sys,usr,cb){
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(`OpenRouter ${r.status}: ${data.error?.message||'Unknown error'}`);
+  const text=data.choices?.[0]?.message?.content||'';
+  cb(text);return text;
+}
+
+async function callOpenAI(sys,usr,cb){
+  const r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  });
+  if(!r.ok)throw new Error(`OpenAI ${r.status}: ${await r.text()}`);
+  return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
+}
+
+async function callGemini(sys,usr,cb){
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:finalTemp,topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(`Gemini ${r.status}: ${data.error?.message||'Unknown error'}`);
+  const parts=data.candidates?.[0]?.content?.parts||[];
+  const text=parts.map(p=>p.text||'').join('');
+  cb(text);return text;
+}
+
+async function callGroq(sys,usr,cb){
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.92,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  });
+  if(!r.ok){throw new Error(`Groq ${r.status}: ${await r.text()}`);}
+  return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
+}
+
+async function readSSE(resp,extract){
+  const reader=resp.body.getReader(),dec=new TextDecoder();
+  let buf='',full='';
+  while(true){
+    const{done,value}=await reader.read();
+    if(done)break;
+    buf+=dec.decode(value,{stream:true});
+    const lines=buf.split('\n');
+    buf=lines.pop();
+    for(const l of lines){
+      if(!l.startsWith('data: '))continue;
+      const raw=l.slice(6).trim();
+      if(raw==='[DONE]')continue;
+      try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}}
+  }
+  return full;
+}
+
+// ── Generate (TWO-PHASE PIPELINE) ──────────────────────────────────
+async function go(){
+  if(busy)return;
+  const ind=document.getElementById('industry').value;
+  if(!ind){toast('Please select an industry');return;}
+  if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}
+  
+  language=document.getElementById('language').value;
+  charLength=document.getElementById('charlen').value;
+  localStorage.setItem('bl_charlen',charLength);
+  localStorage.setItem('bl_lang',language);
+  
+  busy=true;
+  domC={};
+  const btn=document.getElementById('gbtn');
+  btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';
+  
+  const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');
+  pw.classList.add('on');pf.style.width='0%';ps.textContent='';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('exportRow').style.display='none';
+  
+  let intelData =
+  industryIntel?.[ind] || null;
+  
+  const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];
+  let pi=0;
+  const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
+  
+  const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;
+  const sys=prov==='gemini'?GEMINI_SYS:SYS;
+  
+  try{
+    // PHASE 1: Local procedural generation
+    pt.textContent='Generating candidate names…';pp.textContent='48%';
+    const pipeline=rufloIntel?.pipeline_config;
+    const targetCount=pipeline?.stage_1_local_generation?.target_count||300;
+    
+    let candidates=[];
+if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
+  candidates=proceduralGenerate(
+    rufloIntel.generation_grammar, 
+    rufloIntel.morphology, 
+    targetCount, 
+    ind // ← Pass industry for filtering
+  );
+}
+    
+    else{
+      // Fallback to LLM generation if intel not loaded
+      const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,prov==='gemini'?15:25);
+      candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
+    }
+    
+    // PHASE 2: Local scoring + filtering
+    pt.textContent='Scoring for availability…';pp.textContent='72%';
+    const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};
+    
+    let scored=candidates.map(c=>{
+      const availScore=calculateAvailabilityScore(c.name,tlds[0]);
+      const rubricScore=computeRubricScore(c);
+      return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_combinedScore:(availScore*0.6)+(rubricScore*0.4)};
+    });
+    
+    // Apply filters
+    const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));
+    const filteredByGlobal=filteredByCharLen.filter(n=>passesGlobalPronounceability(n.name,rufloIntel));
+    
+    let finalNames,minResults=prov==='gemini'?3:5;
+    if(filteredByGlobal.length>=minResults){finalNames=filteredByGlobal;}
+    else if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;toast('Relaxed global pronounceability filter');}
+    else{finalNames=[...scored].sort((a,b)=>(b._rubricScore||0)-(a._rubricScore||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}
+    
+    // Deduplicate
+    const uniqueNames=[];
+    for(const item of finalNames){
+      let similarityHits=0;
+      for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}
+      for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}
+      if(similarityHits<=1){
+        item.diversityPenalty=similarityHits*8;
+        item.finalScore=(item._combinedScore||70)-item.diversityPenalty;
+        uniqueNames.push(item);
+        recentNamesCache.add(item.name);
+      }
+    }
+    
+    // Fill if needed
+    if(uniqueNames.length<(prov==='gemini'?3:5)&&candidates.length>finalNames.length){
+      const extras=candidates.filter(c=>{
+        const norm=normalizeBrandName(c.name);
+        return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));
+      }).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);
+      uniqueNames.push(...extras);
+    }
+    
+    let names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);
+    if(!names.length)throw new Error('No names passed filters. Try broader settings.');
+    
+    // PHASE 3: LLM refinement (taglines, rationale, vertical mapping)
+    pt.textContent='Refining with AI…';pp.textContent='88%';
+    const refinementPrompt=`For these startup names, generate concise taglines, naming patterns, VC signals, and "why it works" explanations. Return ONLY JSON array matching the input order. Names: ${names.map(n=>n.name).join(', ')}`;
+    
+    const refined=await (prov==='gemini'?callGemini:prov==='openai'?callOpenAI:prov==='groq'?callGroq:callOpenRouter)(sys,refinementPrompt,()=>{});
+    
+    try{
+      const clean=String(refined||'').replace(/```json|```/g,'').trim();
+      const llmData=JSON.parse(clean||'[]');
+      names=names.map((n,i)=>({...n,...(llmData[i]||{})}));
+    }catch(e){console.warn('LLM refinement failed, using procedural data');}
+    
+    // PHASE 4: Validation + final output
+    pt.textContent='Validating domains…';pp.textContent='96%';
+    lastGeneratedNames=names.map(n=>({
+      ...n,
+      _d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),
+      _id:n.name.replace(/\s+/g,'-'),
+      _generated:new Date().toISOString(),
+      _provider:prov,
+      score:computeScores(n),
+      _model:mdl
+    }));
+    
+    clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;
+    
+    renderCards(lastGeneratedNames,tlds);
+    document.getElementById('exportRow').style.display='flex';
+    
+    const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);
+    if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);
+    
+    resetFilterState();
+    
+  }catch(e){
+    clearInterval(tick);pw.classList.remove('on');
+    document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;
+    toast('Error: '+e.message);
+    console.error('Generation failed:',e);
+  }finally{
+    busy=false;btn.disabled=false;btn.classList.remove('ld');
+    if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}
+  }
+}
+
+// Fallback LLM generation (if procedural not available)
+async function generateRawCandidates(industry,style,kw,targetCount=25){
+  const heuristicExamples=generateHeuristicExamples(industry,6);
+  const exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
+  const randomSeed=Math.random().toString(36).slice(2,10);
+  const batchId=`${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*999)}`;
+  const variationPhrases=["Focus on completely fresh phonetic patterns not seen in previous batches","Explore unconventional letter combinations and syllable structures","Prioritize names with unique vowel-consonant rhythms","Generate names that feel distinct from typical tech startup naming conventions","Use diverse linguistic roots: latin, greek, slavic, east-asian phonetics"];
+  const randomVariation=variationPhrases[Math.floor(Math.random()*variationPhrases.length)];
+  const exclusionList=recentNamesCache.size>0?`\n🚫 AVOID THESE RECENTLY GENERATED NAMES (do not repeat):\n${Array.from(recentNamesCache).slice(-15).map(n=>`- ${n}`).join('\n')}`:'';
+  const intel=industryIntel[industry]||{};
+  const topClusters=(intel.top_clusters||[]).slice(0,8).join(', ');
+  const topSuffixes=(intel.top_suffixes||[]).slice(0,8).join(', ');
+  const topPrefixes=(intel.top_prefixes||[]).slice(0,8).join(', ');
+  
+  const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
 
 REAL INDUSTRY DATA:
-Top consonant clusters:
-${topClusters}
-
-Top startup suffixes:
-${topSuffixes}
-
-Top startup prefixes:
-${topPrefixes}
-
+Top consonant clusters: ${topClusters}
+Top startup suffixes: ${topSuffixes}
+Top startup prefixes: ${topPrefixes}
 
 🎯 STYLE EXAMPLES (emulate these patterns, but create FRESH variations):
 ${exampleList}
 
-🔄 BATCH ${batchId} VARIATION INSTRUCTION:
-${randomVariation}
-
+🔄 BATCH ${batchId} VARIATION INSTRUCTION: ${randomVariation}
 🎲 RANDOM SEED: ${randomSeed} (use this to generate truly unique outputs)
 ${exclusionList}
 
 Rules:
-- 4-8 characters, globally pronounceable , Can exceed if structurally strong
+- 4-8 characters, globally pronounceable, Can exceed if structurally strong
 - Each generated name must sound DISTINCT from the others
 - Use varied consonant structures
 - Avoid repeating prefixes/suffixes
@@ -573,336 +1168,234 @@ Rules:
 - No exact dictionary words under 6 letters
 - Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs
 - Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation
-Style DNA:
-${style?STYLE_DNA[style]:`
-Mix:
-- 30% invented
-- 30% compound
-- 20% atomic
-- 20% hybrid
-Use varied phonetic structures.
-`}
+Style DNA: ${style?STYLE_DNA[style]:`Mix: 30% invented, 30% compound, 20% atomic, 20% hybrid. Use varied phonetic structures.`}
 
-Brand Structure:
-${brandStructure==='atomic'?'single-token minimal brands like Stripe, Ramp, Arc':brandStructure==='compound'?'compound semantic brands like BindEcho, ClearPath':brandStructure==='invented'?'invented phonetic brands like Klyro, Vexa':brandStructure==='hybrid'?'hybrid startup names mixing semantic + invented roots':'mixed varied structures'}
+Brand Structure: ${brandStructure==='atomic'?'single-token minimal brands like Stripe, Ramp, Arc':brandStructure==='compound'?'compound semantic brands like BindEcho, ClearPath':brandStructure==='invented'?'invented phonetic brands like Klyro, Vexa':brandStructure==='hybrid'?'hybrid startup names mixing semantic + invented roots':'mixed varied structures'}
 ${kw?`Incorporate creatively: ${kw}`:''}
 
-Return ONLY a JSON array:
-[{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
+Return ONLY a JSON array: [{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
+No markdown, no explanations.`;
 
-No markdown, no explanations.`;const sys=`You are a startup naming expert. Return ONLY valid JSON array.`;try{let response;if(prov==='gemini')response=await callGemini(sys,prompt,()=>{});else if(prov==='openai')response=await callOpenAI(sys,prompt,()=>{});else if(prov==='groq')response=await callGroq(sys,prompt,()=>{});else response=await callOpenRouter(sys,prompt,()=>{});const clean=String(response||'').replace(/```json|```/g,'').trim();let names=null;try{names=JSON.parse(clean||'[]');}catch(e){const start=clean.indexOf('['),end=clean.lastIndexOf(']');if(start!==-1&&end!==-1)names=JSON.parse(clean.slice(start,end+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));}if(!Array.isArray(names)){return [];}const unique=[];for(const n of names){if(recentNamesCache.has(n.name.toLowerCase())){continue;}if(!n?.name)continue;const dup=unique.some(u=>isNearDuplicate(u.name,n.name));if(!dup){unique.push(n);}}return unique;}catch(e){console.error('Phase 1 generation error:',e);return [];}}
+  const sys=`You are a startup naming expert. Return ONLY valid JSON array.`;
+  
+  try{
+    let response;
+    if(prov==='gemini')response=await callGemini(sys,prompt,()=>{});
+    else if(prov==='openai')response=await callOpenAI(sys,prompt,()=>{});
+    else if(prov==='groq')response=await callGroq(sys,prompt,()=>{});
+    else response=await callOpenRouter(sys,prompt,()=>{});
+    
+    const clean=String(response||'').replace(/```json|```/g,'').trim();
+    let names=null;
+    try{names=JSON.parse(clean||'[]');}catch(e){
+      const start=clean.indexOf('['),end=clean.lastIndexOf(']');
+      if(start!==-1&&end!==-1)names=JSON.parse(clean.slice(start,end+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));
+    }
+    if(!Array.isArray(names)){return [];}
+    
+    const unique=[];
+    for(const n of names){
+      if(recentNamesCache.has(n.name.toLowerCase())){continue;}
+      if(!n?.name)continue;
+      const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
+      if(!dup){unique.push(n);}
+    }
+    return unique;
+  }catch(e){console.error('Phase 1 generation error:',e);return [];}
+}
 
-async function scoreCandidates(rawNames,tlds,config){if(rawNames.length===0)return[];return rawNames.map(n=>{const availScore=calculateAvailabilityScore(n.name,tlds[0]),brandScore=n.score?Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length:70;return{...n,_availabilityScore:availScore,_brandScore:brandScore,_combinedScore:(availScore*0.6)+(brandScore*0.4)};});}
+function generateHeuristicExamples(industry,count=8){
+  const roots={'AI Agents & Automation':['auto','agent','flow','sync','mind'],'Fintech & Neobanking':['pay','coin','vault','flux','mint'],'Developer Tools':['code','dev','stack','build','deploy'],'Healthcare AI':['med','care','health','vital','pulse']};
+  const industryRoots=roots[industry]||['tech','labs','sys','net'];
+  const prefixes=['z','k','v','x','q','kr','vy','zyl','vex'],suffixes=['ox','ra','on','ix','or','ex','al','en'],examples=[];
+  for(let p of prefixes.slice(0,4)){for(let s of suffixes.slice(0,3)){if(examples.length>=count)break;examples.push((p+s).charAt(0).toUpperCase()+(p+s).slice(1));}}
+  for(let r of industryRoots.slice(0,3)){if(examples.length>=count)break;examples.push((r+'ix').charAt(0).toUpperCase()+(r+'ix').slice(1));}
+  return examples;
+}
 
-// ── Prompts ───────────────────────────────────────────────────────
-const SYS=`You are an elite startup naming strategist. Generate structurally distinct startup brand names.
-Prioritize phonetic diversity and archetype fidelity.
-Rules: memorable, globally pronounceable, clean phonetics, strong brandability, avoid generic AI buzzwords, avoid trademark-heavy names, avoid hyphens and numbers.
-Avoid overused startup terms: AI, Nova, Core, Flow, Labs, Nexus, Meta, Quantum, Bot, Sync, Cloud, Data.
-Each output name must belong to a DIFFERENT phonetic family.
-Avoid repeating:
-- prefixes
-- suffixes
-- syllable patterns
-- vowel cadence
-across outputs.
-Return ONLY raw JSON array. Format: [{"name":"","tagline":"","naming_pattern":"","vc_signal":"","why_it_works":"","score":{"brand_strength":90,"memorability":90,"global_fit":90,"trend_alignment":90}}]`;
-
-const GEMINI_SYS=`You are an elite VC startup naming strategist. Return ONLY valid raw JSON. RULES: No markdown, No explanations, No code fences, EXACTLY 5 objects, Compact JSON only, Finish complete JSON, No trailing commas. FORMAT: [{"name":"Klyro","tagline":"AI workflows simplified","naming_pattern":"Abstract","vc_signal":"VC-ready","why_it_works":"Short memorable modern","score":{"brand_strength":90,"memorability":91,"global_fit":88,"trend_alignment":89}}]`;
-
-const STYLE_DNA={ultra_short:`Structure:
-- 4-5 characters
-- single token
-- hard consonants
-- minimal vowels
-- no semantic meaning
-Examples:
-Brex, Ramp, Deel, Arc`,invented:`Structure:
-- invented phonetics
-- balanced vowels/consonants
-- globally pronounceable
-- modern SaaS energy
-- no direct dictionary roots
-Examples:
-Figma, Vanta, Asana`,real_adjacent:`Structure:
-- inspired by real words
-- softened semantics
-- trust-oriented
-- easy pronunciation
-- emotionally neutral
-Examples:
-Notion, Mercury, Plaid`,infra:`Structure:
-- technical/devtool feel
-- hard consonants
-- compressed syllables
-- infrastructure energy
-- slightly mechanical
-Examples:
-Vercel, Datadog, HashiCorp`,luxury:`Structure:
-- elegant phonetics
-- flowing vowels
-- premium cadence
-- soft consonants
-- fashion/luxury feel
-Examples:
-Velora, Aurelia, Rivian`,enterprise:`Structure:
-- trustworthy
-- stable
-- scalable corporate tone
-- strong endings
-- conservative phonetics
-Examples:
-Okta, Workday, ServiceNow`,playful:`Structure:
-- softer consonants
-- memorable rhythm
-- consumer-friendly
-- emotionally warm
-Examples:
-Canva, Loom, Duolingo`,future:`Structure:
-- futuristic phonetics
-- uncommon syllables
-- AI-native feel
-- strong distinctiveness
-Examples:
-Anthropic, Replit, OpenAI`,mythic:`Structure:
-- powerful tone
-- legendary cadence
-- deep-tech seriousness
-- strong syllables
-Examples:
-Anduril, Palantir, Oracle`};
-
-function USR(industry,style,aud,kw,tlds,lang,charlen,strictTld=false,twoWord=false,intelData=null){const langInstructions={'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.','global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.','non-en':'Generate names optimized for non-English markets. May include adapted Latin characters. Prioritize .ai/.io/.xyz TLDs.','multilingual':'Generate names that work across 3+ languages. Avoid homophones with negative meanings in major languages.'};const charInstructions={'3-5':'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".','4-6':'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".','5-8':'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".','6-10':'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".','10+':'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".','any':'Mix of lengths; prioritize memorability and brandability over strict count.'};const twoWordRule=twoWord?`
-🔒🔒🔒 TWO-WORD MODE — ABSOLUTE REQUIREMENTS 🔒🔒🔒
-CRITICAL: You are in STRICT TWO-WORD MODE. Follow these rules EXACTLY:
-
-1. FORMAT: [Word1] [Word2] — EXACTLY ONE SPACE between words
-2. EXAMPLES OF VALID OUTPUT: "Git Hub", "Pay Pal", "Linear App", "Super Human"
-3. EXAMPLES OF INVALID OUTPUT (REJECT THESE IMMEDIATELY):
-   - "GitHub" (no space = REJECT)
-   - "Git-Hub" (hyphen = REJECT)
-   - "Git Hub Pro" (3 words = REJECT)
-   - "Zylox" (single word = REJECT)
-4. VERIFICATION STEP: Before including any name in your JSON output, COUNT THE SPACES:
-   - Exactly 1 space = ✅ INCLUDE
-   - 0 spaces or 2+ spaces = ❌ REJECT AND GENERATE ANOTHER
-5. PENALTY: Names that don't follow this rule will be DISCARDED and waste API credits.
-
-If you are unsure whether a name has exactly one space, DO NOT INCLUDE IT.
-`:'';let intelPrompt='';if(intelData){const patterns=intelData.patterns.map(p=>`${p.naming_pattern} (${p.count} startups)`).join(', ');const tlds=intelData.tlds.map(t=>`${t.tld}`).join(', ');const avoid=intelData.competitors.join(', ');intelPrompt=`
-🧠 LOCAL INTELLIGENCE DATA (Industry: ${industry}):
-• Proven Naming Patterns: ${patterns}
-• Common TLDs: ${tlds}
-• AVOID THESE (Existing Startups): ${avoid}
-• Generate names that match proven patterns but use UNIQUE phonetics to avoid confusion.
-`;}return `Create ${prov==='gemini'?5:10} brand names for a "${industry}" startup.${intelPrompt}
-Language: ${lang} — ${langInstructions[lang]}
-${twoWordRule}
-Character Length: ${charInstructions[charlen]}
-Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
-Audience: ${aud} | TLDs: ${tlds.join(', ')}
-${strictTld&&tlds[0]!=='.com'?`CRITICAL HARD REQUIREMENT: ALL generated names MUST prioritize ${tlds[0]} availability. Rules: Avoid common dictionary words, Avoid existing startup-style names, Prefer invented brandables, Prefer uncommon phonetics, Prefer low-competition naming structures, Assume user wants domains AVAILABLE in ${tlds[0]}. At least 80% of generated names should likely have ${tlds[0]} available.`:strictTld?`🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE. Strategy for available .com domains: 1. INVENTED BRANDABLES (highest availability): 5-7 letters, no dictionary words, Uncommon consonant clusters: xv, zq, kr, vy, Vowel patterns: a-e-i-o-u rotated unusually, Examples: "Zylox", "Krevu", "Vexor". 2. COMPOUND INNOVATIONS: Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly", Avoid common suffixes: -ify, -ly, -able, -ify, Use uncommon prefixes: "Vor-", "Zyn-", "Kael-". 3. PHONETIC UNIQUENESS: Names that sound distinctive when spoken, Pass the "radio test": spellable after hearing once, Avoid homophones with existing brands. 4. AVOID (high registration probability): Exact dictionary words under 6 letters, Common tech terms: cloud, data, sync, flow, nexus, Popular startup patterns: get[word], [word]app, [word]io. Output guidance: 70% invented brandables (highest .com availability), 20% novel compounds (medium availability), 10% creative risks (low availability but high brand potential). ${kw?'\nKeywords to incorporate creatively: '+kw:''}`:''}
-${kw?'\nKeywords: '+kw:''}
-${promptSummary?`
-
-REAL STARTUP NAMING INTELLIGENCE:
-${promptSummary}
-
-`:''}
-Rules:
-• Modern VC-backable startup feel
-• Strong phonetic distinction
-• Avoid repetitive prefixes/suffixes
-• Avoid overused AI buzzwords
-• Prioritize memorability
-• Ensure names sound distinct when spoken aloud
-
-
-${prov==='gemini'?'Return compact JSON array of exactly 5 objects.':'Return JSON array of exactly 10 objects.'}
-${style?`Name Shape DNA: ${STYLE_DNA[style]}`:''}
-Raw JSON only.`;}
-
-// ── API Callers with Retry Logic ──────────────────────────────────
-async function fetchWithRetry(url,options,retries=3){for(let i=0;i<retries;i++){try{const res=await fetch(url,options);if(res.ok)return res;if(res.status===503&&i<retries-1){await new Promise(r=>setTimeout(r,1000*(i+1)));continue;}throw new Error(`HTTP ${res.status}`);}catch(e){if(i===retries-1)throw e;await new Promise(r=>setTimeout(r,1000*(i+1)));}}}
-
-async function callOpenRouter(sys,usr,cb){const strict=document.getElementById('strictTld').checked;const baseTemp=strict?0.62:0.78;const varietyBoost=Math.random()*0.08;const finalTemp=Math.min(0.9,baseTemp+varietyBoost);const r=await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});const data=await r.json();if(!r.ok)throw new Error(`OpenRouter ${r.status}: ${data.error?.message||'Unknown error'}`);const text=data.choices?.[0]?.message?.content||'';cb(text);return text;}
-async function callOpenAI(sys,usr,cb){const r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});if(!r.ok)throw new Error(`OpenAI ${r.status}: ${await r.text()}`);return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});}
-async function callGemini(sys,usr,cb){const strict=document.getElementById('strictTld').checked;const baseTemp=strict?0.62:0.78;const varietyBoost=Math.random()*0.08;const finalTemp=Math.min(0.9,baseTemp+varietyBoost);const r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:finalTemp,topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})});const data=await r.json();if(!r.ok)throw new Error(`Gemini ${r.status}: ${data.error?.message||'Unknown error'}`);const parts=data.candidates?.[0]?.content?.parts||[];const text=parts.map(p=>p.text||'').join('');cb(text);return text;}
-async function callGroq(sys,usr,cb){const strict=document.getElementById('strictTld').checked;const baseTemp=strict?0.62:0.78;const varietyBoost=Math.random()*0.08;const finalTemp=Math.min(0.9,baseTemp+varietyBoost);const r=await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.92,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})});if(!r.ok){throw new Error(`Groq ${r.status}: ${await r.text()}`);}return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});}
-async function readSSE(resp,extract){const reader=resp.body.getReader(),dec=new TextDecoder();let buf='',full='';while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines){if(!l.startsWith('data: '))continue;const raw=l.slice(6).trim();if(raw==='[DONE]')continue;try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}}}return full;}
-
-// ── Generate (TWO-PHASE) ───────────────────────────────────────────
-async function go(){if(busy)return;const ind=document.getElementById('industry').value;if(!ind){toast('Please select an industry');return;}if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}language=document.getElementById('language').value;charLength=document.getElementById('charlen').value;localStorage.setItem('bl_charlen',charLength);localStorage.setItem('bl_lang',language);busy=true;domC={};const btn=document.getElementById('gbtn');btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');pw.classList.add('on');pf.style.width='0%';ps.textContent='';document.getElementById('results').innerHTML='';document.getElementById('exportRow').style.display='none';let intelData=null;try{const res=await fetch(`http://localhost:3002/api/intelligence/${encodeURIComponent(ind)}`,{signal:AbortSignal.timeout(3000)});if(res.ok)intelData=(await res.json()).data;}catch(e){}const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];let pi=0;const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;const sys=prov==='gemini'?GEMINI_SYS:SYS;try{pt.textContent='Generating candidate names…';pp.textContent='48%';const targetCount=prov==='gemini'?15:25;const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,targetCount);if(!rawCandidates.length)throw new Error('No candidates generated. Try different settings or provider.');pt.textContent='Scoring for availability…';pp.textContent='72%';const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};let scored=await scoreCandidates(rawCandidates,tlds,config);const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));let finalNames,minResults=prov==='gemini'?3:5;if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;}else if(scored.length>=minResults){finalNames=scored;toast('Relaxed character length filter');}else{finalNames=[...scored].sort((a,b)=>(b.score?.brand_strength||0)-(a.score?.brand_strength||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}const uniqueNames=[];for(const item of finalNames){let similarityHits=0;for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}if(similarityHits<=1){item.diversityPenalty=similarityHits*8;item.finalScore=(item._combinedScore||70)-item.diversityPenalty;uniqueNames.push(item);recentNamesCache.add(item.name);localStorage.setItem('dng_recent_names',JSON.stringify(Array.from(recentNamesCache).slice(-120)));}}if(uniqueNames.length<(prov==='gemini'?3:5)&&rawCandidates.length>finalNames.length){const extras=rawCandidates.filter(c=>{const norm=normalizeBrandName(c.name);return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));}).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);uniqueNames.push(...extras);}names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);if(!names.length)throw new Error('No names passed filters. Try broader settings.');lastGeneratedNames=names.map(n=>({...n,_d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),_id:n.name.replace(/\s+/g,'-'),_generated:new Date().toISOString(),_provider:prov,score: computeScores(n),_model:mdl}));clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;renderCards(lastGeneratedNames,tlds);document.getElementById('exportRow').style.display='flex';const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);resetFilterState();}catch(e){clearInterval(tick);pw.classList.remove('on');document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;toast('Error: '+e.message);console.error('Generation failed:',e);}finally{busy=false;btn.disabled=false;btn.classList.remove('ld');if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}}
-
+// ── Legacy Scoring (Fallback) ─────────────────────────────────────
 function computeScores(nameObj){
-
-  const name =
-    nameObj.name || '';
-
-  const lower =
-    name.toLowerCase();
-
-  const clean =
-    lower.replace(/[^a-z]/g,'');
-
-  const len =
-    clean.length;
-
-  const vowels =
-    (clean.match(/[aeiou]/g)||[]).length;
-
-  const consonants =
-    len - vowels;
-
-  const vowelRatio =
-    vowels / Math.max(1,len);
-
-  const repeated =
-    /(.)\1{1,}/.test(clean);
-
-  const rareLetters =
-    (clean.match(/[zxqkv]/g)||[]).length;
-
-  // ─────────────────────────
-  // Brand Strength
-  // ─────────────────────────
-
-  let brand = 70;
-
-  if(len>=4 && len<=8)
-    brand += 12;
-
-  if(rareLetters>=1)
-    brand += 6;
-
-  if(!repeated)
-    brand += 4;
-
-  if(vowelRatio>=0.3 && vowelRatio<=0.6)
-    brand += 6;
-
-  // ─────────────────────────
-  // Memorability
-  // ─────────────────────────
-
-  let memory = 65;
-
-  if(len<=6)
-    memory += 12;
-
-  if(rareLetters>=1)
-    memory += 8;
-
-  if(clean.length!==new Set(clean).size)
-    memory -= 4;
-
-  if(/^[bcdfghjklmnpqrstvwxz]/.test(clean))
-    memory += 5;
-
-  // ─────────────────────────
-  // Global Fit
-  // ─────────────────────────
-
-  let global = 75;
-
-  if(!/[^\w]/.test(clean))
-    global += 5;
-
-  if(vowelRatio>=0.28 && vowelRatio<=0.58)
-    global += 10;
-
-  if(!/[qzx]{2,}/.test(clean))
-    global += 6;
-
-  // ─────────────────────────
-  // Trend Alignment
-  // ─────────────────────────
-
-  let trend = 60;
-
-  const modernSuffixes = [
-    'ly','io','ra','ex','iq',
-    'or','on','ix','al','os'
-  ];
-
-  const modernPrefixes = [
-    'ka','zy','ve','qy',
-    'xa','vo','kr'
-  ];
-
-  if(
-    modernSuffixes.some(s=>clean.endsWith(s))
-  ){
-    trend += 12;
-  }
-
-  if(
-    modernPrefixes.some(s=>clean.startsWith(s))
-  ){
-    trend += 10;
-  }
-
-  if(rareLetters>=1)
-    trend += 8;
-
-  if(len>=5 && len<=7)
-    trend += 8;
-
-  // ─────────────────────────
-  // Clamp
-  // ─────────────────────────
-
-  brand =
-    Math.min(98,Math.max(45,brand));
-
-  memory =
-    Math.min(98,Math.max(45,memory));
-
-  global =
-    Math.min(98,Math.max(45,global));
-
-  trend =
-    Math.min(98,Math.max(45,trend));
-
-  return {
-
-    brand_strength:
-      Math.round(brand),
-
-    memorability:
-      Math.round(memory),
-
-    global_fit:
-      Math.round(global),
-
-    trend_alignment:
-      Math.round(trend)
-
-  };
-
+  const name=nameObj.name||'';const lower=name.toLowerCase();const clean=lower.replace(/[^a-z]/g,'');const len=clean.length;
+  const vowels=(clean.match(/[aeiou]/g)||[]).length;const consonants=len-vowels;const vowelRatio=vowels/Math.max(1,len);
+  const repeated=/(.)\1{1,}/.test(clean);const rareLetters=(clean.match(/[zxqkv]/g)||[]).length;
+  
+  let brand=70;if(len>=4&&len<=8)brand+=12;if(rareLetters>=1)brand+=6;if(!repeated)brand+=4;if(vowelRatio>=0.3&&vowelRatio<=0.6)brand+=6;
+  let memory=65;if(len<=6)memory+=12;if(rareLetters>=1)memory+=8;if(clean.length!==new Set(clean).size)memory-=4;if(/^[bcdfghjklmnpqrstvwxz]/.test(clean))memory+=5;
+  let global=75;if(!/[^\w]/.test(clean))global+=5;if(vowelRatio>=0.28&&vowelRatio<=0.58)global+=10;if(!/[qzx]{2,}/.test(clean))global+=6;
+  let trend=60;const modernSuffixes=['ly','io','ra','ex','iq','or','on','ix','al','os'];const modernPrefixes=['ka','zy','ve','qy','xa','vo','kr'];
+  if(modernSuffixes.some(s=>clean.endsWith(s)))trend+=12;if(modernPrefixes.some(s=>clean.startsWith(s)))trend+=10;if(rareLetters>=1)trend+=8;if(len>=5&&len<=7)trend+=8;
+  
+  return{brand_strength:Math.round(Math.min(98,Math.max(45,brand))),memorability:Math.round(Math.min(98,Math.max(45,memory))),global_fit:Math.round(Math.min(98,Math.max(45,global))),trend_alignment:Math.round(Math.min(98,Math.max(45,trend)))};
 }
 
 // ── Render Results ─────────────────────────────────────────────────
-function renderCards(names,tlds){const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;sorted.forEach((n,i)=>{const c=n.colors?.[0]||'#c8f04a';const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;});h+='</div>';document.getElementById('results').innerHTML=h;names.forEach(n=>n._d.forEach(d=>chkDom(d)));}
+function renderCards(names,tlds){
+  const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));
+  const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
+  
+  let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;
+  
+  sorted.forEach((n,i)=>{
+    const c=n.colors?.[0]||'#c8f04a';
+    const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
+    const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';
+    const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;
+    const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
+    const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');
+    
+    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;
+  });
+  
+  h+='</div>';
+  document.getElementById('results').innerHTML=h;
+  names.forEach(n=>n._d.forEach(d=>chkDom(d)));
+}
 
 // ── Filtering ──────────────────────────────────────────────────────
-function filt(k,btn){pill=k;document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.card').forEach(c=>{let s=k==='all'?true:k==='available'?c.querySelectorAll('.dchip.av').length>0:c.dataset.pat===k;c.style.display=s?'':'none';});}
-function filtLang(lang,btn){document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.card').forEach(c=>{c.style.display='';});}
+function filt(k,btn){
+  pill=k;
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.card').forEach(c=>{
+    let s=k==='all'?true:k==='available'?c.querySelectorAll('.dchip.av').length>0:c.dataset.pat===k;
+    c.style.display=s?'':'none';
+  });
+}
+function filtLang(lang,btn){
+  document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.card').forEach(c=>{c.style.display='';});
+}
 
 // ── Domain Check ───────────────────────────────────────────────────
-async function chkDom(d){if(domC[d]){applyDom(d,domC[d]);return;}if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}let r='unknown';try{const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});if(res.status===404)r='available';else if(res.status===200)r='taken';}catch(e){}if(r==='unknown')try{const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}}catch(e){}domC[d]=r;applyDom(d,r);return r;}
-function applyDom(d,r){const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));if(!el)return;const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}if(pill==='available'){const card=el.closest('.card');if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}}}
+async function chkDom(d){
+  if(domC[d]){applyDom(d,domC[d]);return;}
+  if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}
+  
+  let r='unknown';
+  try{
+    const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});
+    if(res.status===404)r='available';else if(res.status===200)r='taken';
+  }catch(e){}
+  
+  if(r==='unknown')try{
+    const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});
+    if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}
+  }catch(e){}
+  
+  domC[d]=r;applyDom(d,r);return r;
+}
+
+function applyDom(d,r){
+  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
+  if(!el)return;
+  const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;
+  
+  if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
+  else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}
+  else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}
+  
+  if(pill==='available'){
+    const card=el.closest('.card');
+    if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}
+  }
+}
 
 // ── Export ─────────────────────────────────────────────────────────
 let exportFormat='csv',exportOpts={all:true,avail:false,top3:false,scores:true};
-function openExportModal(format){exportFormat=format;document.getElementById('expAll').checked=true;document.getElementById('expAvail').checked=false;document.getElementById('expTop').checked=false;document.getElementById('expScores').checked=true;document.getElementById('exportModal').classList.add('on');}
+
+function openExportModal(format){
+  exportFormat=format;
+  document.getElementById('expAll').checked=true;
+  document.getElementById('expAvail').checked=false;
+  document.getElementById('expTop').checked=false;
+  document.getElementById('expScores').checked=true;
+  document.getElementById('exportModal').classList.add('on');
+}
 function closeExportModal(){document.getElementById('exportModal').classList.remove('on');}
-function confirmExport(){exportOpts={all:document.getElementById('expAll').checked,avail:document.getElementById('expAvail').checked,top3:document.getElementById('expTop').checked,scores:document.getElementById('expScores').checked};closeExportModal();let names=lastGeneratedNames;if(exportOpts.avail){names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));}if(exportOpts.top3){names=names.slice(0,3);}if(exportFormat==='csv')downloadCSV(names);else if(exportFormat==='pdf')downloadPDF(names);else if(exportFormat==='json')downloadJSON(names);toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);}
-function exportCSV(){openExportModal('csv');}function exportPDF(){openExportModal('pdf');}function exportJSON(){openExportModal('json');}
-function copyAll(){const names=lastGeneratedNames.map(n=>n.name).join('\n');navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!'));}
-function downloadCSV(names){const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];const rows=names.map(n=>{const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';return[n.name,n.tagline||'',n.naming_pattern||'',n.vc_signal||'',avail,scoreAvg,(n.why_it_works||'').replace(/,/g,';')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');});const csv=[headers.join(','),...rows].join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);}
-function downloadJSON(names){const exportData={exportedAt:new Date().toISOString(),provider:prov,model:mdl,config:{industry:document.getElementById('industry').value,language,charLength},names:names.map(n=>{const base={...n};if(!exportOpts.scores)delete base.score;return base;})};const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);}
-function downloadPDF(names){const{jsPDF}=window.jspdf;const doc=new jsPDF();doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('autoDNG — Brand Name Report',14,20);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);doc.text(`Industry: ${document.getElementById('industry').value} | Language: ${language} | Length: ${charLength}`,14,34);let y=45;names.forEach((n,i)=>{if(y>270){doc.addPage();y=20;}doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(`${i+1}. ${n.name}`,14,y);y+=6;doc.setFont('helvetica','italic');doc.setFontSize(10);doc.text(n.tagline||'',14,y);y+=5;doc.setFont('helvetica','normal');doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);y+=5;if(exportOpts.scores&&n.score){const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  ');doc.text(scores,14,y);y+=5;}const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';doc.text(`Available: ${avail}`,14,y);y+=5;doc.text(`Why: ${n.why_it_works||'—'}`,14,y);y+=12;doc.setDrawColor(200,240,74);doc.line(14,y-3,196,y-3);y+=5;});doc.setFontSize(8);doc.setTextColor(100);doc.text('autoDNG — AI Brand Name Generator • brandlab.example.com',14,285);doc.save(`brandlab-export-${new Date().toISOString().slice(0,10)}.pdf`);}
+
+function confirmExport(){
+  exportOpts={all:document.getElementById('expAll').checked,avail:document.getElementById('expAvail').checked,top3:document.getElementById('expTop').checked,scores:document.getElementById('expScores').checked};
+  closeExportModal();
+  
+  let names=lastGeneratedNames;
+  if(exportOpts.avail){names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));}
+  if(exportOpts.top3){names=names.slice(0,3);}
+  
+  if(exportFormat==='csv')downloadCSV(names);
+  else if(exportFormat==='pdf')downloadPDF(names);
+  else if(exportFormat==='json')downloadJSON(names);
+  
+  toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);
+}
+
+function exportCSV(){openExportModal('csv');}
+function exportPDF(){openExportModal('pdf');}
+function exportJSON(){openExportModal('json');}
+
+function copyAll(){
+  const names=lastGeneratedNames.map(n=>n.name).join('\n');
+  navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!'));
+}
+
+function downloadCSV(names){
+  const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];
+  const rows=names.map(n=>{
+    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
+    const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';
+    return[n.name,n.tagline||'',n.naming_pattern||'',n.vc_signal||'',avail,scoreAvg,(n.why_it_works||'').replace(/,/g,';')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+function downloadJSON(names){
+  const exportData={
+    exportedAt:new Date().toISOString(),
+    provider:prov,
+    model:mdl,
+    config:{industry:document.getElementById('industry').value,language,charLength},
+    names:names.map(n=>{const base={...n};if(!exportOpts.scores)delete base.score;return base;})
+  };
+  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
+}
+
+function downloadPDF(names){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('autoDNG — Brand Name Report',14,20);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');
+  doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);
+  doc.text(`Industry: ${document.getElementById('industry').value} | Language: ${language} | Length: ${charLength}`,14,34);
+  
+  let y=45;
+  names.forEach((n,i)=>{
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text(`${i+1}. ${n.name}`,14,y);y+=6;
+    doc.setFont('helvetica','italic');doc.setFontSize(10);
+    doc.text(n.tagline||'',14,y);y+=5;
+    doc.setFont('helvetica','normal');
+    doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);y+=5;
+    if(exportOpts.scores&&n.score){
+      const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  ');
+      doc.text(scores,14,y);y+=5;
+    }
+    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
+    doc.text(`Available: ${avail}`,14,y);y+=5;
+    doc.text(`Why: ${n.why_it_works||'—'}`,14,y);y+=12;
+    doc.setDrawColor(200,240,74);doc.line(14,y-3,196,y-3);y+=5;
+  });
+  
+  doc.setFontSize(8);doc.setTextColor(100);
+  doc.text('autoDNG — AI Brand Name Generator • autodng.example.com',14,285);
+  doc.save(`autodng-export-${new Date().toISOString().slice(0,10)}.pdf`);
+}
 
 // ── Utilities ──────────────────────────────────────────────────────
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200);}

@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>autoDNG — AI auto Name Generator</title>
+<title>autoDNG — AI Auto Name Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -29,21 +27,15 @@ html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;}
 .app{position:relative;z-index:1}
-
-/* HEADER */
 .header{position:sticky;top:0;z-index:200;background:rgba(9,9,11,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .header-inner{max-width:1140px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
 .logo em{color:var(--lime);font-style:italic}
 .hright{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:nowrap}
-
-/* Provider tabs */
 .ptabs{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:3px;flex-shrink:0}
 .ptab{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:6px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
 .ptab.on{background:var(--bg2);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .ptab:hover:not(.on){color:var(--text)}
-
-/* Key input */
 .kwrap{position:relative;flex:1;max-width:250px}
 .kwrap input{width:100%;font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:8px 32px 8px 12px;border-radius:8px;outline:none;transition:border-color .2s,color .2s}
 .kwrap input:focus{border-color:var(--lime);color:var(--text)}
@@ -52,25 +44,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .spill{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:5px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
 .sdot.ok{background:var(--lime);box-shadow:0 0 7px var(--lime-glow)}
-.helpbtn{
-  background:none;
-  border:1px solid var(--border2);
-  border-radius:8px;
-  padding:10px 14px;
-  color:var(--muted2);
-  font-family:var(--mono);
-  font-size:13px;
-  cursor:pointer;
-  min-height:44px;
-}
+.helpbtn{background:none;border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--muted2);font-family:var(--mono);font-size:13px;cursor:pointer;min-height:44px}
 .helpbtn:hover{border-color:var(--lime);color:var(--lime)}
-
-/* Help banner */
-.helpbar{
-  position:relative;
-  z-index:300;
-}
-.helpbar{max-width:1140px;margin:0 auto;padding:10px 24px 0;display:none}
+.helpbar{position:relative;z-index:300;max-width:1140px;margin:0 auto;padding:10px 24px 0;display:none}
 .helpbar.on{display:block}
 .helpbar-inner{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .hb-txt{font-size:13px;color:var(--muted2);line-height:1.6}
@@ -79,8 +55,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .hblink{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);text-decoration:none;transition:all .15s;white-space:nowrap}
 .hblink:hover{border-color:var(--lime);color:var(--lime)}
 .hbclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0}
-
-/* HERO */
 .hero{max-width:1140px;margin:0 auto;padding:52px 24px 36px;display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:center}
 .hero h1{font-family:var(--serif);font-size:clamp(34px,4.5vw,56px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:12px}
 .hero h1 em{font-style:italic;color:var(--lime)}
@@ -89,53 +63,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .chip{display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--muted2)}
 .cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .cval{margin-left:auto;color:var(--lime);font-weight:500}
-
-/* FORM */
 .fwrap{max-width:1140px;margin:0 auto;padding:0 24px 32px}
 .fcard{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px}
 .flbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
 .fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
-.fg4{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:13px;
-  margin-bottom:13px;
-}
-
-@media(max-width:800px){
-
-  .fg4{
-    grid-template-columns:1fr;
-  }
-
-  .helpbtn{
-  width:100%;
-  padding:12px;
-  text-align:center;
-  font-size:13px;
-}
-
-}
+.fg4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:13px}
+@media(max-width:800px){.fg4{grid-template-columns:1fr}.helpbtn{width:100%;padding:12px;text-align:center;font-size:13px}}
 .fg2{display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:18px}
 .field label{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 .field select,.field input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:10px 13px;border-radius:8px;outline:none;appearance:none;transition:border-color .2s}
 .field select:focus,.field input:focus{border-color:var(--lime)}
 .field select option{background:#1a1a22}
-.tld-check{
-  margin-top:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:13px;
-  color:var(--muted2);
-  cursor:pointer;
-}
-
-.tld-check input{
-  accent-color:var(--lime);
-  width:15px;
-  height:15px;
-}
+.tld-check{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted2);cursor:pointer}
+.tld-check input{accent-color:var(--lime);width:15px;height:15px}
 .model-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
 .mchip{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
 .mchip:hover{color:var(--text);border-color:var(--border2)}
@@ -150,14 +90,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .genbtn.ld .spin{display:block}
 .genbtn.ld .blbl{opacity:.6}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Export buttons */
 .export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .expbtn{flex:1;min-width:120px;padding:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .expbtn:hover{border-color:var(--lime);background:var(--lime-dim)}
 .expbtn:disabled{opacity:.4;cursor:not-allowed}
-
-/* PROGRESS */
 .pwrap{max-width:1140px;margin:0 auto;padding:0 24px 26px;display:none}
 .pwrap.on{display:block}
 .pcard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
@@ -166,8 +102,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .pbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:9px}
 .pfill{height:100%;background:var(--lime);border-radius:99px;width:0%;transition:width .4s ease}
 .pstream{font-family:var(--mono);font-size:10px;color:var(--muted);max-height:32px;overflow:hidden;line-height:1.6;word-break:break-all}
-
-/* RESULTS */
 .rwrap{max-width:1140px;margin:0 auto;padding:0 24px 80px}
 .rhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
 .rtitle{font-family:var(--serif);font-size:26px;font-weight:400}
@@ -177,8 +111,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .fpill:hover{border-color:var(--lime);color:var(--lime)}
 .fpill.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
 .cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
-
-/* CARD */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s,transform .2s;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
 .card:hover{border-color:var(--border2);transform:translateY(-1px)}
 .card.win{border-color:rgba(200,240,74,.3)}
@@ -214,8 +146,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .footer{max-width:1140px;margin:0 auto;padding:18px 24px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 16px;font-family:var(--mono);font-size:12px;color:var(--text);transform:translateY(70px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;max-width:300px}
 .toast.on{transform:translateY(0);opacity:1}
-
-/* Export modal */
 .modal{position:fixed;inset:0;z-index:1000;background:rgba(9,9,11,0.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.on{display:flex}
 .modal-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;padding:24px;animation:fadeUp .3s ease}
@@ -230,163 +160,40 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .modal-btn.primary{background:var(--lime);color:#09090b;font-weight:600}
 .modal-btn.secondary{background:var(--bg3);border:1px solid var(--border2);color:var(--text)}
 .modal-btn:hover{opacity:.92}
-
 @media(max-width:800px){
   .hero{grid-template-columns:1fr}
   .chips{display:none}
   .fg3,.fg2{grid-template-columns:1fr}
   .cgrid{grid-template-columns:1fr}
   .scores{grid-template-columns:repeat(2,1fr)}
-  .ptabs{
-  display:flex;
-  width:100%;
-  justify-content:space-between;
-}
-
-.ptab{
-  flex:1;
-  text-align:center;
-}
-
-.header-inner{
-  height:auto;
-  padding:10px 24px;
-  flex-wrap:wrap;
-}
-
-.hright{
-  width:100%;
-  flex-wrap:wrap;
-}
-
-.kwrap{
-  flex:1;
-  max-width:none;
-}
-  
+  .ptabs{display:flex;width:100%;justify-content:space-between}
+  .ptab{flex:1;text-align:center}
+  .header-inner{height:auto;padding:10px 24px;flex-wrap:wrap}
+  .hright{width:100%;flex-wrap:wrap}
+  .kwrap{flex:1;max-width:none}
   .modal-opts{grid-template-columns:1fr}
 }
-.footer{
-  margin-top:60px;
-  border-top:1px solid var(--border);
-  background:rgba(9,9,11,.95);
-  backdrop-filter:blur(10px);
-}
-
-.footer-inner{
-  max-width:1100px;
-  margin:auto;
-  padding:22px;
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-.fbtn{
-  text-decoration:none;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:12px 18px;
-  border-radius:12px;
-  font-size:14px;
-  transition:.2s ease;
-}
-
-.fbtn:hover{
-  border-color:var(--lime);
-  color:var(--lime);
-  transform:translateY(-1px);
-}
-.tools-section{
-  margin-top:34px;
-  padding-top:28px;
-  border-top:1px solid var(--border);
-}
-
-.tools-head{
-  font-family:var(--serif);
-  font-size:28px;
-  margin-bottom:18px;
-}
-
-.tools-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-
-.tool-card{
-  text-decoration:none;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:20px;
-  transition:.2s ease;
-  display:block;
-}
-
-.tool-card:hover{
-  border-color:var(--lime);
-  transform:translateY(-2px);
-}
-
-.tool-icon{
-  font-size:28px;
-  margin-bottom:14px;
-}
-
-.tool-title{
-  color:var(--text);
-  font-size:18px;
-  font-weight:600;
-  margin-bottom:8px;
-}
-
-.tool-sub{
-  color:var(--muted2);
-  font-size:14px;
-  line-height:1.6;
-}
-
-.tool-card.soon{
-  opacity:.55;
-  pointer-events:none;
-}
-
-@media(max-width:800px){
-
-  .tools-grid{
-    grid-template-columns:1fr;
-  }
-
-  .tool-card{
-    padding:18px;
-  }
-}
-@media(max-width:800px){
-
-  .footer-inner{
-    padding:18px 14px 28px;
-  }
-
-  .fbtn{
-    flex:1;
-    text-align:center;
-    font-size:13px;
-    padding:14px 10px;
-  }
-}
+.footer{margin-top:60px;border-top:1px solid var(--border);background:rgba(9,9,11,.95);backdrop-filter:blur(10px)}
+.footer-inner{max-width:1100px;margin:auto;padding:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.fbtn{text-decoration:none;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;transition:.2s ease}
+.fbtn:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-1px)}
+.tools-section{margin-top:34px;padding-top:28px;border-top:1px solid var(--border)}
+.tools-head{font-family:var(--serif);font-size:28px;margin-bottom:18px}
+.tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.tool-card{text-decoration:none;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;transition:.2s ease;display:block}
+.tool-card:hover{border-color:var(--lime);transform:translateY(-2px)}
+.tool-icon{font-size:28px;margin-bottom:14px}
+.tool-title{color:var(--text);font-size:18px;font-weight:600;margin-bottom:8px}
+.tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
+.tool-card.soon{opacity:.55;pointer-events:none}
+@media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
 </style>
 </head>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-PVV83DRSFT');
 </script>
 <body><div class="app">
@@ -451,229 +258,114 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="model-row" id="mrow"></div>
   </div>
   
-  <!-- Row 1: Industry, Archetype, Language, Word Count -->
-<div class="fg4">
-
-  <div class="field">
-    <label>Industry</label>
-
-    <select id="industry">
-      <option value="">— select —</option>
-
-      <option>AI Agents & Automation</option>
-      <option>Healthcare AI</option>
-      <option>Fintech & Neobanking</option>
-      <option>Developer Tools</option>
-      <option>B2B SaaS / Enterprise</option>
-      <option>Defense & Aerospace</option>
-      <option>Biotech & Life Sciences</option>
-      <option>Climate & CleanTech</option>
-      <option>Consumer & E-commerce</option>
-      <option>Education & EdTech</option>
-      <option>Cybersecurity</option>
-      <option>Logistics & Supply Chain</option>
-      <option>Crypto & Web3</option>
-      <option>Food & FoodTech</option>
-      <option>Mental Health & Wellness</option>
-      <option>Real Estate & PropTech</option>
-      <option>Gaming & Esports</option>
-      <option>Legal Tech</option>
-      <option>HR & Future of Work</option>
-      <option>Supply Chain & Robotics</option>
-    </select>
+  <!-- Row 1: Industry, Archetype, Language, Char Length -->
+  <div class="fg4">
+    <div class="field">
+      <label>Industry</label>
+      <select id="industry">
+        <option value="">— select —</option>
+        <option>AI Agents & Automation</option>
+        <option>Healthcare AI</option>
+        <option>Fintech & Neobanking</option>
+        <option>Developer Tools</option>
+        <option>B2B SaaS / Enterprise</option>
+        <option>Defense & Aerospace</option>
+        <option>Biotech & Life Sciences</option>
+        <option>Climate & CleanTech</option>
+        <option>Consumer & E-commerce</option>
+        <option>Education & EdTech</option>
+        <option>Cybersecurity</option>
+        <option>Logistics & Supply Chain</option>
+        <option>Crypto & Web3</option>
+        <option>Food & FoodTech</option>
+        <option>Mental Health & Wellness</option>
+        <option>Real Estate & PropTech</option>
+        <option>Gaming & Esports</option>
+        <option>Legal Tech</option>
+        <option>HR & Future of Work</option>
+        <option>Supply Chain & Robotics</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Brand Archetype</label>
+      <select id="archetype">
+        <option value="">Mix styles (recommended)</option>
+        <option value="linear">Linear-style (clean SaaS)</option>
+        <option value="stripe">Stripe-style (premium fintech)</option>
+        <option value="figma">Figma-style (creative modern)</option>
+        <option value="cursor">Cursor-style (AI-native)</option>
+        <option value="anduril">Anduril-style (deep-tech)</option>
+        <option value="palantir">Palantir-style (intelligence)</option>
+        <option value="vanta">Vanta-style (security SaaS)</option>
+        <option value="vercel">Vercel-style (developer infra)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Language Focus</label>
+      <select id="language">
+        <option value="global" selected>🌍 Global-friendly</option>
+        <option value="en">🇺🇸 English-only</option>
+        <option value="non-en">🗾 Non-English optimized</option>
+        <option value="multilingual">🌐 Multilingual adaptable</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Character Length</label>
+      <select id="charlen" onchange="onFilterChange()">
+        <option value="any" selected>Any length</option>
+        <option value="3-5">3–5 chars</option>
+        <option value="4-6">4–6 chars</option>
+        <option value="5-8">5–8 chars</option>
+        <option value="6-10">6–10 chars</option>
+        <option value="10+">10+ chars</option>
+     </select>
+    </div>
   </div>
-
-  <div class="field">
-    <label>Brand Archetype</label>
-
-    <select id="archetype">
-
-      <option value="">
-        Mix styles (recommended)
-      </option>
-
-      <option value="linear">
-        Linear-style (clean SaaS)
-      </option>
-
-      <option value="stripe">
-        Stripe-style (premium fintech)
-      </option>
-
-      <option value="figma">
-        Figma-style (creative modern)
-      </option>
-
-      <option value="cursor">
-        Cursor-style (AI-native)
-      </option>
-
-      <option value="anduril">
-        Anduril-style (deep-tech)
-      </option>
-
-      <option value="palantir">
-        Palantir-style (intelligence)
-      </option>
-
-      <option value="vanta">
-        Vanta-style (security SaaS)
-      </option>
-
-      <option value="vercel">
-        Vercel-style (developer infra)
-      </option>
-
-    </select>
-  </div>
-
-  <div class="field">
-    <label>Language Focus</label>
-
-    <select id="language">
-      <option value="global" selected>
-        🌍 Global-friendly
-      </option>
-
-      <option value="en">
-        🇺🇸 English-only
-      </option>
-
-      <option value="non-en">
-        🗾 Non-English optimized
-      </option>
-
-      <option value="multilingual">
-        🌐 Multilingual adaptable
-      </option>
-    </select>
-  </div>
-
-  <div class="field">
-  <label>Name Length</label>
-
-  <select id="wordcount">
-    <option value="any" selected>
-      Any length
-    </option>
-
-    <option value="1">
-      Single word (Slack, Arc)
-    </option>
-
-    <option value="2">
-      Two words (GitHub, PayPal)
-    </option>
-
-    <option value="3">
-      Three words max
-    </option>
-  </select>
-</div>
-
-<div class="field">
-  <label>Character Length</label>
-
-  <select id="charlen">
-
-    <option value="any" selected>
-      Any length
-    </option>
-
-    <option value="3-5">
-      3–5 chars
-    </option>
-
-    <option value="4-6">
-      4–6 chars
-    </option>
-
-    <option value="5-8">
-      5–8 chars
-    </option>
-
-    <option value="6-10">
-      6–10 chars
-    </option>
-
-    <option value="10+">
-      10+ chars
-    </option>
-
-  </select>
-</div>
-
-</div>
   
   <!-- Row 2: Style, TLD, Audience -->
   <div class="fg3">
     <div class="field">
       <label>Naming style</label>
-      <select id="style">
-
-  <option value="">
-    Mixed styles (recommended)
-  </option>
-
-  <option value="ultra_short">
-    Ultra-short (4–5 letters)
-  </option>
-
-  <option value="invented">
-    Premium invented brandables
-  </option>
-
-  <option value="real_adjacent">
-    Real-word adjacent
-  </option>
-
-  <option value="infra">
-    Technical infrastructure
-  </option>
-
-  <option value="luxury">
-    Luxury minimal
-  </option>
-
-  <option value="enterprise">
-    Enterprise-grade
-  </option>
-
-  <option value="playful">
-    Playful modern startup
-  </option>
-
-  <option value="future">
-    Futuristic AI-native
-  </option>
-
-  <option value="mythic">
-    Mythological / powerful
-  </option>
-
-</select>
+      <select id="style" onchange="onFilterChange()">
+        <option value="">Mixed styles (recommended)</option>
+        <option value="ultra_short">Ultra-short (4–5 letters)</option>
+        <option value="invented">Premium invented brandables</option>
+        <option value="real_adjacent">Real-word adjacent</option>
+        <option value="infra">Technical infrastructure</option>
+        <option value="luxury">Luxury minimal</option>
+        <option value="enterprise">Enterprise-grade</option>
+        <option value="playful">Playful modern startup</option>
+        <option value="future">Futuristic AI-native</option>
+        <option value="mythic">Mythological / powerful</option>
+      </select>
     </div>
     <div class="field">
-  <label>Primary TLD</label>
-
-  <select id="tld">
-    <option value="mix">Mixed TLDs (recommended)</option>
-    <option value="com">.com (universal)</option>
-    <option value="ai">.ai (AI-native)</option>
-    <option value="io">.io (SaaS / dev)</option>
-    <option value="co">.co (modern)</option>
-    <option value="xyz">.xyz (Web3 / emerging)</option>
-  </select>
-
-  <label class="tld-check">
-    <input
-      type="checkbox"
-      id="strictTld"
-    >
-    <span>Prioritize available primary TLD names</span>
-  </label>
-</div>
-
+      <label>Primary TLD</label>
+      <select id="tld" onchange="onFilterChange()">
+        <option value="mix">Mixed TLDs (recommended)</option>
+        <option value="com">.com (universal)</option>
+        <option value="ai">.ai (AI-native)</option>
+        <option value="io">.io (SaaS / dev)</option>
+        <option value="co">.co (modern)</option>
+        <option value="xyz">.xyz (Web3 / emerging)</option>
+      </select>
+      <label class="tld-check">
+        <input type="checkbox" id="strictTld">
+        <span>Prioritize available primary TLD names</span>
+      </label>
+      
+      <!-- Brand Structure -->
+      <label style="display:block;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">
+        Brand Structure
+      </label>
+      <select id="brandStructure" onchange="onFilterChange()" style="margin-top:6px">
+        <option value="flex">Flexible AI mode</option>
+        <option value="atomic">Atomic (Ramp, Stripe)</option>
+        <option value="compound">Compound (BindEcho)</option>
+        <option value="invented">Invented (Klyro)</option>
+        <option value="hybrid">Hybrid startup (NotionFlow)</option>
+      </select>
+    </div>
     <div class="field">
       <label>Target audience</label>
       <select id="aud">
@@ -696,7 +388,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="spin"></div><span class="blbl">Generate brand names →</span>
   </button>
   
-  <!-- Export buttons (shown after generation) -->
+  <!-- Export buttons -->
   <div class="export-row" id="exportRow" style="display:none">
     <button class="expbtn" onclick="exportCSV()">📄 Export CSV</button>
     <button class="expbtn" onclick="exportPDF()">📕 Export PDF</button>
@@ -720,73 +412,36 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="esub">Claude, GPT-4o, or Gemini generates 10 VC-vetted brand names with live .com/.ai/.io/.xyz/.co checks</div>
   </div>
 </div>
+
+<!-- Tools Section -->
 <div class="rwrap">
-
   <div class="tools-section">
-
-    <div class="tools-head">
-      autoDNG Tools
-    </div>
-
+    <div class="tools-head">autoDNG Tools</div>
     <div class="tools-grid">
-
       <a href="trademarks.html" class="tool-card">
         <div class="tool-icon">™</div>
-
-        <div class="tool-title">
-          Trademark Checker
-        </div>
-
-        <div class="tool-sub">
-          Analyze legal conflict probability,
-          startup overlap, and safer alternatives.
-        </div>
+        <div class="tool-title">Trademark Checker</div>
+        <div class="tool-sub">Analyze legal conflict probability, startup overlap, and safer alternatives.</div>
       </a>
-
       <a href="valuation.html" class="tool-card">
         <div class="tool-icon">💎</div>
-
-        <div class="tool-title">
-          Domain Valuation
-        </div>
-
-        <div class="tool-sub">
-          Estimate startup brand value,
-          liquidity, and aftermarket potential.
-        </div>
+        <div class="tool-title">Domain Valuation</div>
+        <div class="tool-sub">Estimate startup brand value, liquidity, and aftermarket potential.</div>
       </a>
-
       <a href="handles.html" class="tool-card">
         <div class="tool-icon">🌐</div>
-
-        <div class="tool-title">
-          Social Handle Checker
-        </div>
-
-        <div class="tool-sub">
-          Analyze username, startup branding consistency,
-      and social identity strength across modern platforms.
-        </div>
+        <div class="tool-title">Social Handle Checker</div>
+        <div class="tool-sub">Analyze username, startup branding consistency, and social identity strength.</div>
       </a>
-
       <a href="vc-score.html" class="tool-card">
         <div class="tool-icon">📈</div>
-
-        <div class="tool-title">
-          VC Brand Score
-        </div>
-
-        <div class="tool-sub">
-          Analyze investor perception, startup readiness, memorability, 
-          and venture-scale branding potential.
-        </div>
+        <div class="tool-title">VC Brand Score</div>
+        <div class="tool-sub">Analyze investor perception, startup readiness, memorability, and venture-scale branding potential.</div>
       </a>
-
     </div>
-
   </div>
-
 </div>
+
 <footer class="footer">
   <span>autoDNG — Multi-provider AI naming engine</span>
   <span>Training: a16z · YC · NameBio · Crunchbase · TechCrunch · GoDaddy Auctions</span>
@@ -801,18 +456,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="modal-title">Export Options</div>
     <div class="modal-sub">Select which names to export and format preferences:</div>
     <div class="modal-opts">
-      <label class="modal-opt">
-        <input type="checkbox" id="expAll" checked> All names (10)
-      </label>
-      <label class="modal-opt">
-        <input type="checkbox" id="expAvail" onchange="document.getElementById('expAll').checked=false"> Available domains only
-      </label>
-      <label class="modal-opt">
-        <input type="checkbox" id="expTop" onchange="document.getElementById('expAll').checked=false"> Top 3 picks only
-      </label>
-      <label class="modal-opt">
-        <input type="checkbox" id="expScores" checked> Include scoring metrics
-      </label>
+      <label class="modal-opt"><input type="checkbox" id="expAll" checked> All names (10)</label>
+      <label class="modal-opt"><input type="checkbox" id="expAvail" onchange="document.getElementById('expAll').checked=false"> Available domains only</label>
+      <label class="modal-opt"><input type="checkbox" id="expTop" onchange="document.getElementById('expAll').checked=false"> Top 3 picks only</label>
+      <label class="modal-opt"><input type="checkbox" id="expScores" checked> Include scoring metrics</label>
     </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeExportModal()">Cancel</button>
@@ -824,700 +471,432 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 <script>
 // ── Config ─────────────────────────────────────────────────────────
 const PROVS = {
-
-  openrouter:{
-    ph:'sk-or-…',
-    val:k=>k.startsWith('sk-or-'),
-    models:[
-      {
-        id:'deepseek/deepseek-chat',
-        l:'DeepSeek Chat'
-      },
-      {
-        id:'meta-llama/llama-3.3-70b-instruct',
-        l:'Llama 3.3'
-      },
-      {
-        id:'google/gemini-2.0-flash-001',
-        l:'Gemini Flash'
-      }
-    ]
-  },
-
-  openai:{
-    ph:'sk-proj-…',
-    val:k=>k.startsWith('sk-'),
-    models:[
-      {
-        id:'gpt-4o',
-        l:'GPT-4o'
-      },
-      {
-        id:'gpt-4o-mini',
-        l:'GPT-4o Mini'
-      }
-    ]
-  },
-
-  gemini:{
-    ph:'AIzaSy…',
-    val:k=>k.startsWith('AIza'),
-    models:[
-      {
-        id:'gemini-2.5-flash',
-        l:'Gemini 2.5 Flash'
-      },
-      {
-        id:'gemini-2.5-pro',
-        l:'Gemini 2.5 Pro'
-      }
-    ]
-  },
-
-  groq:{
-  ph:'gsk_…',
-
-  val:k=>k.startsWith('gsk_'),
-
-  models:[
-
-    {
-      id:'llama-3.3-70b-versatile',
-      l:'Llama 3.3 70B'
-    },
-
-    {
-      id:'llama-3.1-8b-instant',
-      l:'Llama 3.1 Instant'
-    },
-
-    {
-      id:'qwen-qwq-32b',
-      l:'Qwen QwQ 32B'
-    }
-
-  ]
-}
-
-  
-
+  openrouter:{ph:'sk-or-…',val:k=>k.startsWith('sk-or-'),models:[{id:'deepseek/deepseek-chat',l:'DeepSeek Chat'},{id:'meta-llama/llama-3.3-70b-instruct',l:'Llama 3.3'},{id:'google/gemini-2.0-flash-001',l:'Gemini Flash'}]},
+  openai:{ph:'sk-proj-…',val:k=>k.startsWith('sk-'),models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'}]},
+  gemini:{ph:'AIzaSy…',val:k=>k.startsWith('AIza'),models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
+  groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
 };
 
-// Expanded TLD config with NameBio/GoDaddy priority ordering [[34]][[17]]
-const TLDS = {
-  com:['.com'],
-  ai:['.ai'],
-  io:['.io'],
-  co:['.co'],
-  xyz:['.xyz'],
-  mix:['.com','.ai','.io','.xyz','.co']
-};
-
-const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],
-      SC_K=['brand_strength','memorability','global_fit','trend_alignment'],
-      SC_L=['Brand','Memory','Global','Trend'];
-
-// Language labels for UI
+const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
+const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
 const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
-const WC_LABELS={1:'1-word',2:'2-word',3:'3-word',any:'Any'};
-function getWordCount(name){
 
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .length;
-
+// ── Phonetic Utilities ─────────────────────────────────────────────
+function normalizeBrandName(name){
+  return name.toLowerCase().replace(/[^a-z]/g,'').replace(/ph/g,'f').replace(/x/g,'ks').replace(/z/g,'s').replace(/q/g,'k').replace(/[aeiou]+/g,'a').replace(/(.)\1+/g,'$1');
 }
-
-function matchesWordCount(
-  name,
-  wc
-){
-
-  if(wc === 'any'){
-    return true;
-  }
-
-  return getWordCount(name)
-    === Number(wc);
-
-}
-
-function matchesCharLength(
-  name,
-  range
-){
-
-  if(range === 'any'){
-    return true;
-  }
-
-  const len =
-    name
-      .replace(/\s+/g,'')
-      .length;
-
-  if(range === '10+'){
-    return len >= 10;
-  }
-
-  const [min,max] =
-    range.split('-').map(Number);
-
-  return len >= min &&
-         len <= max;
-
-}
+function bigrams(str){const s=str.toLowerCase();const out=[];for(let i=0;i<s.length-1;i++){out.push(s.slice(i,i+2));}return out;}
+function diceCoefficient(a,b){const bgA=bigrams(normalizeBrandName(a));const bgB=bigrams(normalizeBrandName(b));let matches=0;const used=new Set();for(let i=0;i<bgA.length;i++){for(let j=0;j<bgB.length;j++){if(!used.has(j)&&bgA[i]===bgB[j]){matches++;used.add(j);break;}}}const total=bgA.length+bgB.length;if(total===0){return 0;}return (2*matches)/total;}
+function similarityScore(a,b){return Math.round(diceCoefficient(a,b)*100);}
+function isNearDuplicate(a,b){return similarityScore(a,b)>=72;}
+function getPhoneticRoot(name){return normalizeBrandName(name).slice(0,4);}
+function escapeHtml(str=''){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+function getWordCount(name){return name.trim().split(/\s+/).filter(Boolean).length;}
+function matchesCharLength(name,range){if(range==='any')return true;const len=name.replace(/\s+/g,'').length;if(range==='10+')return len>=10;const[min,max]=range.split('-').map(Number);return len>=min&&len<=max;}
+function hasCVCVPattern(str){const s=str.toLowerCase().replace(/[^a-z]/g,'');return /^[^aeiou][aeiou][^aeiou][aeiou]/i.test(s)||/[aeiou][^aeiou][aeiou][^aeiou]/i.test(s);}
+function pickWeighted(arr){if(!arr.length)return null;const total=arr.reduce((sum,i)=>sum+(i.weight||1),0);let rand=Math.random()*total;for(const item of arr){if(rand<(item.weight||1))return item;rand-=(item.weight||1);}return arr[arr.length-1];}
+function capitalize(str){return str.charAt(0).toUpperCase()+str.slice(1).toLowerCase();}
 
 // ── State ──────────────────────────────────────────────────────────
 let prov=localStorage.getItem('bl_p')||'openrouter';
 let key=localStorage.getItem('bl_k_'+prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
-if(!PROVS[prov].models.find(m=>m.id===mdl)){
-  mdl=PROVS[prov].models[0].id;
-  localStorage.setItem('bl_m_'+prov,mdl);
-}
-// let busy=false,domC={},pill='all',helpOn=false,language='global',wordCount='any';
-let busy=false,
-    domC={},
-    pill='all',
-    helpOn=false,
-    language='global',
-    wordCount='any',
-    charLength='any';
-let lastGeneratedNames=[]; // For export functionality
+if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
+let busy=false,domC={},pill='all',helpOn=false,language='global',charLength='any',brandStructure='flex',filtersChanged=false;
+let lastGeneratedNames=[],rufloIntel=null,namingIntel=null,industryIntel={},promptSummary='';
+const recentNamesCache=new Set(JSON.parse(localStorage.getItem('dng_recent_names')||'[]'));
+
+// ── Intelligence Loading ───────────────────────────────────────────
+async function loadIntelligence(){try{
+  const intelRes=await fetch('./data/naming-intelligence.json');
+  const rufloRes=await fetch('./data/ruflo-intelligence.json');
+  const promptRes=await fetch('./data/prompt-summary.txt');
+  const industryRes=await fetch('./data/industry-intelligence.json');
+  
+  namingIntel=await intelRes.json();
+  rufloIntel=await rufloRes.json();
+  promptSummary=await promptRes.text();
+  industryIntel=await industryRes.json();
+  
+  window.rufloIntel=rufloIntel;
+  console.log('✓ Intelligence loaded:',rufloIntel.metadata?.version);
+}catch(err){console.warn('Could not load intelligence',err);}}
 
 // ── Boot ───────────────────────────────────────────────────────────
-(function init(){
+(async function init(){
+  await loadIntelligence();
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
   document.querySelector(`.ptab[onclick*="${prov}"]`)?.classList.add('on');
   document.getElementById('akey').value=key;
   document.getElementById('akey').placeholder=PROVS[prov].ph;
-  setKeyUI(key);renderModels();
-  
-  // Load persisted preferences
+  setKeyUI(key);
+  renderModels();
   language=localStorage.getItem('bl_lang')||'global';
-  wordCount=localStorage.getItem('bl_wc')||'any';
+  charLength=localStorage.getItem('bl_charlen')||'any';
+  brandStructure=localStorage.getItem('bl_structure')||'flex';
   document.getElementById('language').value=language;
-  document.getElementById('wordcount').value=wordCount;
-  charLength =
-  localStorage.getItem(
-    'bl_charlen'
-  ) || 'any';
-
-document.getElementById(
-  'charlen'
-).value = charLength;
+  document.getElementById('charlen').value=charLength;
+  document.getElementById('brandStructure').value=brandStructure;
 })();
 
+// ── Provider/Model Switching ───────────────────────────────────────
 function switchProv(p,el){
   localStorage.setItem('bl_k_'+prov,key);
   prov=p;localStorage.setItem('bl_p',p);
   key=localStorage.getItem('bl_k_'+p)||'';
   mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
-  if(!PROVS[p].models.find(m=>m.id===mdl)){
-  mdl=PROVS[p].models[0].id;
-  localStorage.setItem('bl_m_'+p,mdl);
-}
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
   document.getElementById('akey').value=key;
   document.getElementById('akey').placeholder=PROVS[p].ph;
-  setKeyUI(key);renderModels();
+  setKeyUI(key);
+  renderModels();
 }
-
 function renderModels(){
   document.getElementById('mrow').innerHTML=PROVS[prov].models.map(m=>
     `<button class="mchip ${m.id===mdl?'on':''}" data-id="${m.id}" onclick="selMdl('${m.id}',this)">${m.l}</button>`
   ).join('');
 }
-
-function selMdl(id,el){mdl=id;localStorage.setItem('bl_m_'+prov,id);document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function selMdl(id,el){
+  mdl=id;localStorage.setItem('bl_m_'+prov,id);
+  document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
 function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
 function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';}
 function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
 function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
+function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
+function resetFilterState(){filtersChanged=false;const btn=document.getElementById('gbtn');if(btn){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}
 
-// ── Enhanced Prompts with Training Data Integration ─────────────────
-const SYS = `
-You are an elite startup naming strategist.
-
-Generate modern venture-scale startup names.
-
-Rules:
-- memorable
-- globally pronounceable
-- clean phonetics
-- strong brandability
-- avoid generic AI buzzwords
-- avoid trademark-heavy names
-- avoid hyphens and numbers
-
-Avoid overused startup terms:
-AI
-Nova
-Core
-Flow
-Labs
-Nexus
-Meta
-Quantum
-Bot
-Sync
-Cloud
-Data
-
-Return ONLY raw JSON array.
-
-Format:
-
-[
-{
-"name":"",
-"tagline":"",
-"naming_pattern":"",
-"vc_signal":"",
-"why_it_works":"",
-"score":{
-"brand_strength":90,
-"memorability":90,
-"global_fit":90,
-"trend_alignment":90
-}
-}
-]
-`;
-const GEMINI_SYS = `
-You are an elite VC startup naming strategist.
-
-Return ONLY valid raw JSON.
-
-RULES:
-- No markdown
-- No explanations
-- No code fences
-- EXACTLY 5 objects
-- Compact JSON only
-- Finish complete JSON
-- No trailing commas
-
-FORMAT:
-
-[
-{
-"name":"Klyro",
-"tagline":"AI workflows simplified",
-"naming_pattern":"Abstract",
-"vc_signal":"VC-ready",
-"why_it_works":"Short memorable modern",
-"score":{
-"brand_strength":90,
-"memorability":91,
-"global_fit":88,
-"trend_alignment":89
-}
-}
-]
-`;
-const STYLE_DNA = {
-
-  ultra_short: `
-Generate:
-- 4-5 character names
-- highly memorable
-- premium startup feel
-
-Examples:
-Brex, Ramp, Arc
-`,
-
-  invented: `
-Generate:
-- invented premium brandables
-- low dictionary overlap
-- VC-backable feel
-
-Examples:
-Vanta, Stripe, Figma
-`,
-
-  real_adjacent: `
-Generate:
-- names inspired by real words
-- trustworthy and simple
-- globally pronounceable
-
-Examples:
-Notion, Mercury, Plaid
-`,
-
-  infra: `
-Generate:
-- technical infrastructure feel
-- developer-tool energy
-- hard consonants
-
-Examples:
-Vercel, Supabase, Datadog
-`,
-
-  luxury: `
-Generate:
-- elegant minimalist names
-- premium phonetics
-- smooth syllables
-
-Examples:
-Avenza, Velora
-`,
-
-  enterprise: `
-Generate:
-- serious B2B credibility
-- trusted enterprise tone
-- scalable naming structure
-
-Examples:
-Okta, Workday, ServiceNow
-`,
-
-  playful: `
-Generate:
-- modern startup friendliness
-- softer memorable phonetics
-- creative energy
-
-Examples:
-Canva, Figma, Loom
-`,
-
-  future: `
-Generate:
-- futuristic AI-native names
-- modern technical energy
-- uncommon phonetics
-
-Examples:
-Anthropic, OpenAI, Replit
-`,
-
-  mythic: `
-Generate:
-- powerful memorable names
-- legendary undertones
-- deep-tech seriousness
-
-Examples:
-Palantir, Anduril
-`
-};
-
-// ── Two-Phase Generation Helpers ──────────────────────────────────
-
-// Generate heuristic name patterns to guide LLM toward available-friendly names
-function generateHeuristicExamples(industry, count = 8) {
-  const roots = {
-    'AI Agents & Automation': ['auto', 'agent', 'flow', 'sync', 'mind'],
-    'Fintech & Neobanking': ['pay', 'coin', 'vault', 'flux', 'mint'],
-    'Developer Tools': ['code', 'dev', 'stack', 'build', 'deploy'],
-    'Healthcare AI': ['med', 'care', 'health', 'vital', 'pulse'],
-  };
-  const industryRoots = roots[industry] || ['tech', 'labs', 'sys', 'net'];
+// ── UPDATED: Procedural Generation with Optional Suffixes + Industry Filtering ───────────────────────────────────
+function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
+  const { phonetic_inventory, structural_patterns, invented_endings, pattern_weights, suffix_probability, atomic_mode_rules } = grammar;
+  const { prefixes, suffixes, clusters, combination_affinity } = morphology;
   
-  const prefixes = ['z', 'k', 'v', 'x', 'q', 'kr', 'vy', 'zyl', 'vex'];
-  const suffixes = ['ox', 'ra', 'on', 'ix', 'or', 'ex', 'al', 'en'];
+  const availableSuffixes = getIndustryAppropriateSuffixes(industry, suffixes);
+  const candidates = [];
+  const seen = new Set();
+  const suffixCounts = {};
+  const prefixCounts = {};
   
-  const examples = [];
+  const brandStructure = document.getElementById('brandStructure')?.value || 'flex';
+  const isAtomicMode = brandStructure === 'atomic' || Math.random() < (atomic_mode_rules?.force_atomic_probability || 0);
   
-  // Pattern 1: Prefix + Suffix (invented)
-  for (let p of prefixes.slice(0, 4)) {
-    for (let s of suffixes.slice(0, 3)) {
-      if (examples.length >= count) break;
-      examples.push((p + s).charAt(0).toUpperCase() + (p + s).slice(1));
-    }
-  }
-  
-  // Pattern 2: Root + uncommon suffix
-  for (let r of industryRoots.slice(0, 3)) {
-    if (examples.length >= count) break;
-    examples.push((r + 'ix').charAt(0).toUpperCase() + (r + 'ix').slice(1));
-  }
-  
-  return examples;
-}
-
-// Score names for availability likelihood (client-side heuristic)
-function calculateAvailabilityScore(name, tld = '.com') {
-  let score = 70; // Base score
-  const lower = name.toLowerCase().replace(/\s+/g, '');
-  const len = lower.length;
-  
-  // 🔽 Penalties
-  const commonWords = ['cloud','data','sync','flow','core','labs','tech','app','web','net','ai','bot','meta','quantum','nova','prime','elite'];
-  if (commonWords.includes(lower)) score -= 40;
-  if (len <= 4 && /^[a-z]+$/.test(lower)) score -= 30;
-  if (/(ify|ly|able|io|ai|app)$/.test(lower)) score -= 20;
-  if (/[-\d]/.test(name)) score -= 25;
-  
-  // 🔼 Bonuses  
-  if (/[xzqvk]/.test(lower)) score += 15;
-  if (/[^aeiou]{3,}/.test(lower)) score += 10;
-  if (len >= 5 && len <= 7) score += 10;
-  if (/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower)) score += 8;
-  
-  return Math.max(5, Math.min(99, score));
-}
-
-// Phase 1: Generate broad candidate pool
-async function generateRawCandidates(industry, style, kw, targetCount = 25) {
-  const heuristicExamples = generateHeuristicExamples(industry, 6);
-  const exampleList = heuristicExamples.map(e => `- ${e}`).join('\n');
-  
-  const prompt = `Generate ${targetCount} invented brandable startup names for "${industry}".
-
-🎯 STYLE EXAMPLES (emulate these patterns):
-${exampleList}
-
-Rules:
-- 4-8 characters, globally pronounceable  
-- No exact dictionary words under 6 letters
-- Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs
-- Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation
-- Style: ${style || 'mixed modern tech'}
-${kw ? `Incorporate creatively: ${kw}` : ''}
-
-Return ONLY a JSON array:
-[{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
-
-No markdown, no explanations.`;
-
-  const sys = `You are a startup naming expert. Return ONLY valid JSON array.`;
-  
-  try {
-    let response;
-    if (prov === 'gemini') {
-      response = await callGemini(sys, prompt, () => {});
-    } else if (prov === 'openai') {
-      response = await callOpenAI(sys, prompt, () => {});
-    } else if (prov === 'groq') {
-      response = await callGroq(sys, prompt, () => {});
-    } else {
-      response = await callOpenRouter(sys, prompt, () => {});
-    }
+  while (candidates.length < count) {
+    const weightedPatterns = structural_patterns.map(p => ({
+      pattern: p,
+      weight: pattern_weights?.[p] || 1
+    }));
+    const pattern = pickWeighted(weightedPatterns)?.pattern || structural_patterns[0];
     
-    // Parse response
-    const clean = String(response || '').replace(/```json|```/g, '').trim();
-    let names = null;
-    
-    try { names = JSON.parse(clean); }
-    catch(e) {
-      const start = clean.indexOf('[');
-      const end = clean.lastIndexOf(']');
-      if (start !== -1 && end !== -1) {
-        names = JSON.parse(clean.slice(start, end + 1)
-          .replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
+    let effectivePattern = pattern;
+    if (isAtomicMode && atomic_mode_rules?.force_no_suffix) {
+      if (pattern.includes('{suffix}') || pattern.includes('{ending}')) {
+        effectivePattern = pattern.replace('{suffix}', '').replace('{ending}', '');
       }
     }
     
-    return Array.isArray(names) ? names.filter(n => n?.name) : [];
-  } catch(e) {
-    console.error('Phase 1 generation error:', e);
-    return [];
-  }
-}
-
-// Phase 2: Score candidates for availability + brand strength
-async function scoreCandidates(rawNames, tlds, config) {
-  if (rawNames.length === 0) return [];
-  
-  // Client-side scoring (fast, no API call)
-  return rawNames.map(n => {
-    const availScore = calculateAvailabilityScore(n.name, tlds[0]);
-    const brandScore = n.score 
-      ? Object.values(n.score).reduce((a,b) => a + b, 0) / Object.values(n.score).length 
-      : 70;
+    let name = effectivePattern
+      .replace(/{onset}/, () => pickWeighted(phonetic_inventory.safe_onsets))
+      .replace(/{vowel}/, () => pickWeighted(phonetic_inventory.vowels))
+      .replace(/{coda}/, () => pickWeighted(phonetic_inventory.safe_codas))
+      .replace(/{prefix}/, () => {
+        const usable = prefixes.filter(p => {
+          if(p.trend === 'saturating') return false;
+          const used = prefixCounts[p.term] || 0;
+          return used < 1;
+        });
+        const p = pickWeighted(usable.length ? usable : prefixes);
+        if(p?.term){ prefixCounts[p.term] = (prefixCounts[p.term] || 0) + 1; }
+        return p?.term || '';
+      })
+      .replace(/{suffix}/, () => {
+        if (Math.random() > (suffix_probability || 0.08)) return '';
+        const s = pickWeighted(availableSuffixes.filter(s => s.trend !== 'saturating'));
+        if (s?.term) suffixCounts[s.term] = (suffixCounts[s.term] || 0) + 1;
+        return s?.term || '';
+      })
+      .replace(/{cluster}/, () => pickWeighted(clusters))
+      .replace(/{semantic_root}/, () => {
+        const roots = Object.keys(rufloIntel?.semantic_taxonomy?.high_value_roots || {});
+        const filtered = roots.filter(r => {
+          const rootData = rufloIntel?.semantic_taxonomy?.high_value_roots?.[r];
+          if (!rootData?.consumer_health_fit) return true;
+          if (isConsumerHealthIndustry(industry) && rootData.consumer_health_fit === 'avoid') return false;
+          return true;
+        });
+        return (filtered.length ? filtered : roots)[Math.floor(Math.random() * (filtered.length || roots.length))];
+      })
+      .replace(/{invented_ending}/, () => {
+        const endingsWithEmpty = [...(invented_endings || []), ""];
+        const weighted = endingsWithEmpty.map(e => ({ term: e, weight: e === "" ? 0.45 : 1 }));
+        return pickWeighted(weighted)?.term || "";
+      });
     
-    return {
-      ...n,
-      _availabilityScore: availScore,
-      _brandScore: brandScore,
-      _combinedScore: (availScore * 0.6) + (brandScore * 0.4) // Weight availability higher
-    };
-  });
+    name = capitalize(name.replace(/\s+/g, '').slice(0, 10));
+    const key = normalizeBrandName(name);
+    const len = name.replace(/\s+/g, '').length;
+    
+    const lengthPressure = grammar.length_pressure;
+    const lengthPenalty = len > 6 && lengthPressure?.penalty_per_char_over_6 
+      ? Math.pow(1 - lengthPressure.penalty_per_char_over_6, len - 6) 
+      : 1;
+    
+    const suffix = name.match(/(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum)$/)?.[0];
+    const diversityPenalty = suffix && suffixCounts[suffix] > (grammar.suffix_diversity?.max_same_suffix_in_batch || 3)
+      ? Math.pow(0.7, suffixCounts[suffix] - 3)
+      : 1;
+    
+    if (
+      !seen.has(key) &&
+      passesLocalFilters(name, rufloIntel?.constraints, rufloIntel?.negative_similarity_filters) &&
+      Math.random() < lengthPenalty * diversityPenalty
+    ) {
+      seen.add(key);
+      candidates.push({ name, source: 'procedural', _length: len });
+    }
+  }
+  return candidates;
 }
 
-function USR(
-  industry,
-  style,
-  aud,
-  kw,
-  tlds,
-  lang,
-  wc,
-  charlen,
-  strictTld=false
-){
-  const langInstructions={
-    'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.',
-    'global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.',
-    'non-en':'Generate names optimized for non-English markets. May include adapted Latin characters. Prioritize .ai/.io/.xyz TLDs.',
-    'multilingual':'Generate names that work across 3+ languages. Avoid homophones with negative meanings in major languages.'
+// Helper: Check if industry is consumer health
+function isConsumerHealthIndustry(industry) {
+  const consumerHealth = ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"];
+  return consumerHealth.includes(industry);
+}
+
+// Helper: Get industry-appropriate suffixes
+function getIndustryAppropriateSuffixes(industry, suffixes) {
+  if (!rufloIntel?.industry_overrides) return suffixes;
+  
+  const consumerOverride = rufloIntel.industry_overrides.healthcare_consumer;
+  if (consumerOverride?.industries?.includes(industry) && consumerOverride?.suffix_adjustments) {
+    return suffixes.map(s => {
+      const adj = consumerOverride.suffix_adjustments[s.term];
+      return adj ? { ...s, weight: (s.weight || 1) * (adj.weight_multiplier || 1) } : s;
+    }).filter(s => {
+      const rootData = rufloIntel?.semantic_taxonomy?.high_value_roots?.[s.term];
+      return !(rootData?.consumer_health_fit === 'avoid');
+    });
+  }
+  
+  const techOverride = rufloIntel.industry_overrides.healthcare_technical;
+  if (techOverride?.industries?.includes(industry) && techOverride?.suffix_adjustments) {
+    return suffixes.map(s => {
+      const adj = techOverride.suffix_adjustments[s.term];
+      return adj ? { ...s, weight: (s.weight || 1) * (adj.weight_multiplier || 1) } : s;
+    });
+  }
+  
+  return suffixes;
+}
+
+function passesLocalFilters(name,constraints,filters){
+  if(!name)return false;
+  const len = name.replace(/\s+/g,'').length;
+  if(len < 4)return false;
+  if(len > 8)return false;
+  if(constraints?.hard_exclusions?.some(e=>name.toLowerCase().includes(e)))return false;
+  if(filters?.overused_prefixes?.some(p=>name.toLowerCase().startsWith(p)))return false;
+  if(filters?.overused_suffixes?.some(s=>name.toLowerCase().endsWith(s)))return false;
+  if(filters?.forbidden_combinations?.some(c=>name.toLowerCase().includes(c)))return false;
+  if(/[^\w]/.test(name))return false;
+  return true;
+}
+
+function getAffinityBoost(prefix,suffix,affinityRules){
+  if(!affinityRules?.high_value_pairs)return 0.5;
+  const pair=affinityRules.high_value_pairs.find(p=>p.prefix===prefix&&p.suffix===suffix);
+  return pair?pair.affinity:0.5;
+}
+
+// ── Scoring Engine (Rubric-Based) ──────────────────────────────────
+function computeRubricScore(nameObj,config=rufloIntel){
+  if(!config?.scoring_rubric)return 70;
+  const name=(nameObj.name||'').toLowerCase().replace(/[^a-z]/g,'');
+  const{scoring_rubric,global_pronounceability,risk_heuristics,semantic_taxonomy}=config;
+  
+  const lengthScoring = scoring_rubric.length_scoring || {"4-5":1.0,"6":0.95,"7":0.85,"8":0.65};
+  const lengthKey = name.length <= 5 ? "4-5" : name.length.toString();
+  
+  const brandability={
+    uniqueness:Math.min(1,name.length/8),
+    phonetic_clarity:evaluatePronounceability(name,global_pronounceability),
+    length_fit:lengthScoring[lengthKey] || 0.5,
+    memorability:hasCVCVPattern(name)?1:0.7
   };
   
-  const wordInstructions={
-    '1':'Strictly single-word names (4-8 characters ideal). Must pass the "radio test" — spellable after hearing once.',
-    '2':'Two-word compounds or phrase names. Max 12 characters total. Prefer tight compounds (GitHub, PayPal).',
-    '3':'Three-word descriptive names allowed. Keep under 18 characters total.',
-    'any':'Mix of lengths; prioritize memorability over strict count.'
+  const commercial={
+    trademark_distance:assessTMRisk(name,risk_heuristics?.trademark_risk),
+    domain_availability:(nameObj._availabilityScore||70)/100,
+    vertical_alignment:assessVerticalFit(name,semantic_taxonomy)
   };
+  
+  const differentiation={
+    trend_alignment:config.predictive_signals?.trend_weights?.rising_patterns||1,
+    structural_novelty:recentNamesCache.has(name)?0:1,
+    semantic_flexibility:countApplicableVerticals(name,semantic_taxonomy)
+  };
+  
+  let brandScore=Object.values(brandability).reduce((a,b)=>a+b,0)/4;
+  const commScore=Object.values(commercial).reduce((a,b)=>a+b,0)/3;
+  const diffScore=Object.values(differentiation).reduce((a,b)=>a+b,0)/3;
+  
+  const atomicBonus = scoring_rubric.atomic_bonus;
+  if (atomicBonus?.apply_if_no_suffix_and_length_lte_6) {
+    const hasSuffix = /(gen|nex|ics|ent|ion|ara|zen|va|lum)$/i.test(name);
+    if (!hasSuffix && name.length <= 6) {
+      brandScore += atomicBonus.brandability_bonus || 0.08;
+      diffScore += atomicBonus.differentiation_bonus || 0.12;
+    }
+  }
+  
+  return Math.round((brandScore*0.40+commScore*0.35+diffScore*0.25)*100);
+}
 
-  const charInstructions = {
-  '3-5': 'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".',
-  '4-6': 'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".',
-  '5-8': 'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".',
-  '6-10': 'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".',
-  '10+': 'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".',
-  'any': 'Mix of lengths; prioritize memorability and brandability over strict count.'
+function evaluatePronounceability(name,config){
+  if(!config?.risk_patterns)return 0.85;
+  let score=1.0;
+  for(const risk of config.risk_patterns){
+    if(new RegExp(risk.pattern).test(name)){score-=0.15;}
+  }
+  return Math.max(0.3,Math.min(1,score));
+}
+
+function assessTMRisk(name,riskConfig){
+  if(!riskConfig)return 0.7;
+  if(riskConfig.high_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.4;
+  if(riskConfig.low_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.9;
+  return 0.7;
+}
+
+function assessVerticalFit(name,taxonomy){
+  if(!taxonomy?.high_value_roots)return 0.5;
+  const roots=Object.keys(taxonomy.high_value_roots);
+  const matches=roots.filter(r=>name.toLowerCase().includes(r)).length;
+  return Math.min(1,0.4+matches*0.3);
+}
+
+function countApplicableVerticals(name,taxonomy){
+  if(!taxonomy?.high_value_roots)return 1;
+  let count=0;
+  for(const[root,data]of Object.entries(taxonomy.high_value_roots)){
+    if(name.toLowerCase().includes(root)){count+=data.verticals?.length||1;}
+  }
+  return Math.min(3,count);
+}
+
+function passesGlobalPronounceability(name,config){
+  if(!config?.global_pronounceability)return true;
+  const{risk_patterns,min_threshold}=config.global_pronounceability;
+  let score=1.0;
+  for(const risk of risk_patterns){
+    if(new RegExp(risk.pattern).test(name.toLowerCase())){score-=0.15;}
+  }
+  return score>=min_threshold;
+}
+
+function calculateAvailabilityScore(name,tld='.com'){
+  let score=70;
+  const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
+  const commonWords=namingIntel?.oversaturated_terms?.slice(0,40)?.map(x=>x[0])||['cloud','data','sync','flow','core','labs','tech','app','web','net'];
+  if(commonWords.some(w=>lower.includes(w))){score-=40;}
+  if(len<=4&&/^[a-z]+$/.test(lower)){score-=20;}
+  if(/(ify|ly|able|verse|base|flow|cloud|sync|labs)$/i.test(lower)){score-=25;}
+  if(/[-\d]/.test(name))score-=25;
+  if(/[xzqvk]/.test(lower))score+=6;
+  if(/[^aeiou]{3,}/.test(lower))score+=10;
+  if(len>=5&&len<=7)score+=10;
+  if(/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower))score+=8;
+  return Math.max(5,Math.min(99,score));
+}
+
+// ── Prompts ───────────────────────────────────────────────────────
+const SYS=`You are an elite startup naming strategist. Generate structurally distinct startup brand names.
+Prioritize phonetic diversity and archetype fidelity.
+Rules: memorable, globally pronounceable, clean phonetics, strong brandability, avoid generic AI buzzwords, avoid trademark-heavy names, avoid hyphens and numbers.
+Avoid overused startup terms: AI, Nova, Core, Flow, Labs, Nexus, Meta, Quantum, Bot, Sync, Cloud, Data.
+Each output name must belong to a DIFFERENT phonetic family.
+Avoid repeating: prefixes, suffixes, syllable patterns, vowel cadence across outputs.
+Return ONLY raw JSON array. Format: [{"name":"","tagline":"","naming_pattern":"","vc_signal":"","why_it_works":"","score":{"brand_strength":90,"memorability":90,"global_fit":90,"trend_alignment":90}}]`;
+
+const GEMINI_SYS=`You are an elite VC startup naming strategist. Return ONLY valid raw JSON. RULES: No markdown, No explanations, No code fences, EXACTLY 5 objects, Compact JSON only, Finish complete JSON, No trailing commas. FORMAT: [{"name":"Klyro","tagline":"AI workflows simplified","naming_pattern":"Abstract","vc_signal":"VC-ready","why_it_works":"Short memorable modern","score":{"brand_strength":90,"memorability":91,"global_fit":88,"trend_alignment":89}}]`;
+
+const STYLE_DNA={
+  ultra_short:`Structure: 4-5 characters, single token, hard consonants, minimal vowels, no semantic meaning. Examples: Brex, Ramp, Deel, Arc`,
+  invented:`Structure: invented phonetics, balanced vowels/consonants, globally pronounceable, modern SaaS energy, no direct dictionary roots. Examples: Figma, Vanta, Asana`,
+  real_adjacent:`Structure: inspired by real words, softened semantics, trust-oriented, easy pronunciation, emotionally neutral. Examples: Notion, Mercury, Plaid`,
+  infra:`Structure: technical/devtool feel, hard consonants, compressed syllables, infrastructure energy, slightly mechanical. Examples: Vercel, Datadog, HashiCorp`,
+  luxury:`Structure: elegant phonetics, flowing vowels, premium cadence, soft consonants, fashion/luxury feel. Examples: Velora, Aurelia, Rivian`,
+  enterprise:`Structure: trustworthy, stable, scalable corporate tone, strong endings, conservative phonetics. Examples: Okta, Workday, ServiceNow`,
+  playful:`Structure: softer consonants, memorable rhythm, consumer-friendly, emotionally warm. Examples: Canva, Loom, Duolingo`,
+  future:`Structure: futuristic phonetics, uncommon syllables, AI-native feel, strong distinctiveness. Examples: Anthropic, Replit, OpenAI`,
+  mythic:`Structure: powerful tone, legendary cadence, deep-tech seriousness, strong syllables. Examples: Anduril, Palantir, Oracle`
 };
-  return `Create ${
-  prov==='gemini' ? 5 : 10
-} brand names for a "${industry}" startup.
+
+function USR(industry,style,aud,kw,tlds,lang,charlen,strictTld=false,intelData=null){
+  const langInstructions={'en':'Generate English-only names. Avoid non-Latin characters. Prioritize .com availability.','global':'Generate globally pronounceable names. Avoid culture-specific references. Test phonetics across EN/ES/DE/FR/JP.','non-en':'Generate names optimized for non-English markets. May include adapted Latin characters. Prioritize .ai/.io/.xyz TLDs.','multilingual':'Generate names that work across 3+ languages. Avoid homophones with negative meanings in major languages.'};
+  const charInstructions={'3-5':'Names MUST be 3-5 characters. Use: invented words, uncommon phonetics, vowel-consonant alternation. Examples: "Zylo", "Krev", "Vexa".','4-6':'Names MUST be 4-6 characters. Prioritize brandable invented words. Avoid dictionary matches. Examples: "Strata", "Vexor", "Klyra".','5-8':'Names MUST be 5-8 characters. Balance memorability with availability. Mix invented + novel compounds. Examples: "Veloxa", "Stratly", "Krevon".','6-10':'Names MUST be 6-10 characters. Can use descriptive compounds. Ensure global pronounceability. Examples: "Stratflow", "Vexorai", "Krevanta".','10+':'Names MUST be 10+ characters. Use descriptive phrases or multi-root compounds. Examples: "StratflowAI", "VexorSystems".','any':'Mix of lengths; prioritize memorability and brandability over strict count.'};
+  
+  let intelPrompt='';
+  if(intelData){
+    const patterns=intelData.patterns?.map(p=>`${p.naming_pattern} (${p.count} startups)`).join(', ')||'';
+    const tlds=intelData.tlds?.map(t=>`${t.tld}`).join(', ')||'';
+    const avoid=intelData.competitors?.join(', ')||'';
+    intelPrompt=`\n🧠 LOCAL INTELLIGENCE DATA (Industry: ${industry}):\n• Proven Naming Patterns: ${patterns}\n• Common TLDs: ${tlds}\n• AVOID THESE (Existing Startups): ${avoid}\n• Generate names that match proven patterns but use UNIQUE phonetics to avoid confusion.\n`;
+  }
+  
+  return `Create ${prov==='gemini'?5:10} brand names for a "${industry}" startup.${intelPrompt}
 Language: ${lang} — ${langInstructions[lang]}
-Name Length: ${wc} words — ${wordInstructions[wc]}
-Character Length:
-${charInstructions[charlen]}
+Character Length: ${charInstructions[charlen]}
 Style: ${style||'mixed — abstract, compound, minimal, latin/greek variety'}
 Audience: ${aud} | TLDs: ${tlds.join(', ')}
-${
-  strictTld &&
-tlds[0] !== '.com'
-  ? `
-CRITICAL HARD REQUIREMENT:
-
-ALL generated names MUST prioritize ${tlds[0]} availability.
-
+${strictTld&&tlds[0]!=='.com'?`CRITICAL HARD REQUIREMENT: ALL generated names MUST prioritize ${tlds[0]} availability. Rules: Avoid common dictionary words, Avoid existing startup-style names, Prefer invented brandables, Prefer uncommon phonetics, Prefer low-competition naming structures, Assume user wants domains AVAILABLE in ${tlds[0]}. At least 80% of generated names should likely have ${tlds[0]} available.`:strictTld?`🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE. Strategy for available .com domains: 1. INVENTED BRANDABLES (highest availability): 5-7 letters, no dictionary words, Uncommon consonant clusters: xv, zq, kr, vy, Vowel patterns: a-e-i-o-u rotated unusually, Examples: "Zylox", "Krevu", "Vexor". 2. COMPOUND INNOVATIONS: Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly", Avoid common suffixes: -ify, -ly, -able, -ify, Use uncommon prefixes: "Vor-", "Zyn-", "Kael-". 3. PHONETIC UNIQUENESS: Names that sound distinctive when spoken, Pass the "radio test": spellable after hearing once, Avoid homophones with existing brands. 4. AVOID (high registration probability): Exact dictionary words under 6 letters, Common tech terms: cloud, data, sync, flow, nexus, Popular startup patterns: get[word], [word]app, [word]io. Output guidance: 70% invented brandables (highest .com availability), 20% novel compounds (medium availability), 10% creative risks (low availability but high brand potential). ${kw?'\nKeywords to incorporate creatively: '+kw:''}`:''}
+${kw?'\nKeywords: '+kw:''}
+${promptSummary?`\n\nREAL STARTUP NAMING INTELLIGENCE:\n${promptSummary}\n`:''}
 Rules:
-- Avoid common dictionary words
-- Avoid existing startup-style names
-- Prefer invented brandables
-- Prefer uncommon phonetics
-- Prefer low-competition naming structures
-- Assume user wants domains AVAILABLE in ${tlds[0]}
+• Modern VC-backable startup feel
+• Strong phonetic distinction
+• Avoid repetitive prefixes/suffixes
+• Avoid overused AI buzzwords
+• Prioritize memorability
+• Ensure names sound distinct when spoken aloud
+${prov==='gemini'?'Return compact JSON array of exactly 5 objects.':'Return JSON array of exactly 10 objects.'}
+${style?`Name Shape DNA: ${STYLE_DNA[style]}`:''}
+Raw JSON only.`;}
 
-At least 80% of generated names should likely have ${tlds[0]} available.
-`
- : strictTld
-  ? `
-🎯 CRITICAL: Generate .com-FRIENDLY names likely to be AVAILABLE
-
-Strategy for available .com domains:
-1. INVENTED BRANDABLES (highest availability):
-   - 5-7 letters, no dictionary words
-   - Uncommon consonant clusters: xv, zq, kr, vy
-   - Vowel patterns: a-e-i-o-u rotated unusually
-   - Examples: "Zylox", "Krevu", "Vexor"
-
-2. COMPOUND INNOVATIONS:
-   - Fuse 2 short roots uniquely: "Strat" + "ly" = "Stratly"
-   - Avoid common suffixes: -ify, -ly, -able, -ify
-   - Use uncommon prefixes: "Vor-", "Zyn-", "Kael-"
-
-3. PHONETIC UNIQUENESS:
-   - Names that sound distinctive when spoken
-   - Pass the "radio test": spellable after hearing once
-   - Avoid homophones with existing brands
-
-4. AVOID (high registration probability):
-   - Exact dictionary words under 6 letters
-   - Common tech terms: cloud, data, sync, flow, nexus
-   - Popular startup patterns: get[word], [word]app, [word]io
-
-Output guidance:
-- 70% invented brandables (highest .com availability)
-- 20% novel compounds (medium availability)  
-- 10% creative risks (low availability but high brand potential)
-
-${kw ? '\nKeywords to incorporate creatively: ' + kw : ''}
-`
-  : ''
-}
-
-${prov==='gemini'
-  ? 'Return compact JSON array of exactly 5 objects.'
-  : 'Return JSON array of exactly 10 objects.'
-}
-${
-  style
-    ? `
-Name Shape DNA:
-${STYLE_DNA[style]}
-`
-    : ''
-}
-Raw JSON only.`;
-}
-
-// ── API callers with rate limiting ─────────────────────────────────
-async function callOpenRouter(sys,usr,cb){
-
-  const r = await fetch(
-    'https://openrouter.ai/api/v1/chat/completions',
-    {
-      method:'POST',
-
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+key
-      },
-
-      body:JSON.stringify({
-
-        model:mdl,
-
-        temperature:0.7,
-
-        max_tokens:4000,
-
-        stream:false,
-
-        messages:[
-          {
-            role:'system',
-            content:sys
-          },
-          {
-            role:'user',
-            content:usr
-          }
-        ]
-
-      })
-    }
-  );
-
-  const data = await r.json();
-
-  if(!r.ok){
-
-    throw new Error(
-      `OpenRouter ${r.status}: ${
-        data.error?.message || 'Unknown error'
-      }`
-    );
-
+// ── API Callers with Retry Logic ──────────────────────────────────
+async function fetchWithRetry(url,options,retries=3){
+  for(let i=0;i<retries;i++){
+    try{
+      const res=await fetch(url,options);
+      if(res.ok)return res;
+      if(res.status===503&&i<retries-1){await new Promise(r=>setTimeout(r,1000*(i+1)));continue;}
+      throw new Error(`HTTP ${res.status}`);
+    }catch(e){if(i===retries-1)throw e;await new Promise(r=>setTimeout(r,1000*(i+1)));}
   }
+}
 
-  const text =
-    data.choices?.[0]?.message?.content || '';
-
-  cb(text);
-
-  return text;
-
+async function callOpenRouter(sys,usr,cb){
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(`OpenRouter ${r.status}: ${data.error?.message||'Unknown error'}`);
+  const text=data.choices?.[0]?.message?.content||'';
+  cb(text);return text;
 }
 
 async function callOpenAI(sys,usr,cb){
-  const r=await fetch('https://api.openai.com/v1/chat/completions',{
+  const r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
     body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
@@ -1527,152 +906,68 @@ async function callOpenAI(sys,usr,cb){
 }
 
 async function callGemini(sys,usr,cb){
-
-  const r = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,
-    {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({
-  system_instruction:{
-    parts:[{text:sys}]
-  },
-
-  contents:[{
-    role:'user',
-    parts:[{text:usr}]
-  }],
-
-  generationConfig:{
-    temperature:0.2,
-    topP:0.8,
-    maxOutputTokens:8192,
-    responseMimeType:"application/json"
-  }
-})
-    }
-  );
-
-  const data = await r.json();
-
-  if(!r.ok){
-    throw new Error(
-      `Gemini ${r.status}: ${
-        data.error?.message || 'Unknown error'
-      }`
-    );
-  }
-
-  const parts =
-    data.candidates?.[0]?.content?.parts || [];
-
-  const text = parts
-    .map(p => p.text || '')
-    .join('');
-
-  cb(text);
-
-  return text;
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:finalTemp,topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(`Gemini ${r.status}: ${data.error?.message||'Unknown error'}`);
+  const parts=data.candidates?.[0]?.content?.parts||[];
+  const text=parts.map(p=>p.text||'').join('');
+  cb(text);return text;
 }
+
 async function callGroq(sys,usr,cb){
-
-  const r = await fetch(
-    'https://api.groq.com/openai/v1/chat/completions',
-    {
-      method:'POST',
-
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+key
-      },
-
-      body:JSON.stringify({
-
-        model:mdl,
-
-        temperature:0.7,
-
-        max_tokens:4000,
-
-        stream:false,
-
-        messages:[
-          {
-            role:'system',
-            content:sys
-          },
-          {
-            role:'user',
-            content:usr
-          }
-        ]
-
-      })
-    }
-  );
-
-  const data = await r.json();
-
-  if(!r.ok){
-
-    throw new Error(
-      `Groq ${r.status}: ${
-        data.error?.message || 'Unknown error'
-      }`
-    );
-
-  }
-
-  const text =
-    data.choices?.[0]?.message?.content || '';
-
-  cb(text);
-
-  return text;
-
+  const strict=document.getElementById('strictTld').checked;
+  const baseTemp=strict?0.62:0.78;
+  const varietyBoost=Math.random()*0.08;
+  const finalTemp=Math.min(0.9,baseTemp+varietyBoost);
+  const r=await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.92,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
+  });
+  if(!r.ok){throw new Error(`Groq ${r.status}: ${await r.text()}`);}
+  return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
 }
+
 async function readSSE(resp,extract){
   const reader=resp.body.getReader(),dec=new TextDecoder();
   let buf='',full='';
   while(true){
-    const{done,value}=await reader.read();if(done)break;
+    const{done,value}=await reader.read();
+    if(done)break;
     buf+=dec.decode(value,{stream:true});
-    const lines=buf.split('\n');buf=lines.pop();
+    const lines=buf.split('\n');
+    buf=lines.pop();
     for(const l of lines){
       if(!l.startsWith('data: '))continue;
-      const raw=l.slice(6).trim();if(raw==='[DONE]')continue;
-      try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}
-    }
+      const raw=l.slice(6).trim();
+      if(raw==='[DONE]')continue;
+      try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}}
   }
   return full;
 }
 
-// ── Generate ───────────────────────────────────────────────────────
+// ── Generate (TWO-PHASE PIPELINE) ──────────────────────────────────
 async function go(){
   if(busy)return;
-  
   const ind=document.getElementById('industry').value;
   if(!ind){toast('Please select an industry');return;}
   if(!PROVS[prov].val(key)){toast('Enter a valid API key — click "get key ?" for links');toggleHelp();return;}
   
-  // Save preferences
   language=document.getElementById('language').value;
-  wordCount=document.getElementById('wordcount').value;
-  charLength =
-  document.getElementById(
-    'charlen'
-  ).value;
-
-localStorage.setItem(
-  'bl_charlen',
-  charLength
-);
+  charLength=document.getElementById('charlen').value;
+  localStorage.setItem('bl_charlen',charLength);
   localStorage.setItem('bl_lang',language);
-  localStorage.setItem('bl_wc',wordCount);
   
-  busy=true;domC={};
+  busy=true;
+  domC={};
   const btn=document.getElementById('gbtn');
   btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';
   
@@ -1681,406 +976,326 @@ localStorage.setItem(
   document.getElementById('results').innerHTML='';
   document.getElementById('exportRow').style.display='none';
   
+  let intelData = industryIntel?.[ind] || null;
+  
   const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];
   let pi=0;
   const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
   
-  const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix;
-  const strictTld =
-  document.getElementById('strictTld')
-    ?.checked;
-  // const sys=SYS,usr=USR(ind,document.getElementById('style').value,document.getElementById('aud').value,document.getElementById('kw').value,tlds,language,wordCount);
-  const sys =
-  prov === 'gemini'
-    ? GEMINI_SYS
-    : SYS;
-
-const usr = USR(
-  ind,
-  document.getElementById('style').value,
-  document.getElementById('aud').value,
-  document.getElementById('kw').value,
-  tlds,
-  language,
-  wordCount,
-  charLength,
-  strictTld
-);
-  let sbuf='';
-  const onChunk=t=>{sbuf+=t;ps.textContent=sbuf.slice(-160);};
+  const tlds=TLDS[document.getElementById('tld').value]||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;
+  const sys=prov==='gemini'?GEMINI_SYS:SYS;
   
   try{
-    let full;
-    if(prov==='anthropic'){
-
-  full = await callAnthropic(
-    sys,
-    usr,
-    onChunk
-  );
-
-}
-else if(prov==='openai'){
-
-  full = await callOpenAI(
-    sys,
-    usr,
-    onChunk
-  );
-
-}
-else if(prov==='gemini'){
-
-  full = await callGemini(
-    sys,
-    usr,
-    onChunk
-  );
-
-}
-else if(prov==='groq'){
-
-  full = await callGroq(
-    sys,
-    usr,
-    onChunk
-  );
-
-}
-else if(prov==='openrouter'){
-
-  full = await callOpenRouter(
-    sys,
-    usr,
-    onChunk
-  );
-
-}
+    pt.textContent='Generating candidate names…';pp.textContent='48%';
+    const pipeline=rufloIntel?.pipeline_config;
+    const targetCount=pipeline?.stage_1_local_generation?.target_count||300;
     
-    clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent='Done! Checking domains…';
-    setTimeout(()=>pw.classList.remove('on'),2200);
-    
-    // Parse and sanitize JSON
-    //const clean=full.replace(/```json|```/g,'').trim();
-    //const names=JSON.parse(clean);
-   
-
-let clean = String(full || '')
-  .replace(/```json/gi,'')
-  .replace(/```/g,'')
-  .trim();
-
-console.log('RAW GEMINI:', clean);
-
-let names = null;
-
-// attempt 1
-try{
-  names = JSON.parse(clean);
-}catch(e){}
-
-// attempt 2
-if(!Array.isArray(names)){
-
-  const start = clean.indexOf('[');
-  const end = clean.lastIndexOf(']');
-
-  if(start !== -1 && end !== -1){
-
-    clean = clean.slice(start,end+1);
-
-    clean = clean
-      .replace(/,\s*}/g,'}')
-      .replace(/,\s*]/g,']')
-      .replace(/\n/g,' ')
-      .replace(/\r/g,' ')
-      .replace(/\t/g,' ')
-      .replace(/\s+/g,' ')
-      .trim();
-
-    try{
-      names = JSON.parse(clean);
-    }catch(e){}
-  }
-}
-
-// attempt 3 — recover truncated Gemini JSON
-if(!Array.isArray(names) && prov==='gemini'){
-
-  try{
-
-    const repaired =
-      clean
-        .replace(/,\s*}/g,'}')
-        .replace(/,\s*]/g,']');
-
-    const arrStart = repaired.indexOf('[');
-
-    if(arrStart !== -1){
-
-      let partial = repaired.slice(arrStart);
-
-      // force close array if Gemini truncated
-      if(!partial.endsWith(']')){
-        partial += ']';
-      }
-
-      names = JSON.parse(partial);
+    let candidates=[];
+    if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
+      candidates=proceduralGenerate(rufloIntel.generation_grammar, rufloIntel.morphology, targetCount, ind);
+    } else {
+      const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,prov==='gemini'?15:25);
+      candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
     }
-
-  }catch(e){}
-}
-
-if(!Array.isArray(names)){
-  console.error('FAILED RAW:', full);
-  throw new Error('Gemini returned malformed JSON');
-}
-
-// Step 1: Basic validation only
-names = names.filter(n => n && n.name && typeof n.name === 'string');
-
-// Step 2: Apply filters BUT keep track of what was filtered
-const filteredByWordCount = names.filter(n => matchesWordCount(n.name, wordCount));
-const filteredByCharLen = names.filter(n => matchesCharLength(n.name, charLength));
-
-// Step 3: Use strict filtering only if we have enough results
-let finalNames;
-if (filteredByWordCount.length >= 3 && filteredByCharLen.length >= 3) {
-  // Both filters passed enough names - use strict intersection
-  finalNames = names.filter(n => 
-    matchesWordCount(n.name, wordCount) && 
-    matchesCharLength(n.name, charLength)
-  );
-} else if (filteredByWordCount.length >= 3) {
-  // Word count filter has enough - relax char length
-  finalNames = filteredByWordCount;
-  toast('Showing names matching word count (character length relaxed)');
-} else if (filteredByCharLen.length >= 3) {
-  // Char length filter has enough - relax word count  
-  finalNames = filteredByCharLen;
-  toast('Showing names matching character length (word count relaxed)');
-} else {
-  // Neither filter has enough - show all with warnings
-  finalNames = names;
-  toast('Showing all generated names (filters relaxed)');
-}
-
-// Ensure we have at least 1 name to display
-if (finalNames.length === 0 && names.length > 0) {
-  finalNames = names.slice(0, Math.min(5, names.length));
-  toast('Showing top candidates (filters could not be applied)');
-}
-
-names = finalNames;
-    // Store for export
+    
+    pt.textContent='Scoring for availability…';pp.textContent='72%';
+    const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};
+    
+    let scored=candidates.map(c=>{
+      const availScore=calculateAvailabilityScore(c.name,tlds[0]);
+      const rubricScore=computeRubricScore(c);
+      return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_combinedScore:(availScore*0.6)+(rubricScore*0.4)};
+    });
+    
+    const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));
+    const filteredByGlobal=filteredByCharLen.filter(n=>passesGlobalPronounceability(n.name,rufloIntel));
+    
+    let finalNames,minResults=prov==='gemini'?3:5;
+    if(filteredByGlobal.length>=minResults){finalNames=filteredByGlobal;}
+    else if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;toast('Relaxed global pronounceability filter');}
+    else{finalNames=[...scored].sort((a,b)=>(b._rubricScore||0)-(a._rubricScore||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}
+    
+    const uniqueNames=[];
+    for(const item of finalNames){
+      let similarityHits=0;
+      for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}
+      for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}
+      if(similarityHits<=1){
+        item.diversityPenalty=similarityHits*8;
+        item.finalScore=(item._combinedScore||70)-item.diversityPenalty;
+        uniqueNames.push(item);
+        recentNamesCache.add(item.name);
+      }
+    }
+    
+    if(uniqueNames.length<(prov==='gemini'?3:5)&&candidates.length>finalNames.length){
+      const extras=candidates.filter(c=>{
+        const norm=normalizeBrandName(c.name);
+        return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));
+      }).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);
+      uniqueNames.push(...extras);
+    }
+    
+    let names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);
+    if(!names.length)throw new Error('No names passed filters. Try broader settings.');
+    
+    pt.textContent='Refining with AI…';pp.textContent='88%';
+    const refinementPrompt=`For these startup names, generate concise taglines, naming patterns, VC signals, and "why it works" explanations. Return ONLY JSON array matching the input order. Names: ${names.map(n=>n.name).join(', ')}`;
+    
+    const refined=await (prov==='gemini'?callGemini:prov==='openai'?callOpenAI:prov==='groq'?callGroq:callOpenRouter)(sys,refinementPrompt,()=>{});
+    
+    try{
+      const clean=String(refined||'').replace(/```json|```/g,'').trim();
+      const llmData=JSON.parse(clean||'[]');
+      names=names.map((n,i)=>({...n,...(llmData[i]||{})}));
+    }catch(e){console.warn('LLM refinement failed, using procedural data');}
+    
+    pt.textContent='Validating domains…';pp.textContent='96%';
     lastGeneratedNames=names.map(n=>({
       ...n,
       _d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t),
       _id:n.name.replace(/\s+/g,'-'),
       _generated:new Date().toISOString(),
       _provider:prov,
+      score:computeScores(n),
       _model:mdl
     }));
+    
+    clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;
     
     renderCards(lastGeneratedNames,tlds);
     document.getElementById('exportRow').style.display='flex';
     
+    const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);
+    if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);
+    
+    resetFilterState();
+    
   }catch(e){
     clearInterval(tick);pw.classList.remove('on');
-    document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Error</div><div class="esub">${e.message}</div></div>`;
-    toast('Generation failed: '+e.message);
+    document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;
+    toast('Error: '+e.message);
+    console.error('Generation failed:',e);
   }finally{
-    busy=false;btn.disabled=false;btn.classList.remove('ld');btn.querySelector('.blbl').textContent='Generate brand names →';
+    busy=false;btn.disabled=false;btn.classList.remove('ld');
+    if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}
   }
+}
+
+// Fallback LLM generation
+async function generateRawCandidates(industry,style,kw,targetCount=25){
+  const heuristicExamples=generateHeuristicExamples(industry,6);
+  const exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
+  const randomSeed=Math.random().toString(36).slice(2,10);
+  const batchId=`${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*999)}`;
+  const variationPhrases=["Focus on completely fresh phonetic patterns not seen in previous batches","Explore unconventional letter combinations and syllable structures","Prioritize names with unique vowel-consonant rhythms","Generate names that feel distinct from typical tech startup naming conventions","Use diverse linguistic roots: latin, greek, slavic, east-asian phonetics"];
+  const randomVariation=variationPhrases[Math.floor(Math.random()*variationPhrases.length)];
+  const exclusionList=recentNamesCache.size>0?`\n🚫 AVOID THESE RECENTLY GENERATED NAMES (do not repeat):\n${Array.from(recentNamesCache).slice(-15).map(n=>`- ${n}`).join('\n')}`:'';
+  const intel=industryIntel[industry]||{};
+  const topClusters=(intel.top_clusters||[]).slice(0,8).join(', ');
+  const topSuffixes=(intel.top_suffixes||[]).slice(0,8).join(', ');
+  const topPrefixes=(intel.top_prefixes||[]).slice(0,8).join(', ');
+  
+  const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
+
+REAL INDUSTRY DATA:
+Top consonant clusters: ${topClusters}
+Top startup suffixes: ${topSuffixes}
+Top startup prefixes: ${topPrefixes}
+
+🎯 STYLE EXAMPLES (emulate these patterns, but create FRESH variations):
+${exampleList}
+
+🔄 BATCH ${batchId} VARIATION INSTRUCTION: ${randomVariation}
+🎲 RANDOM SEED: ${randomSeed} (use this to generate truly unique outputs)
+${exclusionList}
+
+Rules:
+- 4-8 characters, globally pronounceable, Can exceed if structurally strong
+- Each generated name must sound DISTINCT from the others
+- Use varied consonant structures
+- Avoid repeating prefixes/suffixes
+- every name must sound structurally different
+- Avoid phonetic similarity across outputs
+- No exact dictionary words under 6 letters
+- Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs
+- Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation
+Style DNA: ${style?STYLE_DNA[style]:`Mix: 30% invented, 30% compound, 20% atomic, 20% hybrid. Use varied phonetic structures.`}
+
+Brand Structure: ${brandStructure==='atomic'?'single-token minimal brands like Stripe, Ramp, Arc':brandStructure==='compound'?'compound semantic brands like BindEcho, ClearPath':brandStructure==='invented'?'invented phonetic brands like Klyro, Vexa':brandStructure==='hybrid'?'hybrid startup names mixing semantic + invented roots':'mixed varied structures'}
+${kw?`Incorporate creatively: ${kw}`:''}
+
+Return ONLY a JSON array: [{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
+No markdown, no explanations.`;
+
+  const sys=`You are a startup naming expert. Return ONLY valid JSON array.`;
+  
+  try{
+    let response;
+    if(prov==='gemini')response=await callGemini(sys,prompt,()=>{});
+    else if(prov==='openai')response=await callOpenAI(sys,prompt,()=>{});
+    else if(prov==='groq')response=await callGroq(sys,prompt,()=>{});
+    else response=await callOpenRouter(sys,prompt,()=>{});
+    
+    const clean=String(response||'').replace(/```json|```/g,'').trim();
+    let names=null;
+    try{names=JSON.parse(clean||'[]');}catch(e){
+      const start=clean.indexOf('['),end=clean.lastIndexOf(']');
+      if(start!==-1&&end!==-1)names=JSON.parse(clean.slice(start,end+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));
+    }
+    if(!Array.isArray(names)){return [];}
+    
+    const unique=[];
+    for(const n of names){
+      if(recentNamesCache.has(n.name.toLowerCase())){continue;}
+      if(!n?.name)continue;
+      const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
+      if(!dup){unique.push(n);}
+    }
+    return unique;
+  }catch(e){console.error('Phase 1 generation error:',e);return [];}
+}
+
+function generateHeuristicExamples(industry,count=8){
+  const roots={'AI Agents & Automation':['auto','agent','flow','sync','mind'],'Fintech & Neobanking':['pay','coin','vault','flux','mint'],'Developer Tools':['code','dev','stack','build','deploy'],'Healthcare AI':['med','care','health','vital','pulse']};
+  const industryRoots=roots[industry]||['tech','labs','sys','net'];
+  const prefixes=['z','k','v','x','q','kr','vy','zyl','vex'],suffixes=['ox','ra','on','ix','or','ex','al','en'],examples=[];
+  for(let p of prefixes.slice(0,4)){for(let s of suffixes.slice(0,3)){if(examples.length>=count)break;examples.push((p+s).charAt(0).toUpperCase()+(p+s).slice(1));}}
+  for(let r of industryRoots.slice(0,3)){if(examples.length>=count)break;examples.push((r+'ix').charAt(0).toUpperCase()+(r+'ix').slice(1));}
+  return examples;
+}
+
+// ── Legacy Scoring (Fallback) ─────────────────────────────────────
+function computeScores(nameObj){
+  const name=nameObj.name||'';const lower=name.toLowerCase();const clean=lower.replace(/[^a-z]/g,'');const len=clean.length;
+  const vowels=(clean.match(/[aeiou]/g)||[]).length;const consonants=len-vowels;const vowelRatio=vowels/Math.max(1,len);
+  const repeated=/(.)\1{1,}/.test(clean);const rareLetters=(clean.match(/[zxqkv]/g)||[]).length;
+  
+  let brand=70;if(len>=4&&len<=8)brand+=12;if(rareLetters>=1)brand+=6;if(!repeated)brand+=4;if(vowelRatio>=0.3&&vowelRatio<=0.6)brand+=6;
+  let memory=65;if(len<=6)memory+=12;if(rareLetters>=1)memory+=8;if(clean.length!==new Set(clean).size)memory-=4;if(/^[bcdfghjklmnpqrstvwxz]/.test(clean))memory+=5;
+  let global=75;if(!/[^\w]/.test(clean))global+=5;if(vowelRatio>=0.28&&vowelRatio<=0.58)global+=10;if(!/[qzx]{2,}/.test(clean))global+=6;
+  let trend=60;const modernSuffixes=['ly','io','ra','ex','iq','or','on','ix','al','os'];const modernPrefixes=['ka','zy','ve','qy','xa','vo','kr'];
+  if(modernSuffixes.some(s=>clean.endsWith(s)))trend+=12;if(modernPrefixes.some(s=>clean.startsWith(s)))trend+=10;if(rareLetters>=1)trend+=8;if(len>=5&&len<=7)trend+=8;
+  
+  return{brand_strength:Math.round(Math.min(98,Math.max(45,brand))),memorability:Math.round(Math.min(98,Math.max(45,memory))),global_fit:Math.round(Math.min(98,Math.max(45,global))),trend_alignment:Math.round(Math.min(98,Math.max(45,trend)))};
 }
 
 // ── Render Results ─────────────────────────────────────────────────
 function renderCards(names,tlds){
   const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));
-  const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean);
-  const prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
+  const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
   
-  let h=`<div class="rhdr">
-    <div class="rtitle">Brand name candidates</div>
-    <div class="rsub">${names.length} names · ${prov_label} · domains checking…</div>
-  </div>
-  <div class="frow">
-    <button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>
-    ${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}
-    <button class="fpill" onclick="filt('available',this)">✅ Available domains</button>
-    <button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button>
-    <button class="fpill" onclick="filtWC('${wordCount}',this)">${WC_LABELS[wordCount]}</button>
-  </div><div class="cgrid">`;
+  let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;
   
   sorted.forEach((n,i)=>{
     const c=n.colors?.[0]||'#c8f04a';
     const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
-        // Add availability score badge if present
-    const availScore = n._availabilityScore || calculateAvailabilityScore(n.name, tlds[0]);
-    const availColor = availScore >= 80 ? 'var(--lime)' : availScore >= 60 ? 'var(--amber)' : 'var(--rose)';
-    const availLabel = availScore >= 80 ? 'Likely available' : availScore >= 60 ? 'Possible' : 'Competitive';
-    
-    const availIndicator = `
-      <div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span>
-        <span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span>
-      </div>
-    `;
+    const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';
+    const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;
     const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
+    const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');
     
-    // Store metadata for filtering
-    const meta=JSON.stringify({language_suitability:n.language_suitability||['en'],word_count:n.word_count||1}).replace(/"/g,'&quot;');
-    
-    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms">
-      <div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div>
-      <div class="cname">${n.name}</div>
-      <div class="cline">${n.tagline||''}</div>
-      <div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${n.vc_signal||''}</span></div>
-      <div class="cwhy">${n.why_it_works||''}</div>
-      <div class="scores">${sc}</div>
-      <div class="drow">${dc}</div>
-      ${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}
-    </div>`;
+    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;
   });
-  h+='</div>';
-
-
-  document.getElementById('results').innerHTML=h;
   
-  // Start domain checks
+  h+='</div>';
+  document.getElementById('results').innerHTML=h;
   names.forEach(n=>n._d.forEach(d=>chkDom(d)));
 }
 
 // ── Filtering ──────────────────────────────────────────────────────
 function filt(k,btn){
   pill=k;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
   document.querySelectorAll('.card').forEach(c=>{
     let s=k==='all'?true:k==='available'?c.querySelectorAll('.dchip.av').length>0:c.dataset.pat===k;
     c.style.display=s?'':'none';
   });
 }
-
 function filtLang(lang,btn){
-
-  document.querySelectorAll(
-    '.fpill[onclick*="filtLang"]'
-  ).forEach(
-    p => p.classList.remove('on')
-  );
-
+  document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));
   btn.classList.add('on');
-
-  document.querySelectorAll(
-    '.card'
-  ).forEach(c => {
-
-    c.style.display='';
-
-  });
-
+  document.querySelectorAll('.card').forEach(c=>{c.style.display='';});
 }
 
-function filtWC(wc,btn){
-  document.querySelectorAll('.fpill[onclick*="filtWC"]').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.card').forEach(c => {
-    try{
-      const meta=JSON.parse(c.dataset.meta||'{}');
-     // const cardWC=meta.word_count;
-     // const match=wc==='any'||cardWC==wc;
-     const match =
-  matchesWordCount(
-    c.querySelector('.cname')
-      ?.textContent || '',
-    wc
-  );
-      c.style.display=(c.style.display!=='none'&&match)?'':'none';
-    }catch{c.style.display='';}
-  });
-}
-
-// ── Domain Check (5 TLDs) ──────────────────────────────────────────
+// ── Domain Check ───────────────────────────────────────────────────
 async function chkDom(d){
-  if(domC[d]){ applyDom(d, domC[d]); return; }
+  if(domC[d]){applyDom(d,domC[d]);return;}
+  if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}
   
-  // Dev mode: skip all checks, mark as "verify manually"
-  if(location.search.includes('dev=1') || location.hostname === 'localhost'){
-    domC[d] = 'unknown';
-    applyDom(d, 'unknown');
-    return 'unknown';
-  }
-  
-  let r = 'unknown';
-  
-  // Try RDAP with silent fail
+  let r='unknown';
   try{
-    const res = await fetch(`https://rdap.org/domain/${d}`, {
-      mode: 'cors',
-      signal: AbortSignal.timeout(4000),
-      credentials: 'omit'
-    });
-    if(res.status === 404) r = 'available';
-    else if(res.status === 200) r = 'taken';
-  }catch(e){ /* fail silently */ }
+    const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});
+    if(res.status===404)r='available';else if(res.status===200)r='taken';
+  }catch(e){}
   
-  // Fallback: Cloudflare DNS (only if RDAP didn't resolve)
-  if(r === 'unknown'){
-    try{
-      const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`, {
-        headers: {'Accept': 'application/dns-json'},
-        mode: 'cors',
-        signal: AbortSignal.timeout(3000)
-      });
-      if(res.ok){
-        const j = await res.json();
-        r = j.Status === 3 ? 'available' : (j.Answer?.length > 0 ? 'taken' : 'unknown');
-      }
-    }catch(e){ /* fail silently */ }
-  }
+  if(r==='unknown')try{
+    const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});
+    if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}
+  }catch(e){}
   
-  domC[d] = r;
-  applyDom(d, r);
-  return r;
+  domC[d]=r;applyDom(d,r);return r;
 }
 
-function applyDom(d, r){
-  const el = document.getElementById('dc-' + d.replace(/[.]/g, '-'));
-  if(!el) return;
+function applyDom(d,r){
+  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
+  if(!el)return;
+  const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;
   
-  const registerUrl = `https://www.namecheap.com/domains/registration/results/?domain=${d}`;
-  const aftermarketUrl = `https://${d}`;
+  if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
+  else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}
+  else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}
   
-  if(r === 'available'){
-    el.className = 'dchip av';
-    el.title = 'Available — register now!';
-    el.innerHTML = `<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;
-  } else if(r === 'taken'){
-    el.className = 'dchip tk';
-    el.title = 'Registered — check aftermarket';
-    el.innerHTML = `<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;
-  } else {
-    // Unknown: provide multiple verification options
-    el.className = 'dchip un';
-    el.title = 'Status unknown — verify manually';
-    el.innerHTML = `
-      <a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">
-        ${d} ❓
-      </a>
-    `;
+  if(pill==='available'){
+    const card=el.closest('.card');
+    if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}
   }
+}
+
+// ── Deterministic Metadata Generator ─────────────────────────────────────────────
+function enrichDeterministic(names, industry) {
+  const tax = rufloIntel?.semantic_taxonomy;
+  const morph = rufloIntel?.morphology;
   
-  // Re-apply filters if viewing "available only"
-  if(pill === 'available'){
-    const card = el.closest('.card');
-    if(card) {
-      const hasAvailable = card.querySelectorAll('.dchip.av').length > 0;
-      card.style.display = hasAvailable ? '' : 'none';
+  return names.map(n => {
+    const clean = n.name.toLowerCase().replace(/[^a-z]/g, '');
+    const len = clean.length;
+    
+    const hasSuffix = /(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum|labs|infra|node|forge|system)$/i.test(clean);
+    const structuralType = hasSuffix ? 'Hybrid' : 'Atomic';
+    
+    const lengthScore = len <= 5 ? 100 : len <= 6 ? 90 : len <= 7 ? 75 : 50;
+    const pronScore = /[qzx]{2,}/.test(clean) ? 40 : /[^aeiou]{3,}/.test(clean) ? 55 : 85;
+    const availScore = n._availabilityScore || 70;
+    
+    let verticalScore = 0;
+    if (tax?.high_value_roots) {
+      const matchedRoots = Object.keys(tax.high_value_roots).filter(r => clean.includes(r));
+      verticalScore = Math.min(100, 40 + (matchedRoots.length * 30));
     }
-  }
+    
+    const overall = Math.round((lengthScore * 0.25) + (pronScore * 0.20) + (availScore * 0.30) + (verticalScore * 0.25));
+    
+    return {
+      ...n,
+      structural_type: structuralType,
+      algorithmic_scores: {
+        overall,
+        length: lengthScore,
+        pronounceability: pronScore,
+        availability: availScore,
+        vertical_fit: verticalScore
+      },
+      tagline: null,
+      vc_signal: null,
+      why_it_works: null,
+      _score_reason: `Length:${lengthScore} | Pron:${pronScore} | Avail:${availScore} | Fit:${verticalScore}`
+    };
+  });
 }
 
-// ── Export Functionality ───────────────────────────────────────────
+// ── Export ─────────────────────────────────────────────────────────
 let exportFormat='csv',exportOpts={all:true,avail:false,top3:false,scores:true};
 
 function openExportModal(format){
@@ -2091,31 +1306,26 @@ function openExportModal(format){
   document.getElementById('expScores').checked=true;
   document.getElementById('exportModal').classList.add('on');
 }
-
-function closeExportModal(){
-  document.getElementById('exportModal').classList.remove('on');
-}
+function closeExportModal(){document.getElementById('exportModal').classList.remove('on');}
 
 function confirmExport(){
-  exportOpts={
-    all:document.getElementById('expAll').checked,
-    avail:document.getElementById('expAvail').checked,
-    top3:document.getElementById('expTop').checked,
-    scores:document.getElementById('expScores').checked
+  exportOpts = {
+    all: document.getElementById('expAll').checked,
+    avail: document.getElementById('expAvail').checked,
+    top3: document.getElementById('expTop').checked,
+    scores: true
   };
   closeExportModal();
   
-  // Filter names based on options
-  let names=lastGeneratedNames;
-  if(exportOpts.avail){
-    names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));
-  }else if(exportOpts.top3){
-    names=names.slice(0,3);
-  }
+  let names = lastGeneratedNames;
+  if(exportOpts.avail){ names = names.filter(n => n._d?.some(d => domC[d]==='available')); }
+  if(exportOpts.top3){ names = names.slice(0,3); }
   
-  if(exportFormat==='csv')downloadCSV(names);
-  else if(exportFormat==='pdf')downloadPDF(names);
-  else if(exportFormat==='json')downloadJSON(names);
+  names = enrichDeterministic(names, document.getElementById('industry').value);
+  
+  if(exportFormat==='csv') downloadCSV(names);
+  else if(exportFormat==='pdf') downloadPDF(names);
+  else if(exportFormat==='json') downloadJSON(names);
   
   toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);
 }
@@ -2129,136 +1339,87 @@ function copyAll(){
   navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!'));
 }
 
-// CSV Export (native)
-function downloadCSV(names){
-  const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];
-  const rows=names.map(n=>{
-    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
-    const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';
+function downloadCSV(names) {
+  const enriched = enrichDeterministic(names, document.getElementById('industry').value);
+  const headers = ['Name','Type','Overall Score','Length','Pronounceability','Availability %','Vertical Fit %','Available TLDs','Scoring Basis'];
+  
+  const rows = enriched.map(n => {
+    const avail = n._d?.filter(d => domC[d] === 'available').join(' | ') || 'None';
     return [
       n.name,
-      n.tagline||'',
-      n.naming_pattern||'',
-      n.vc_signal||'',
-      avail,
-      scoreAvg,
-      (n.why_it_works||'').replace(/,/g,';')
-    ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+      n.structural_type,
+      n.algorithmic_scores.overall,
+      n.name.replace(/\s/g,'').length,
+      n.algorithmic_scores.pronounceability,
+      n.algorithmic_scores.availability,
+      n.algorithmic_scores.vertical_fit,
+      `"${avail}"`,
+      `"${n._score_reason}"`
+    ].join(',');
   });
   
-  const csv=[headers.join(','),...rows].join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();URL.revokeObjectURL(url);
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `autodng-investor-data-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
 }
 
-// JSON Export (native)
 function downloadJSON(names){
   const exportData={
     exportedAt:new Date().toISOString(),
     provider:prov,
     model:mdl,
-    config:{industry:document.getElementById('industry').value,language,wordCount},
-    names:names.map(n=>{
-      const base={...n};
-      if(!exportOpts.scores)delete base.score;
-      return base;
-    })
+    config:{industry:document.getElementById('industry').value,language,charLength},
+    names:names.map(n=>{const base={...n};if(!exportOpts.scores)delete base.score;return base;})
   };
-  
   const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download=`brandlab-export-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();URL.revokeObjectURL(url);
+  const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
 }
 
-// PDF Export (jsPDF)
-function downloadPDF(names){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
+function downloadPDF(names) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const enriched = enrichDeterministic(names, document.getElementById('industry').value);
   
-  // Header
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(18);
-  doc.text('autoDNG — Brand Name Report',14,20);
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-  doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);
-  doc.text(`Industry: ${document.getElementById('industry').value} | Language: ${language} | Length: ${wordCount}`,14,34);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+  doc.text('autoDNG — Investor-Ready Brand Report', 14, 20);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.text(`Generated: ${new Date().toLocaleString()} | Industry: ${document.getElementById('industry').value}`, 14, 28);
+  doc.text(`Provider: ${prov} | Model: ${mdl} | Filtered by: ${document.getElementById('charlen').value}`, 14, 34);
   
-  let y=45;
-  names.forEach((n,i)=>{
-    if(y>270){doc.addPage();y=20;}
+  let y = 45;
+  enriched.forEach((n, i) => {
+    if (y > 250) { doc.addPage(); y = 20; }
     
-    // Card header
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(14);
-    doc.text(`${i+1}. ${n.name}`,14,y);
-    y+=6;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+    doc.text(`${i+1}. ${n.name}`, 14, y);
+    y += 6;
     
-    // Tagline
-    doc.setFont('helvetica','italic');
-    doc.setFontSize(10);
-    doc.text(n.tagline||'',14,y);
-    y+=5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+    doc.text(`Type: ${n.structural_type} | Length: ${n.name.replace(/\s/g,'').length} chars`, 14, y); y += 5;
+    doc.text(`Overall Score: ${n.algorithmic_scores.overall}/100`, 14, y); y += 5;
+    doc.text(`• Length: ${n.algorithmic_scores.length}  • Pronounceability: ${n.algorithmic_scores.pronounceability}  • Availability: ${n.algorithmic_scores.availability}  • Vertical Fit: ${n.algorithmic_scores.vertical_fit}`, 14, y); y += 5;
     
-    // Metadata
-    doc.setFont('helvetica','normal');
-    doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);
-    y+=5;
+    const availStatus = n._d?.filter(d => domC[d] === 'available').join(', ') || 'None verified';
+    doc.text(`Domain Availability: ${availStatus}`, 14, y); y += 5;
+    doc.text(`Scoring Basis: ${n._score_reason}`, 14, y); y += 8;
     
-    // Scores (if enabled)
-    if(exportOpts.scores && n.score){
-      const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  ');
-      doc.text(scores,14,y);
-      y+=5;
-    }
-    
-    // Domain availability
-    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
-    doc.text(`Available: ${avail}`,14,y);
-    y+=5;
-    
-    // Why it works
-    doc.text(`Why: ${n.why_it_works||'—'}`,14,y);
-    y+=12;
-    
-    // Separator
-    doc.setDrawColor(200,240,74);
-    doc.line(14,y-3,196,y-3);
-    y+=5;
+    doc.setDrawColor(200, 240, 74); doc.setLineWidth(0.5);
+    doc.line(14, y-4, 196, y-4); y += 4;
   });
   
-  // Footer
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text('autoDNG — AI Brand Name Generator • brandlab.example.com',14,285);
-  
-  doc.save(`brandlab-export-${new Date().toISOString().slice(0,10)}.pdf`);
+  doc.setFontSize(8); doc.setTextColor(100);
+  doc.text('autoDNG — Algorithmic Brand Intelligence • No LLM hallucination • Ready for TM/DD', 14, 285);
+  doc.save(`autodng-investor-report-${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
 // ── Utilities ──────────────────────────────────────────────────────
-function toast(m){
-  const t=document.getElementById('toast');
-  t.textContent=m;
-  t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'),3200);
-}
-
-// Close modal on outside click
-document.getElementById('exportModal').addEventListener('click',(e)=>{
-  if(e.target.id==='exportModal')closeExportModal();
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown',(e)=>{
-  if(e.key==='Escape')closeExportModal();
-  if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();if(lastGeneratedNames.length)openExportModal('csv');}
-});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200);}
+document.getElementById('exportModal').addEventListener('click',(e)=>{if(e.target.id==='exportModal')closeExportModal();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeExportModal();if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();if(lastGeneratedNames.length)openExportModal('csv');}});
 </script>
 </body>
-
 </html>

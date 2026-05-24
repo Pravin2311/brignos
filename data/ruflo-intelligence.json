@@ -1,0 +1,436 @@
+{
+  "_README": "autoDNG Intelligence v3.4.1. Added 20 new prefixes (vel, nor, sol, aer, vex, ryn, tor, kae, lyr, vor, sen, myr, xel, dra, nov, aev, kry, zen, aro, vyx) with semantic mappings, vertical affinities, and global safety scores. Drop into /data/ folder.",
+  "metadata": {
+    "version": "3.4.1-prefix-expanded",
+    "mode": "hybrid_balance_commercial",
+    "last_updated": "2026-05-24",
+    "dataset_size": 1639,
+    "target_regions": ["EN", "ES", "DE", "FR", "JP"],
+    "architecture": "local_procedural → local_scoring → LLM_refinement → RDAP_validation"
+  },
+  "generation_weights": {
+    "structure": { "invented": 0.45, "atomic": 0.30, "compound": 0.15, "hybrid": 0.10 },
+    "phonetics": { "balanced": 0.70, "hard_minimal": 0.28, "soft_vocalic": 0.02 },
+    "length_distribution": { "4-5": 0.40, "6": 0.35, "7": 0.18, "8": 0.07 },
+    "syllable_preference": { "min": 1, "max": 3, "ideal": 2 },
+    "stress_pattern": "primary_on_first_syllable",
+    "lexicality": { "invented_with_hint": 0.55, "atomic_metaphorical": 0.30, "compound_safe": 0.15 },
+    "commercial_priority": { "high_value_verticals": ["ai_ml", "biotech", "fintech", "productivity", "climate"], "weight_vertical_alignment": 0.35 }
+  },
+  "predictive_signals": {
+    "trend_weights": { "rising_patterns": 1.3, "stable_patterns": 1.0, "saturating_patterns": 0.6 },
+    "vertical_premiums": { "ai_ml": 1.4, "biotech": 1.3, "fintech": 1.2, "climate": 1.2, "productivity": 1.1 },
+    "friction_penalties": { "q_without_u": 0.55, "x_onset_ambiguous": 0.65, "length_gt_7": 0.75, "length_eq_8": 0.50, "ambiguous_vowel_y": 0.85, "oversaturated_suffix": 0.75 }
+  },
+  "semantic_taxonomy": {
+    "high_value_roots": {
+      "gen": { "meanings": ["generate", "genesis", "gene"], "verticals": ["ai", "biotech", "climate"], "valence": "forward-looking", "consumer_health_fit": "avoid" },
+      "nex": { "meanings": ["next", "nexus", "connect"], "verticals": ["apis", "integration", "web3"], "valence": "modern", "consumer_health_fit": "neutral" },
+      "lum": { "meanings": ["light", "clarity", "insight"], "verticals": ["analytics", "ai", "visibility", "wellness"], "valence": "transparent", "consumer_health_fit": "strong" },
+      "ver": { "meanings": ["truth", "authentic", "verify"], "verticals": ["security", "identity", "data"], "valence": "trustworthy", "consumer_health_fit": "neutral" },
+      "arc": { "meanings": ["bridge", "trajectory", "structure"], "verticals": ["platforms", "middleware", "strategy"], "valence": "foundational", "consumer_health_fit": "neutral" },
+      "mind": { "meanings": ["intelligence", "cognition", "awareness"], "verticals": ["ai", "wellness", "edtech", "mental_health"], "valence": "intelligent", "consumer_health_fit": "strong" },
+      "zen": { "meanings": ["calm", "balance", "focus"], "verticals": ["wellness", "mental_health", "productivity"], "valence": "serene", "consumer_health_fit": "strong" },
+      "ara": { "meanings": ["altar", "elevation", "grace"], "verticals": ["wellness", "lifestyle", "consumer"], "valence": "elegant", "consumer_health_fit": "strong" },
+      "vel": { "meanings": ["velocity", "speed", "momentum"], "verticals": ["ai_ml", "automation", "productivity", "logistics"], "valence": "dynamic", "consumer_health_fit": "neutral" },
+      "sol": { "meanings": ["solution", "solar", "sole"], "verticals": ["climate", "energy", "saas", "consumer"], "valence": "resolving", "consumer_health_fit": "strong" },
+      "aer": { "meanings": ["air", "aerial", "light"], "verticals": ["climate", "infrastructure", "mobility", "iot"], "valence": "lightweight", "consumer_health_fit": "neutral" },
+      "vex": { "meanings": ["energy", "challenge", "catalyst"], "verticals": ["ai_ml", "dev_tools", "security", "gaming"], "valence": "provocative", "consumer_health_fit": "weak" },
+      "tor": { "meanings": ["torque", "motor", "force"], "verticals": ["infrastructure", "robotics", "industrial", "mobility"], "valence": "powerful", "consumer_health_fit": "neutral" },
+      "lyr": { "meanings": ["lyric", "harmony", "flow"], "verticals": ["creative", "consumer", "edtech", "wellness"], "valence": "harmonious", "consumer_health_fit": "strong" },
+      "vor": { "meanings": ["forward", "voracious", "absorb"], "verticals": ["ai_ml", "analytics", "growth", "data"], "valence": "absorbing", "consumer_health_fit": "neutral" },
+      "sen": { "meanings": ["sense", "sensor", "sentient"], "verticals": ["iot", "analytics", "ai_ml", "security"], "valence": "perceptive", "consumer_health_fit": "neutral" },
+      "myr": { "meanings": ["myriad", "mystical", "mirror"], "verticals": ["wellness", "creative", "gaming", "consumer"], "valence": "mystical", "consumer_health_fit": "strong" },
+      "xel": { "meanings": ["excel", "pixel", "accelerate"], "verticals": ["ai_ml", "dev_tools", "analytics", "creative"], "valence": "precise", "consumer_health_fit": "neutral" },
+      "dra": { "meanings": ["dragon", "draw", "drama"], "verticals": ["gaming", "creative", "consumer", "entertainment"], "valence": "bold", "consumer_health_fit": "weak" },
+      "nov": { "meanings": ["nova", "novel", "innovation"], "verticals": ["ai_ml", "biotech", "climate", "innovation"], "valence": "innovative", "consumer_health_fit": "neutral" },
+      "aev": { "meanings": ["aeon", "eternal", "age"], "verticals": ["wellness", "climate", "infrastructure", "longevity"], "valence": "timeless", "consumer_health_fit": "strong" },
+      "kry": { "meanings": ["cryo", "crystal", "sharp"], "verticals": ["security", "ai_ml", "biotech", "infrastructure"], "valence": "sharp", "consumer_health_fit": "neutral" },
+      "aro": { "meanings": ["aroma", "arrow", "arise"], "verticals": ["consumer", "wellness", "lifestyle", "foodtech"], "valence": "uplifting", "consumer_health_fit": "strong" },
+      "vyx": { "meanings": ["vortex", "vital", "vex"], "verticals": ["security", "ai_ml", "gaming", "dev_tools"], "valence": "intense", "consumer_health_fit": "weak" }
+    },
+    "semantic_layering_rules": { "min_hint_strength": 0.4, "max_roots_per_name": 2, "prefer_complementary_valence": true }
+  },
+  "morphology": {
+    "suffixes": [
+      { "term": "gen", "weight": 0.089, "trend": "rising", "vertical_affinity": { "strong": ["ai_ml", "biotech", "climate"], "neutral": ["developer_tools", "analytics"], "weak": ["wellness", "consumer"], "avoid": ["mental_health", "consumer_health", "dtc"] }, "global_safety": 0.91, "length": 3 },
+      { "term": "ics", "weight": 0.085, "trend": "stable", "vertical_affinity": { "strong": ["tech", "analytics", "ai_ml"], "neutral": ["saas", "enterprise"], "weak": ["wellness", "consumer"] }, "global_safety": 0.92, "length": 3 },
+      { "term": "ent", "weight": 0.073, "trend": "stable", "vertical_affinity": { "strong": ["saas", "tools", "productivity"], "neutral": ["enterprise", "ai_ml"], "weak": ["consumer", "wellness"] }, "global_safety": 0.95, "length": 3 },
+      { "term": "nex", "weight": 0.02, "trend": "rising", "vertical_affinity": { "strong": ["apis", "integration", "web3", "ai_ml"], "neutral": ["tech", "enterprise"], "weak": ["consumer", "wellness"] }, "global_safety": 0.89, "length": 3 },
+      { "term": "ion", "weight": 0.062, "trend": "stable", "vertical_affinity": { "strong": ["enterprise", "formal", "biotech"], "neutral": ["tech", "ai_ml"], "weak": ["consumer", "playful"] }, "global_safety": 0.88, "length": 3 },
+      { "term": "abs", "weight": 0.068, "trend": "stable", "vertical_affinity": { "strong": ["core", "infrastructure", "security"], "neutral": ["tech", "enterprise"], "weak": ["consumer", "wellness"] }, "global_safety": 0.90, "length": 3 },
+      { "term": "roz", "weight": 0.051, "trend": "rising", "vertical_affinity": { "strong": ["growth", "data", "analytics"], "neutral": ["tech", "productivity"], "weak": ["biotech", "consumer"] }, "global_safety": 0.93, "length": 3 },
+      { "term": "mind", "weight": 0.071, "trend": "rising", "vertical_affinity": { "strong": ["ai", "wellness", "edtech", "mental_health"], "neutral": ["productivity", "consumer"], "weak": ["infrastructure", "biotech"] }, "global_safety": 0.94, "length": 4 },
+      { "term": "ara", "weight": 0.042, "trend": "rising", "vertical_affinity": { "strong": ["wellness", "mental_health", "consumer", "lifestyle"], "neutral": ["edtech", "productivity"], "weak": ["biotech", "infrastructure"] }, "global_safety": 0.96, "length": 3 },
+      { "term": "zen", "weight": 0.038, "trend": "rising", "vertical_affinity": { "strong": ["wellness", "mental_health", "productivity"], "neutral": ["consumer", "edtech"], "weak": ["biotech", "infrastructure", "security"] }, "global_safety": 0.97, "length": 3 },
+      { "term": "va", "weight": 0.035, "trend": "stable", "vertical_affinity": { "strong": ["consumer", "wellness", "lifestyle"], "neutral": ["edtech", "productivity"], "weak": ["biotech", "infrastructure"] }, "global_safety": 0.98, "length": 2 },
+      { "term": "lum", "weight": 0.048, "trend": "rising", "vertical_affinity": { "strong": ["analytics", "ai", "visibility", "wellness"], "neutral": ["tech", "consumer"], "weak": ["biotech", "infrastructure"] }, "global_safety": 0.93, "length": 3 }
+    ],
+    "prefixes": [
+      { "term": "nex", "weight": 0.02, "trend": "rising", "vertical_affinity": ["apis", "integration", "ai_ml"], "global_safety": 0.89, "length": 3 },
+      { "term": "zyl", "weight": 0.012, "trend": "rising", "vertical_affinity": ["tech", "innovation", "ai_ml"], "global_safety": 0.87, "length": 3 },
+      { "term": "cly", "weight": 0.045, "trend": "rising", "vertical_affinity": ["growth", "clarity", "analytics"], "global_safety": 0.90, "length": 3 },
+      { "term": "ver", "weight": 0.064, "trend": "stable", "vertical_affinity": ["security", "truth", "data"], "global_safety": 0.91, "length": 3 },
+      { "term": "lum", "weight": 0.051, "trend": "rising", "vertical_affinity": ["analytics", "ai", "wellness"], "global_safety": 0.93, "length": 3 },
+      { "term": "zen", "weight": 0.038, "trend": "rising", "vertical_affinity": ["wellness", "mental_health", "productivity"], "global_safety": 0.97, "length": 3 },
+      { "term": "ara", "weight": 0.035, "trend": "rising", "vertical_affinity": ["wellness", "consumer", "lifestyle"], "global_safety": 0.96, "length": 3 },
+      { "term": "pro", "weight": 0.048, "trend": "saturating", "vertical_affinity": ["enterprise"], "global_safety": 0.82, "soft_penalty": 0.6, "length": 3 },
+      { "term": "vel", "weight": 0.042, "trend": "rising", "vertical_affinity": ["ai_ml", "automation", "productivity", "logistics"], "global_safety": 0.94, "length": 3 },
+      { "term": "nor", "weight": 0.032, "trend": "stable", "vertical_affinity": ["enterprise", "infrastructure", "security"], "global_safety": 0.92, "length": 3 },
+      { "term": "sol", "weight": 0.048, "trend": "rising", "vertical_affinity": ["climate", "energy", "saas", "consumer"], "global_safety": 0.95, "length": 3 },
+      { "term": "aer", "weight": 0.039, "trend": "rising", "vertical_affinity": ["climate", "infrastructure", "mobility", "iot"], "global_safety": 0.93, "length": 3 },
+      { "term": "vex", "weight": 0.044, "trend": "rising", "vertical_affinity": ["ai_ml", "dev_tools", "security", "gaming"], "global_safety": 0.88, "length": 3 },
+      { "term": "ryn", "weight": 0.028, "trend": "stable", "vertical_affinity": ["analytics", "ai_ml", "creative"], "global_safety": 0.90, "length": 3 },
+      { "term": "tor", "weight": 0.041, "trend": "stable", "vertical_affinity": ["infrastructure", "robotics", "industrial", "mobility"], "global_safety": 0.91, "length": 3 },
+      { "term": "kae", "weight": 0.033, "trend": "rising", "vertical_affinity": ["tech", "innovation", "creative"], "global_safety": 0.89, "length": 3 },
+      { "term": "lyr", "weight": 0.036, "trend": "rising", "vertical_affinity": ["creative", "consumer", "edtech", "wellness"], "global_safety": 0.96, "length": 3 },
+      { "term": "vor", "weight": 0.037, "trend": "rising", "vertical_affinity": ["ai_ml", "analytics", "growth", "data"], "global_safety": 0.87, "length": 3 },
+      { "term": "sen", "weight": 0.040, "trend": "stable", "vertical_affinity": ["iot", "analytics", "ai_ml", "security"], "global_safety": 0.92, "length": 3 },
+      { "term": "myr", "weight": 0.031, "trend": "rising", "vertical_affinity": ["wellness", "creative", "gaming", "consumer"], "global_safety": 0.94, "length": 3 },
+      { "term": "xel", "weight": 0.038, "trend": "rising", "vertical_affinity": ["ai_ml", "dev_tools", "analytics", "creative"], "global_safety": 0.90, "length": 3 },
+      { "term": "dra", "weight": 0.029, "trend": "stable", "vertical_affinity": ["gaming", "creative", "consumer", "entertainment"], "global_safety": 0.86, "length": 3 },
+      { "term": "nov", "weight": 0.046, "trend": "rising", "vertical_affinity": ["ai_ml", "biotech", "climate", "innovation"], "global_safety": 0.93, "length": 3 },
+      { "term": "aev", "weight": 0.034, "trend": "stable", "vertical_affinity": ["wellness", "climate", "infrastructure", "longevity"], "global_safety": 0.95, "length": 3 },
+      { "term": "kry", "weight": 0.035, "trend": "rising", "vertical_affinity": ["security", "ai_ml", "biotech", "infrastructure"], "global_safety": 0.88, "length": 3 },
+      { "term": "aro", "weight": 0.033, "trend": "rising", "vertical_affinity": ["consumer", "wellness", "lifestyle", "foodtech"], "global_safety": 0.96, "length": 3 },
+      { "term": "vyx", "weight": 0.027, "trend": "rising", "vertical_affinity": ["security", "ai_ml", "gaming", "dev_tools"], "global_safety": 0.85, "length": 3 }
+    ],
+    "clusters": [
+      { "term": "nt", "weight": 0.152, "position": "medial", "phonetic_profile": "crisp_professional", "global_safety": 0.94 },
+      { "term": "st", "weight": 0.094, "position": "onset/medial", "phonetic_profile": "forward_momentum", "global_safety": 0.92 },
+      { "term": "ct", "weight": 0.068, "position": "medial/coda", "phonetic_profile": "precise_closure", "global_safety": 0.90 },
+      { "term": "pr", "weight": 0.058, "position": "onset", "phonetic_profile": "professional_onset", "global_safety": 0.91 },
+      { "term": "nd", "weight": 0.071, "position": "medial", "phonetic_profile": "grounded_flow", "global_safety": 0.93 },
+      { "term": "th", "weight": 0.060, "position": "onset/coda", "phonetic_profile": "fricative", "global_safety": 0.71, "risk_regions": ["JP", "FR", "DE"] }
+    ],
+    "combination_affinity": {
+      "high_value_pairs": [
+        { "prefix": "nex", "suffix": "gen", "affinity": 0.92, "rationale": "Connection + creation = AI/integration", "verticals": ["ai_ml", "biotech"] },
+        { "prefix": "cly", "suffix": "roz", "affinity": 0.88, "rationale": "Climb/clear + growth = productivity/analytics", "verticals": ["productivity", "analytics"] },
+        { "prefix": "zyl", "suffix": "gen", "affinity": 0.86, "rationale": "Modern + generation = premium tech/biotech", "verticals": ["ai_ml", "biotech"] },
+        { "root": "lum", "suffix": "ent", "affinity": 0.84, "rationale": "Light + agentive = clarity enabler", "verticals": ["analytics", "ai", "wellness"] },
+        { "root": "zen", "suffix": "ara", "affinity": 0.89, "rationale": "Calm + elegance = wellness/lifestyle", "verticals": ["wellness", "mental_health", "consumer"] },
+        { "root": "mind", "suffix": "ara", "affinity": 0.87, "rationale": "Awareness + grace = mental wellness", "verticals": ["mental_health", "wellness", "edtech"] },
+        { "prefix": "vel", "suffix": "nex", "affinity": 0.85, "rationale": "Speed + connection = automation/AI", "verticals": ["ai_ml", "automation", "productivity"] },
+        { "prefix": "sol", "suffix": "ara", "affinity": 0.83, "rationale": "Solution + grace = consumer wellness", "verticals": ["consumer", "wellness", "climate"] },
+        { "prefix": "nov", "suffix": "gen", "affinity": 0.88, "rationale": "Innovation + generation = biotech/AI", "verticals": ["biotech", "ai_ml", "climate"] }
+      ],
+      "avoid_pairs": [
+        { "prefix": "bio", "suffix": "bio", "reason": "Redundant, high TM conflict", "penalty": 0.85 },
+        { "prefix": "cloud", "suffix": "ware", "reason": "Dated compound, low differentiation", "penalty": 0.80 },
+        { "cluster": "ll", "suffix": "ing", "reason": "Phonetically muddy globally", "penalty": 0.70 },
+        { "root": "gen", "suffix": "gen", "reason": "Redundant semantic layering", "penalty": 0.75 }
+      ]
+    }
+  },
+  "generation_grammar": {
+    "phonetic_inventory": {
+      "vowels": ["a", "e", "i", "o", "u"],
+      "vowel_variants": ["y"],
+      "safe_onsets": ["st", "pr", "tr", "cl", "fl", "br", "dr", "gr", "cr", "sp", "sk", "sm", "sn", "sl", "sh", "ch"],
+      "safe_codas": ["nt", "st", "ld", "nd", "rk", "lt", "rt", "mp", "ng", "ns", "pt", "ct", "sh", "ch"],
+      "forbidden_sequences": ["xx", "qq", "zzz", "thl", "rth", "qy", "xy", "wy", "aeiou_cluster"]
+    },
+    "structural_patterns": [
+      "{onset}{vowel}{coda}",
+      "{prefix}{vowel}{safe_coda}",
+      "{semantic_root}{vowel}",
+      "{onset}{vowel}{coda}{suffix}",
+      "{prefix}{semantic_root}{invented_ending}",
+      "{semantic_root}{cluster}{ending}"
+    ],
+    "pattern_weights": {
+      "{onset}{vowel}{coda}": 0.48,
+      "{prefix}{vowel}{safe_coda}": 0.30,
+      "{semantic_root}{vowel}": 0.15,
+      "{onset}{vowel}{coda}{suffix}": 0.15,
+      "{prefix}{semantic_root}{invented_ending}": 0.03,
+      "{semantic_root}{cluster}{ending}": 0.01
+    },
+    "invented_endings": ["", "", "", "a", "o", "e", "ex", "or", "ix"],
+    "suffix_probability": 0.08,
+    "syllable_rules": { "max_syllables": 3, "ideal_syllables": 2, "stress_position": "first", "cvcv_ratio_target": 0.6 },
+    "generation_modes": {
+      "invented": 0.50,
+      "atomic": 0.35,
+      "semantic_hybrid": 0.10,
+      "compound": 0.05
+    },
+    "atomic_mode_rules": {
+      "force_no_suffix": true,
+      "force_no_ending": true,
+      "max_length": 6,
+      "prefer_cvcv": true,
+      "allow_dictionary_roots": false
+    },
+    "length_pressure": {
+      "target_distribution": { "4-5": 0.40, "6": 0.35, "7": 0.18, "8": 0.07 },
+      "penalty_per_char_over_6": 0.45,
+      "require_semantic_premium_for_8_chars": true
+    },
+    "prefix_diversity": {
+      "max_same_prefix_in_batch": 1,
+      "penalty_per_repeat": 0.35
+    },
+    "suffix_diversity": {
+      "max_same_suffix_in_batch": 3,
+      "penalty_per_repeat": 0.15,
+      "preferred_rotation": ["nex", "ics", "ent", "ara", "zen", "lum", "roz", "gen"]
+    }
+  },
+  "negative_similarity_filters": {
+    "overused_prefixes": ["cloud", "meta", "nova", "open", "smart", "super", "ultra", "hyper", "cyber", "data"],
+    "overused_suffixes": ["ify", "ly", "io", "ware", "soft", "tech", "sys", "net", "hub", "stack", "box"],
+    "forbidden_combinations": ["cloud+sync", "meta+verse", "open+source", "smart+flow", "nova+cloud", "cyber+guard", "data+hub", "ai+gen", "pro+tech"],
+    "similarity_threshold_edit_distance": 2,
+    "phonetic_collision_patterns": ["ai$", "ia$", "ou$", "ue$", "tion$", "sion$"]
+  },
+  "constraints": {
+   "hard_exclusions": [
+  "health",
+  "labs",
+  "therapeutics",
+  "systems",
+  "technologies",
+  "biosciences",
+  "solutions",
+  "platform",
+  "software",
+  "infrastructure",
+  "intelligence",
+  "protocol",
+  "network",
+  "networks",
+  "management",
+  "consumer",
+  "finance",
+  "capital",
+  "security",
+  "games",
+  "startup",
+
+  "cloud",
+  "sync",
+  "flow",
+  "stack",
+  "core",
+  "hub",
+  "spark",
+  "pulse",
+  "vault",
+  "meta",
+  "quantum",
+  "neo",
+
+  "chain",
+  "block",
+  "data",
+  "logic",
+  "mind",
+  "brain",
+  "gen",
+  "byte",
+  "labsai",
+  "aihub",
+  "verse",
+  "matrix",
+  "nexus",
+  "sphere",
+  "factory",
+  "engine",
+  "studio",
+  "space",
+
+  "get",
+  "super",
+  "hyper",
+  "ultra",
+  "smart",
+  "future",
+  "next",
+  "first",
+
+  "fy",
+  "ify",
+  "able",
+  "ster",
+  "base",
+  "matic",
+  "scape",
+  "works"
+]
+    "soft_penalties": [
+      { "pattern": "io$", "penalty": 0.65, "reason": "domain saturation" },
+      { "pattern": "ly$", "penalty": 0.75, "reason": "SaaS trope fatigue" },
+      { "pattern": "ify$", "penalty": 0.75, "reason": "SaaS trope fatigue" },
+      { "pattern": "q_without_u", "penalty": 0.45, "reason": "major spelling friction globally" },
+      { "pattern": "x_onset_ambiguous", "penalty": 0.35, "reason": "pronunciation variance in key markets" },
+      { "pattern": "gen$", "penalty": 0.20, "reason": "oversaturated in non-tech verticals", "industry_exception": ["ai_ml", "biotech", "climate"] }
+    ],
+    "anti_patterns": {
+      "structural": ["compound + compound", "hybrid with >2 morphemes", "exact dictionary words >6 chars"],
+      "phonetic": ["trailing schwa without stress", "consecutive plosives without vowel buffer", "silent letters"],
+      "orthographic": ["q_without_u", "x_onset_without_vowel", "ambiguous_casing", "non_latin_chars"],
+      "commercial": ["oversaturated_suffixes_without_differentiation", "generic_tech_terms_as_primary_morpheme", "suffix_industry_mismatch", "forced_suffix_bias"]
+    }
+  },
+  "global_pronounceability": {
+    "target_regions": ["EN", "ES", "DE", "FR", "JP"],
+    "min_threshold": 0.75,
+    "risk_patterns": [
+      { "pattern": "th", "risk_in": ["JP", "FR", "DE"], "mitigation": "substitute_t_or_s" },
+      { "pattern": "ll", "risk_in": ["ES", "EN"], "mitigation": "vowel_buffer_or_single_l" },
+      { "pattern": "ng", "risk_in": ["JP", "FR"], "mitigation": "prefer_nk_or_n_coda" },
+      { "pattern": "q_without_u", "risk_in": ["ALL"], "mitigation": "avoid_or_use_only_for_niche_deep_tech" }
+    ],
+    "spellability_rules": { "prefer_cvcv_or_cvccv": true, "max_consecutive_consonants": 2, "avoid_ambiguous_digraphs": ["xq", "zt", "qv", "kn", "wr"], "min_spellability_score": 0.80 }
+  },
+  "risk_heuristics": {
+    "trademark_risk": { "high_risk_patterns": ["exact_dictionary_words>5chars", "common_tech_compounds", "oversaturated_suffixes"], "low_risk_patterns": ["invented_cvcv", "semantic_root_plus_unique_suffix", "atomic_metaphorical_<=6chars"], "verification_sources": ["USPTO_TESS", "WIPO_Global_Brand_DB"] },
+    "domain_availability_heuristic": { "high_probability": ["6char_invented.com", "5char_atomic.io", "semantic_root.ai"], "low_probability": ["dictionary_word.com", "compound_tech.com", "oversaturated_pattern.any"], "tld_strategy": { "ai_native": [".ai", ".com"], "developer_tools": [".io", ".dev", ".com"], "consumer": [".com", ".app", ".co"], "biotech": [".com", ".bio", ".ai"], "wellness": [".com", ".care", ".life"] } }
+  },
+  "scoring_rubric": {
+    "brandability": { 
+      "weight": 0.40, 
+      "criteria": [
+        {"name": "uniqueness", "method": "edit_distance_from_dictionary", "threshold": 0.7}, 
+        {"name": "phonetic_clarity", "method": "cross_lingual_pronunciation_score", "threshold": 0.75}, 
+        {"name": "length_fit", "method": "length_pressure_scoring", "threshold": "4-7_preferred"}, 
+        {"name": "memorability", "method": "cvcv_pattern_plus_2_syllable_stress", "threshold": 0.8}
+      ] 
+    },
+    "commercial_viability": { 
+      "weight": 0.35, 
+      "criteria": [
+        {"name": "trademark_distance", "method": "uspto_similarity_heuristic", "threshold": "low_risk"}, 
+        {"name": "domain_availability", "method": "tld_heuristic_match", "threshold": "likely_available"}, 
+        {"name": "vertical_alignment", "method": "suffix_industry_affinity_score", "threshold": 0.7}
+      ] 
+    },
+    "differentiation": { 
+      "weight": 0.25, 
+      "criteria": [
+        {"name": "trend_alignment", "method": "rising_pattern_match", "threshold": "not_saturating"}, 
+        {"name": "structural_novelty", "method": "affinity_matrix_uniqueness", "threshold": 0.5}, 
+        {"name": "semantic_flexibility", "method": "multi_vertical_applicability", "threshold": 2}
+      ] 
+    },
+    "output_threshold": 7.5, 
+    "scoring_method": "weighted_sum_with_explainability",
+    "length_scoring": {
+      "4-5": 1.0,
+      "6": 0.95,
+      "7": 0.85,
+      "8": 0.65,
+      "9+": 0.40
+    },
+    "atomic_bonus": {
+      "apply_if_no_suffix_and_length_lte_6": true,
+      "brandability_bonus": 0.08,
+      "differentiation_bonus": 0.12
+    }
+  },
+  "exemplars": {
+    "tier1_positive": [
+      {"name": "Linear", "type": "atomic", "root": "line=trajectory", "verticals": ["productivity", "dev_tools"]},
+      {"name": "Zylgen", "type": "invented_with_hint", "root": "gen=generate", "verticals": ["ai", "biotech"]},
+      {"name": "Clyroz", "type": "invented_with_hint", "root": "cly=climb, roz=growth", "verticals": ["growth", "analytics"]},
+      {"name": "Nexroz", "type": "invented_with_hint", "root": "nex=connect", "verticals": ["apis", "integration"]},
+      {"name": "Lumara", "type": "invented_with_hint", "root": "lum=light, ara=grace", "verticals": ["wellness", "mental_health", "consumer"]},
+      {"name": "Vexa", "type": "atomic", "root": "vex=energy", "verticals": ["ai", "dev_tools", "automation"]},
+      {"name": "Stral", "type": "atomic", "root": "str=structure", "verticals": ["infrastructure", "ai", "platforms"]},
+      {"name": "Velora", "type": "invented_with_hint", "root": "vel=speed, ora=light", "verticals": ["automation", "productivity", "ai_ml"]},
+      {"name": "Solara", "type": "invented_with_hint", "root": "sol=solution, ara=grace", "verticals": ["climate", "consumer", "wellness"]},
+      {"name": "Novex", "type": "invented_with_hint", "root": "nov=innovation, ex=excel", "verticals": ["ai_ml", "biotech", "innovation"]}
+    ],
+    "avoid": [
+      {"name": "CloudSyncPro", "reason": "generic_compound + oversaturated + 11_chars"},
+      {"name": "Qyntagent", "reason": "q_without_u + 10_chars + suffix_saturation"},
+      {"name": "Xybertask", "reason": "ambiguous_onset + generic_suffix + length"},
+      {"name": "Mindgen", "reason": "gen_suffix_mismatch_for_consumer_health"},
+      {"name": "Wellgen", "reason": "generic_health_term + oversaturated_suffix"}
+    ],
+    "by_vertical": {
+      "ai_ml": ["Linear", "Notion", "Vercel", "Zylgen", "Nexroz", "Vexa", "Velora", "Novex"],
+      "biotech": ["Zylgen", "Arweave", "EQRx", "Biodock", "Veraltra", "Novex"],
+      "fintech": ["Revolut", "Ramp", "Plaid", "Glyzar", "Nexa"],
+      "productivity": ["Linear", "Clyroz", "Frixl", "Lument", "Fluxa", "Velora"],
+      "wellness": ["Lumara", "Zenova", "Calmia", "Avara", "Mindra", "Solara"],
+      "mental_health": ["Zenara", "Mindra", "Clarix", "Aevum", "Lumina"],
+      "consumer_health": ["Avara", "Vita", "Nura", "Zena", "Luma", "Solara"],
+      "climate": ["Solara", "Aeris", "Novex", "Aevum"],
+      "creative": ["Lyra", "Myris", "Dracon", "Arova"]
+    }
+  },
+  "output_schema": { 
+    "required_fields": ["name", "type", "semantic_roots", "phonetic_style", "pronunciation", "rationale", "viability", "score_breakdown"], 
+    "scoring_explainability": true, 
+    "vertical_targeting_hints": true, 
+    "bundle_recommendations": { 
+      "ai_native": [".ai", ".com"], 
+      "developer_tools": [".io", ".com"], 
+      "broad_appeal": [".com", ".co"],
+      "wellness": [".com", ".care", ".life"],
+      "consumer_health": [".com", ".health", ".care"]
+    } 
+  },
+  "pipeline_config": {
+    "stage_1_local_generation": { 
+      "target_count": 300, 
+      "use_grammar": true, 
+      "apply_affinity_rules": true, 
+      "filter_negative_roots": true,
+      "apply_length_pressure": true,
+      "apply_industry_suffix_filtering": true,
+      "allow_optional_suffixes": true
+    },
+    "stage_2_local_scoring": { 
+      "apply_rubric": true, 
+      "min_score_threshold": 7.0, 
+      "keep_top": 40, 
+      "deduplicate_by": ["phonetic_signature", "edit_distance"],
+      "apply_vertical_alignment_penalty": true,
+      "apply_atomic_bonus": true
+    },
+    "stage_3_llm_refinement": { 
+      "task": "taglines_rationale_vertical_mapping", 
+      "max_tokens_per_name": 150, 
+      "temperature": 0.3,
+      "include_vertical_exemplars": true
+    },
+    "stage_4_validation": { 
+      "domain_check_tlds": [".com", ".io", ".ai"], 
+      "trademark_heuristic": true, 
+      "global_pronounceability_verify": true, 
+      "final_output_threshold": 7.5,
+      "length_filter_final": "prefer_4-7_chars"
+    }
+  },
+  "industry_overrides": {
+    "healthcare_consumer": {
+      "industries": ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"],
+      "suffix_adjustments": {
+        "gen": {"weight_multiplier": 0.2, "reason": "avoid_overly_technical"},
+        "bio": {"weight_multiplier": 0.3, "reason": "avoid_clinical"},
+        "ara": {"weight_multiplier": 1.8, "reason": "consumer_friendly"},
+        "zen": {"weight_multiplier": 1.8, "reason": "wellness_aligned"},
+        "va": {"weight_multiplier": 1.5, "reason": "soft_ending"},
+        "lum": {"weight_multiplier": 1.4, "reason": "clarity_wellness"}
+      },
+      "preferred_roots": ["lum", "zen", "ara", "mind", "ver", "sol", "lyr", "myr", "aro"],
+      "avoid_roots": ["gen", "bio", "tec", "sys", "vex", "dra", "vyx"],
+      "force_atomic_probability": 0.45
+    },
+    "healthcare_technical": {
+      "industries": ["Healthcare AI", "Biotech & Life Sciences"],
+      "suffix_adjustments": {
+        "gen": {"weight_multiplier": 1.5, "reason": "biotech_appropriate"},
+        "lyt": {"weight_multiplier": 1.4, "reason": "analytical"},
+        "ics": {"weight_multiplier": 1.3, "reason": "technical_precision"}
+      },
+      "preferred_roots": ["gen", "nex", "lum", "ver", "bio", "sen", "xel", "kry"],
+      "avoid_roots": ["zen", "ara", "va", "lyr", "myr", "aro"],
+      "force_atomic_probability": 0.20
+    }
+  }
+}
