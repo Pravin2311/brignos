@@ -477,6 +477,88 @@ const PROVS = {
   groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
 };
 
+const NAMING_AGENTS = [
+
+{
+  id:'atomic',
+  weight:0.30,
+  style:'minimal vc-grade startup names',
+  rules:[
+    '4-6 letters',
+    'single token',
+    'hard consonants',
+    'minimal vowels'
+  ]
+},
+
+{
+  id:'invented',
+  weight:0.25,
+  style:'invented globally pronounceable brands',
+  rules:[
+    'balanced vowels',
+    'global pronunciation',
+    'modern startup feel'
+  ]
+},
+
+{
+  id:'luxury',
+  weight:0.10,
+  style:'premium elegant brands',
+  rules:[
+    'smooth cadence',
+    'luxury feel',
+    'soft endings'
+  ]
+},
+
+{
+  id:'infra',
+  weight:0.12,
+  style:'developer infrastructure naming',
+  rules:[
+    'technical sound',
+    'compressed rhythm',
+    'strong consonants'
+  ]
+},
+
+{
+  id:'future',
+  weight:0.10,
+  style:'deep-tech futuristic names',
+  rules:[
+    'unique phonetics',
+    'non-generic',
+    'distinctive'
+  ]
+},
+
+{
+  id:'consumer',
+  weight:0.08,
+  style:'friendly modern consumer brands',
+  rules:[
+    'easy pronunciation',
+    'warm energy',
+    'memorable'
+  ]
+},
+
+{
+  id:'antiTrend',
+  weight:0.05,
+  style:'anti-startup original naming',
+  rules:[
+    'avoid trendy structures',
+    'high originality',
+    'unexpected phonetics'
+  ]
+}
+
+];
+
 const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
 const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
 const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
@@ -830,6 +912,28 @@ function passesGlobalPronounceability(name,config){
 }
 
 // ── Domain Availability Heuristic ──────────────────────────────────
+function pronunciationScore(name){
+
+  let score = 100;
+
+  const lower =
+    name.toLowerCase();
+
+  if(/[^aeiou]{4,}/.test(lower))
+    score -= 25;
+
+  if(/[qxz]{3,}/.test(lower))
+    score -= 20;
+
+  if(/[aeiou]{3,}/.test(lower))
+    score -= 15;
+
+  if(name.length > 9)
+    score -= 10;
+
+  return Math.max(40,score);
+
+}
 function calculateAvailabilityScore(name,tld='.com'){
   let score=70;
   const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
@@ -1036,7 +1140,25 @@ if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
     
     else{
       // Fallback to LLM generation if intel not loaded
-      const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,prov==='gemini'?15:25);
+      let rawCandidates = [];
+
+for(const agent of NAMING_AGENTS){
+
+  const count =
+    Math.ceil(40 * agent.weight);
+
+  const generated =
+    await generateRawCandidates(
+      ind,
+      agent.id,
+      document.getElementById('kw').value,
+      count,
+      agent
+    );
+
+  rawCandidates.push(...generated);
+
+}
       candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
     }
     
@@ -1131,7 +1253,13 @@ if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
 }
 
 // Fallback LLM generation (if procedural not available)
-async function generateRawCandidates(industry,style,kw,targetCount=25){
+async function generateRawCandidates(
+  industry,
+  style,
+  kw,
+  targetCount=25,
+  agent=null
+){
   const heuristicExamples=generateHeuristicExamples(industry,6);
   const exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
   const randomSeed=Math.random().toString(36).slice(2,10);
@@ -1157,6 +1285,18 @@ ${exampleList}
 🔄 BATCH ${batchId} VARIATION INSTRUCTION: ${randomVariation}
 🎲 RANDOM SEED: ${randomSeed} (use this to generate truly unique outputs)
 ${exclusionList}
+
+AGENT PERSONALITY:
+${agent ? `
+Agent:
+${agent.id}
+
+Style:
+${agent.style}
+
+Agent Rules:
+${agent.rules.join(', ')}
+` : ''}
 
 Rules:
 - 4-8 characters, globally pronounceable, Can exceed if structurally strong
@@ -1194,11 +1334,20 @@ No markdown, no explanations.`;
     if(!Array.isArray(names)){return [];}
     
     const unique=[];
+    const usedPrefixes = {};
     for(const n of names){
       if(recentNamesCache.has(n.name.toLowerCase())){continue;}
       if(!n?.name)continue;
       const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
-      if(!dup){unique.push(n);}
+      if(!dup){const prefix =
+  n.name.toLowerCase().slice(0,3);
+
+usedPrefixes[prefix] =
+  (usedPrefixes[prefix] || 0) + 1;
+
+if(usedPrefixes[prefix] <= 2){
+  unique.push(n);
+}}
     }
     return unique;
   }catch(e){console.error('Phase 1 generation error:',e);return [];}

@@ -477,6 +477,88 @@ const PROVS = {
   groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
 };
 
+const NAMING_AGENTS = [
+
+{
+  id:'atomic',
+  weight:0.30,
+  style:'minimal vc-grade startup names',
+  rules:[
+    '4-6 letters',
+    'single token',
+    'hard consonants',
+    'minimal vowels'
+  ]
+},
+
+{
+  id:'invented',
+  weight:0.25,
+  style:'invented globally pronounceable brands',
+  rules:[
+    'balanced vowels',
+    'global pronunciation',
+    'modern startup feel'
+  ]
+},
+
+{
+  id:'luxury',
+  weight:0.10,
+  style:'premium elegant brands',
+  rules:[
+    'smooth cadence',
+    'luxury feel',
+    'soft endings'
+  ]
+},
+
+{
+  id:'infra',
+  weight:0.12,
+  style:'developer infrastructure naming',
+  rules:[
+    'technical sound',
+    'compressed rhythm',
+    'strong consonants'
+  ]
+},
+
+{
+  id:'future',
+  weight:0.10,
+  style:'deep-tech futuristic names',
+  rules:[
+    'unique phonetics',
+    'non-generic',
+    'distinctive'
+  ]
+},
+
+{
+  id:'consumer',
+  weight:0.08,
+  style:'friendly modern consumer brands',
+  rules:[
+    'easy pronunciation',
+    'warm energy',
+    'memorable'
+  ]
+},
+
+{
+  id:'antiTrend',
+  weight:0.05,
+  style:'anti-startup original naming',
+  rules:[
+    'avoid trendy structures',
+    'high originality',
+    'unexpected phonetics'
+  ]
+}
+
+];
+
 const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
 const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
 const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
@@ -570,27 +652,33 @@ function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').classNam
 function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
 function resetFilterState(){filtersChanged=false;const btn=document.getElementById('gbtn');if(btn){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}
 
+
 // ── UPDATED: Procedural Generation with Optional Suffixes + Industry Filtering ───────────────────────────────────
 function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
   const { phonetic_inventory, structural_patterns, invented_endings, pattern_weights, suffix_probability, atomic_mode_rules } = grammar;
   const { prefixes, suffixes, clusters, combination_affinity } = morphology;
   
+  // Get industry-appropriate suffixes
   const availableSuffixes = getIndustryAppropriateSuffixes(industry, suffixes);
+  
   const candidates = [];
   const seen = new Set();
   const suffixCounts = {};
   const prefixCounts = {};
   
+  // Determine if we're in atomic mode
   const brandStructure = document.getElementById('brandStructure')?.value || 'flex';
   const isAtomicMode = brandStructure === 'atomic' || Math.random() < (atomic_mode_rules?.force_atomic_probability || 0);
   
   while (candidates.length < count) {
+    // Apply pattern weights
     const weightedPatterns = structural_patterns.map(p => ({
       pattern: p,
       weight: pattern_weights?.[p] || 1
     }));
     const pattern = pickWeighted(weightedPatterns)?.pattern || structural_patterns[0];
     
+    // Atomic mode: force suffix-free patterns
     let effectivePattern = pattern;
     if (isAtomicMode && atomic_mode_rules?.force_no_suffix) {
       if (pattern.includes('{suffix}') || pattern.includes('{ending}')) {
@@ -603,17 +691,38 @@ function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
       .replace(/{vowel}/, () => pickWeighted(phonetic_inventory.vowels))
       .replace(/{coda}/, () => pickWeighted(phonetic_inventory.safe_codas))
       .replace(/{prefix}/, () => {
-        const usable = prefixes.filter(p => {
-          if(p.trend === 'saturating') return false;
-          const used = prefixCounts[p.term] || 0;
-          return used < 1;
-        });
-        const p = pickWeighted(usable.length ? usable : prefixes);
-        if(p?.term){ prefixCounts[p.term] = (prefixCounts[p.term] || 0) + 1; }
-        return p?.term || '';
-      })
+
+  const usable =
+    prefixes.filter(p => {
+
+      if(p.trend === 'saturating')
+        return false;
+
+      const used =
+        prefixCounts[p.term] || 0;
+
+      return used < 1;
+
+    });
+
+  const p =
+    pickWeighted(
+      usable.length
+        ? usable
+        : prefixes
+    );
+
+  if(p?.term){
+    prefixCounts[p.term] =
+      (prefixCounts[p.term] || 0) + 1;
+  }
+
+  return p?.term || '';
+
+})
       .replace(/{suffix}/, () => {
-        if (Math.random() > (suffix_probability || 0.08)) return '';
+        // Optional suffix: 55% chance to include one
+        if (Math.random() > (suffix_probability || 0.55)) return '';
         const s = pickWeighted(availableSuffixes.filter(s => s.trend !== 'saturating'));
         if (s?.term) suffixCounts[s.term] = (suffixCounts[s.term] || 0) + 1;
         return s?.term || '';
@@ -621,6 +730,7 @@ function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
       .replace(/{cluster}/, () => pickWeighted(clusters))
       .replace(/{semantic_root}/, () => {
         const roots = Object.keys(rufloIntel?.semantic_taxonomy?.high_value_roots || {});
+        // Filter roots by industry fit
         const filtered = roots.filter(r => {
           const rootData = rufloIntel?.semantic_taxonomy?.high_value_roots?.[r];
           if (!rootData?.consumer_health_fit) return true;
@@ -630,6 +740,7 @@ function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
         return (filtered.length ? filtered : roots)[Math.floor(Math.random() * (filtered.length || roots.length))];
       })
       .replace(/{invented_ending}/, () => {
+        // Optional ending: include empty string with weight
         const endingsWithEmpty = [...(invented_endings || []), ""];
         const weighted = endingsWithEmpty.map(e => ({ term: e, weight: e === "" ? 0.45 : 1 }));
         return pickWeighted(weighted)?.term || "";
@@ -639,11 +750,13 @@ function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
     const key = normalizeBrandName(name);
     const len = name.replace(/\s+/g, '').length;
     
+    // Apply length pressure
     const lengthPressure = grammar.length_pressure;
     const lengthPenalty = len > 6 && lengthPressure?.penalty_per_char_over_6 
       ? Math.pow(1 - lengthPressure.penalty_per_char_over_6, len - 6) 
       : 1;
     
+    // Apply suffix diversity penalty
     const suffix = name.match(/(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum)$/)?.[0];
     const diversityPenalty = suffix && suffixCounts[suffix] > (grammar.suffix_diversity?.max_same_suffix_in_batch || 3)
       ? Math.pow(0.7, suffixCounts[suffix] - 3)
@@ -660,7 +773,6 @@ function proceduralGenerate(grammar, morphology, count = 300, industry = null) {
   }
   return candidates;
 }
-
 // Helper: Check if industry is consumer health
 function isConsumerHealthIndustry(industry) {
   const consumerHealth = ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"];
@@ -671,6 +783,7 @@ function isConsumerHealthIndustry(industry) {
 function getIndustryAppropriateSuffixes(industry, suffixes) {
   if (!rufloIntel?.industry_overrides) return suffixes;
   
+  // Check healthcare consumer override
   const consumerOverride = rufloIntel.industry_overrides.healthcare_consumer;
   if (consumerOverride?.industries?.includes(industry) && consumerOverride?.suffix_adjustments) {
     return suffixes.map(s => {
@@ -682,6 +795,7 @@ function getIndustryAppropriateSuffixes(industry, suffixes) {
     });
   }
   
+  // Check healthcare technical override
   const techOverride = rufloIntel.industry_overrides.healthcare_technical;
   if (techOverride?.industries?.includes(industry) && techOverride?.suffix_adjustments) {
     return suffixes.map(s => {
@@ -692,12 +806,15 @@ function getIndustryAppropriateSuffixes(industry, suffixes) {
   
   return suffixes;
 }
-
 function passesLocalFilters(name,constraints,filters){
   if(!name)return false;
-  const len = name.replace(/\s+/g,'').length;
-  if(len < 4)return false;
-  if(len > 8)return false;
+
+const len =
+  name.replace(/\s+/g,'').length;
+
+if(len < 4)return false;
+
+if(len > 8)return false;
   if(constraints?.hard_exclusions?.some(e=>name.toLowerCase().includes(e)))return false;
   if(filters?.overused_prefixes?.some(p=>name.toLowerCase().startsWith(p)))return false;
   if(filters?.overused_suffixes?.some(s=>name.toLowerCase().endsWith(s)))return false;
@@ -718,44 +835,39 @@ function computeRubricScore(nameObj,config=rufloIntel){
   const name=(nameObj.name||'').toLowerCase().replace(/[^a-z]/g,'');
   const{scoring_rubric,global_pronounceability,risk_heuristics,semantic_taxonomy}=config;
   
-  const lengthScoring = scoring_rubric.length_scoring || {"4-5":1.0,"6":0.95,"7":0.85,"8":0.65};
-  const lengthKey = name.length <= 5 ? "4-5" : name.length.toString();
-  
+  // Brandability (40%)
   const brandability={
     uniqueness:Math.min(1,name.length/8),
     phonetic_clarity:evaluatePronounceability(name,global_pronounceability),
-    length_fit:lengthScoring[lengthKey] || 0.5,
+    length_fit:name.length>=4&&name.length<=8?1:0.5,
     memorability:hasCVCVPattern(name)?1:0.7
   };
   
+  // Commercial Viability (35%)
   const commercial={
     trademark_distance:assessTMRisk(name,risk_heuristics?.trademark_risk),
     domain_availability:(nameObj._availabilityScore||70)/100,
     vertical_alignment:assessVerticalFit(name,semantic_taxonomy)
   };
   
+  // Differentiation (25%)
   const differentiation={
     trend_alignment:config.predictive_signals?.trend_weights?.rising_patterns||1,
     structural_novelty:recentNamesCache.has(name)?0:1,
     semantic_flexibility:countApplicableVerticals(name,semantic_taxonomy)
   };
   
-  let brandScore=Object.values(brandability).reduce((a,b)=>a+b,0)/4;
+  const brandScore=Object.values(brandability).reduce((a,b)=>a+b,0)/4;
   const commScore=Object.values(commercial).reduce((a,b)=>a+b,0)/3;
   const diffScore=Object.values(differentiation).reduce((a,b)=>a+b,0)/3;
   
-  const atomicBonus = scoring_rubric.atomic_bonus;
-  if (atomicBonus?.apply_if_no_suffix_and_length_lte_6) {
-    const hasSuffix = /(gen|nex|ics|ent|ion|ara|zen|va|lum)$/i.test(name);
-    if (!hasSuffix && name.length <= 6) {
-      brandScore += atomicBonus.brandability_bonus || 0.08;
-      diffScore += atomicBonus.differentiation_bonus || 0.12;
-    }
-  }
-  
   return Math.round((brandScore*0.40+commScore*0.35+diffScore*0.25)*100);
 }
-
+function morphologyKey(name){
+  return name
+    .toLowerCase()
+    .slice(0,3);
+}
 function evaluatePronounceability(name,config){
   if(!config?.risk_patterns)return 0.85;
   let score=1.0;
@@ -788,6 +900,7 @@ function countApplicableVerticals(name,taxonomy){
   return Math.min(3,count);
 }
 
+// ── Global Pronounceability Check ──────────────────────────────────
 function passesGlobalPronounceability(name,config){
   if(!config?.global_pronounceability)return true;
   const{risk_patterns,min_threshold}=config.global_pronounceability;
@@ -798,6 +911,29 @@ function passesGlobalPronounceability(name,config){
   return score>=min_threshold;
 }
 
+// ── Domain Availability Heuristic ──────────────────────────────────
+function pronunciationScore(name){
+
+  let score = 100;
+
+  const lower =
+    name.toLowerCase();
+
+  if(/[^aeiou]{4,}/.test(lower))
+    score -= 25;
+
+  if(/[qxz]{3,}/.test(lower))
+    score -= 20;
+
+  if(/[aeiou]{3,}/.test(lower))
+    score -= 15;
+
+  if(name.length > 9)
+    score -= 10;
+
+  return Math.max(40,score);
+
+}
 function calculateAvailabilityScore(name,tld='.com'){
   let score=70;
   const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
@@ -976,7 +1112,8 @@ async function go(){
   document.getElementById('results').innerHTML='';
   document.getElementById('exportRow').style.display='none';
   
-  let intelData = industryIntel?.[ind] || null;
+  let intelData =
+  industryIntel?.[ind] || null;
   
   const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];
   let pi=0;
@@ -986,18 +1123,46 @@ async function go(){
   const sys=prov==='gemini'?GEMINI_SYS:SYS;
   
   try{
+    // PHASE 1: Local procedural generation
     pt.textContent='Generating candidate names…';pp.textContent='48%';
     const pipeline=rufloIntel?.pipeline_config;
     const targetCount=pipeline?.stage_1_local_generation?.target_count||300;
     
     let candidates=[];
-    if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
-      candidates=proceduralGenerate(rufloIntel.generation_grammar, rufloIntel.morphology, targetCount, ind);
-    } else {
-      const rawCandidates=await generateRawCandidates(ind,document.getElementById('style').value,document.getElementById('kw').value,prov==='gemini'?15:25);
+if(rufloIntel?.generation_grammar&&rufloIntel?.morphology){
+  candidates=proceduralGenerate(
+    rufloIntel.generation_grammar, 
+    rufloIntel.morphology, 
+    targetCount, 
+    ind // ← Pass industry for filtering
+  );
+}
+    
+    else{
+      // Fallback to LLM generation if intel not loaded
+      let rawCandidates = [];
+
+for(const agent of NAMING_AGENTS){
+
+  const count =
+    Math.ceil(40 * agent.weight);
+
+  const generated =
+    await generateRawCandidates(
+      ind,
+      agent.id,
+      document.getElementById('kw').value,
+      count,
+      agent
+    );
+
+  rawCandidates.push(...generated);
+
+}
       candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
     }
     
+    // PHASE 2: Local scoring + filtering
     pt.textContent='Scoring for availability…';pp.textContent='72%';
     const config={charLength:document.getElementById('charlen').value,language:document.getElementById('language').value};
     
@@ -1007,6 +1172,7 @@ async function go(){
       return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_combinedScore:(availScore*0.6)+(rubricScore*0.4)};
     });
     
+    // Apply filters
     const filteredByCharLen=scored.filter(n=>matchesCharLength(n.name,charLength));
     const filteredByGlobal=filteredByCharLen.filter(n=>passesGlobalPronounceability(n.name,rufloIntel));
     
@@ -1015,6 +1181,7 @@ async function go(){
     else if(filteredByCharLen.length>=minResults){finalNames=filteredByCharLen;toast('Relaxed global pronounceability filter');}
     else{finalNames=[...scored].sort((a,b)=>(b._rubricScore||0)-(a._rubricScore||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try broader filters');}
     
+    // Deduplicate
     const uniqueNames=[];
     for(const item of finalNames){
       let similarityHits=0;
@@ -1028,6 +1195,7 @@ async function go(){
       }
     }
     
+    // Fill if needed
     if(uniqueNames.length<(prov==='gemini'?3:5)&&candidates.length>finalNames.length){
       const extras=candidates.filter(c=>{
         const norm=normalizeBrandName(c.name);
@@ -1039,6 +1207,7 @@ async function go(){
     let names=uniqueNames.sort((a,b)=>(b.finalScore||70)-(a.finalScore||70)).slice(0,prov==='gemini'?5:10);
     if(!names.length)throw new Error('No names passed filters. Try broader settings.');
     
+    // PHASE 3: LLM refinement (taglines, rationale, vertical mapping)
     pt.textContent='Refining with AI…';pp.textContent='88%';
     const refinementPrompt=`For these startup names, generate concise taglines, naming patterns, VC signals, and "why it works" explanations. Return ONLY JSON array matching the input order. Names: ${names.map(n=>n.name).join(', ')}`;
     
@@ -1050,6 +1219,7 @@ async function go(){
       names=names.map((n,i)=>({...n,...(llmData[i]||{})}));
     }catch(e){console.warn('LLM refinement failed, using procedural data');}
     
+    // PHASE 4: Validation + final output
     pt.textContent='Validating domains…';pp.textContent='96%';
     lastGeneratedNames=names.map(n=>({
       ...n,
@@ -1082,8 +1252,14 @@ async function go(){
   }
 }
 
-// Fallback LLM generation
-async function generateRawCandidates(industry,style,kw,targetCount=25){
+// Fallback LLM generation (if procedural not available)
+async function generateRawCandidates(
+  industry,
+  style,
+  kw,
+  targetCount=25,
+  agent=null
+){
   const heuristicExamples=generateHeuristicExamples(industry,6);
   const exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
   const randomSeed=Math.random().toString(36).slice(2,10);
@@ -1109,6 +1285,18 @@ ${exampleList}
 🔄 BATCH ${batchId} VARIATION INSTRUCTION: ${randomVariation}
 🎲 RANDOM SEED: ${randomSeed} (use this to generate truly unique outputs)
 ${exclusionList}
+
+AGENT PERSONALITY:
+${agent ? `
+Agent:
+${agent.id}
+
+Style:
+${agent.style}
+
+Agent Rules:
+${agent.rules.join(', ')}
+` : ''}
 
 Rules:
 - 4-8 characters, globally pronounceable, Can exceed if structurally strong
@@ -1146,11 +1334,20 @@ No markdown, no explanations.`;
     if(!Array.isArray(names)){return [];}
     
     const unique=[];
+    const usedPrefixes = {};
     for(const n of names){
       if(recentNamesCache.has(n.name.toLowerCase())){continue;}
       if(!n?.name)continue;
       const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
-      if(!dup){unique.push(n);}
+      if(!dup){const prefix =
+  n.name.toLowerCase().slice(0,3);
+
+usedPrefixes[prefix] =
+  (usedPrefixes[prefix] || 0) + 1;
+
+if(usedPrefixes[prefix] <= 2){
+  unique.push(n);
+}}
     }
     return unique;
   }catch(e){console.error('Phase 1 generation error:',e);return [];}
@@ -1253,48 +1450,6 @@ function applyDom(d,r){
   }
 }
 
-// ── Deterministic Metadata Generator ─────────────────────────────────────────────
-function enrichDeterministic(names, industry) {
-  const tax = rufloIntel?.semantic_taxonomy;
-  const morph = rufloIntel?.morphology;
-  
-  return names.map(n => {
-    const clean = n.name.toLowerCase().replace(/[^a-z]/g, '');
-    const len = clean.length;
-    
-    const hasSuffix = /(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum|labs|infra|node|forge|system)$/i.test(clean);
-    const structuralType = hasSuffix ? 'Hybrid' : 'Atomic';
-    
-    const lengthScore = len <= 5 ? 100 : len <= 6 ? 90 : len <= 7 ? 75 : 50;
-    const pronScore = /[qzx]{2,}/.test(clean) ? 40 : /[^aeiou]{3,}/.test(clean) ? 55 : 85;
-    const availScore = n._availabilityScore || 70;
-    
-    let verticalScore = 0;
-    if (tax?.high_value_roots) {
-      const matchedRoots = Object.keys(tax.high_value_roots).filter(r => clean.includes(r));
-      verticalScore = Math.min(100, 40 + (matchedRoots.length * 30));
-    }
-    
-    const overall = Math.round((lengthScore * 0.25) + (pronScore * 0.20) + (availScore * 0.30) + (verticalScore * 0.25));
-    
-    return {
-      ...n,
-      structural_type: structuralType,
-      algorithmic_scores: {
-        overall,
-        length: lengthScore,
-        pronounceability: pronScore,
-        availability: availScore,
-        vertical_fit: verticalScore
-      },
-      tagline: null,
-      vc_signal: null,
-      why_it_works: null,
-      _score_reason: `Length:${lengthScore} | Pron:${pronScore} | Avail:${availScore} | Fit:${verticalScore}`
-    };
-  });
-}
-
 // ── Export ─────────────────────────────────────────────────────────
 let exportFormat='csv',exportOpts={all:true,avail:false,top3:false,scores:true};
 
@@ -1309,23 +1464,16 @@ function openExportModal(format){
 function closeExportModal(){document.getElementById('exportModal').classList.remove('on');}
 
 function confirmExport(){
-  exportOpts = {
-    all: document.getElementById('expAll').checked,
-    avail: document.getElementById('expAvail').checked,
-    top3: document.getElementById('expTop').checked,
-    scores: true
-  };
+  exportOpts={all:document.getElementById('expAll').checked,avail:document.getElementById('expAvail').checked,top3:document.getElementById('expTop').checked,scores:document.getElementById('expScores').checked};
   closeExportModal();
   
-  let names = lastGeneratedNames;
-  if(exportOpts.avail){ names = names.filter(n => n._d?.some(d => domC[d]==='available')); }
-  if(exportOpts.top3){ names = names.slice(0,3); }
+  let names=lastGeneratedNames;
+  if(exportOpts.avail){names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));}
+  if(exportOpts.top3){names=names.slice(0,3);}
   
-  names = enrichDeterministic(names, document.getElementById('industry').value);
-  
-  if(exportFormat==='csv') downloadCSV(names);
-  else if(exportFormat==='pdf') downloadPDF(names);
-  else if(exportFormat==='json') downloadJSON(names);
+  if(exportFormat==='csv')downloadCSV(names);
+  else if(exportFormat==='pdf')downloadPDF(names);
+  else if(exportFormat==='json')downloadJSON(names);
   
   toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);
 }
@@ -1339,31 +1487,17 @@ function copyAll(){
   navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!'));
 }
 
-function downloadCSV(names) {
-  const enriched = enrichDeterministic(names, document.getElementById('industry').value);
-  const headers = ['Name','Type','Overall Score','Length','Pronounceability','Availability %','Vertical Fit %','Available TLDs','Scoring Basis'];
-  
-  const rows = enriched.map(n => {
-    const avail = n._d?.filter(d => domC[d] === 'available').join(' | ') || 'None';
-    return [
-      n.name,
-      n.structural_type,
-      n.algorithmic_scores.overall,
-      n.name.replace(/\s/g,'').length,
-      n.algorithmic_scores.pronounceability,
-      n.algorithmic_scores.availability,
-      n.algorithmic_scores.vertical_fit,
-      `"${avail}"`,
-      `"${n._score_reason}"`
-    ].join(',');
+function downloadCSV(names){
+  const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];
+  const rows=names.map(n=>{
+    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
+    const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';
+    return[n.name,n.tagline||'',n.naming_pattern||'',n.vc_signal||'',avail,scoreAvg,(n.why_it_works||'').replace(/,/g,';')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
   });
-  
-  const csv = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url;
-  a.download = `autodng-investor-data-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(url);
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
 }
 
 function downloadJSON(names){
@@ -1379,41 +1513,37 @@ function downloadJSON(names){
   const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
 }
 
-function downloadPDF(names) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const enriched = enrichDeterministic(names, document.getElementById('industry').value);
+function downloadPDF(names){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('autoDNG — Brand Name Report',14,20);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');
+  doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);
+  doc.text(`Industry: ${document.getElementById('industry').value} | Language: ${language} | Length: ${charLength}`,14,34);
   
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
-  doc.text('autoDNG — Investor-Ready Brand Report', 14, 20);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-  doc.text(`Generated: ${new Date().toLocaleString()} | Industry: ${document.getElementById('industry').value}`, 14, 28);
-  doc.text(`Provider: ${prov} | Model: ${mdl} | Filtered by: ${document.getElementById('charlen').value}`, 14, 34);
-  
-  let y = 45;
-  enriched.forEach((n, i) => {
-    if (y > 250) { doc.addPage(); y = 20; }
-    
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-    doc.text(`${i+1}. ${n.name}`, 14, y);
-    y += 6;
-    
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-    doc.text(`Type: ${n.structural_type} | Length: ${n.name.replace(/\s/g,'').length} chars`, 14, y); y += 5;
-    doc.text(`Overall Score: ${n.algorithmic_scores.overall}/100`, 14, y); y += 5;
-    doc.text(`• Length: ${n.algorithmic_scores.length}  • Pronounceability: ${n.algorithmic_scores.pronounceability}  • Availability: ${n.algorithmic_scores.availability}  • Vertical Fit: ${n.algorithmic_scores.vertical_fit}`, 14, y); y += 5;
-    
-    const availStatus = n._d?.filter(d => domC[d] === 'available').join(', ') || 'None verified';
-    doc.text(`Domain Availability: ${availStatus}`, 14, y); y += 5;
-    doc.text(`Scoring Basis: ${n._score_reason}`, 14, y); y += 8;
-    
-    doc.setDrawColor(200, 240, 74); doc.setLineWidth(0.5);
-    doc.line(14, y-4, 196, y-4); y += 4;
+  let y=45;
+  names.forEach((n,i)=>{
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text(`${i+1}. ${n.name}`,14,y);y+=6;
+    doc.setFont('helvetica','italic');doc.setFontSize(10);
+    doc.text(n.tagline||'',14,y);y+=5;
+    doc.setFont('helvetica','normal');
+    doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);y+=5;
+    if(exportOpts.scores&&n.score){
+      const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  ');
+      doc.text(scores,14,y);y+=5;
+    }
+    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
+    doc.text(`Available: ${avail}`,14,y);y+=5;
+    doc.text(`Why: ${n.why_it_works||'—'}`,14,y);y+=12;
+    doc.setDrawColor(200,240,74);doc.line(14,y-3,196,y-3);y+=5;
   });
   
-  doc.setFontSize(8); doc.setTextColor(100);
-  doc.text('autoDNG — Algorithmic Brand Intelligence • No LLM hallucination • Ready for TM/DD', 14, 285);
-  doc.save(`autodng-investor-report-${new Date().toISOString().slice(0,10)}.pdf`);
+  doc.setFontSize(8);doc.setTextColor(100);
+  doc.text('autoDNG — AI Brand Name Generator • autodng.example.com',14,285);
+  doc.save(`autodng-export-${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
 // ── Utilities ──────────────────────────────────────────────────────
