@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>autoDNG — Premium Domain Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;--bg2:#111115;--bg3:#18181e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#ededee;--muted:#6b6b72;--muted2:#9898a2;
+  --lime:#c8f04a;--lime-dim:rgba(200,240,74,0.1);--lime-glow:rgba(200,240,74,0.25);
+  --teal:#4af0c0;--teal-dim:rgba(74,240,192,0.1);
+  --rose:#f0506a;--rose-dim:rgba(240,80,106,0.1);
+  --amber:#f0b84a;--amber-dim:rgba(240,184,74,0.1);
+  --purple:#9a6af0;--purple-dim:rgba(154,106,240,0.1);
+  --font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;}
+.app{position:relative;z-index:1}
+
+/* Header */
+.header{position:sticky;top:0;z-index:200;background:rgba(9,9,11,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1140px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
+.logo em{color:var(--lime);font-style:italic}
+
+/* Hero */
+.hero{max-width:1140px;margin:0 auto;padding:52px 24px 36px;text-align:center}
+.hero h1{font-family:var(--serif);font-size:clamp(34px,4.5vw,56px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:12px}
+.hero h1 em{font-style:italic;color:var(--lime)}
+.hero p{font-size:15px;color:var(--muted2);line-height:1.75;max-width:600px;margin:0 auto 24px}
+
+/* Filters */
+.filters{max-width:1140px;margin:0 auto;padding:0 24px 24px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.filter-btn{font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--lime);color:var(--lime)}
+.filter-btn.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
+
+/* Grid */
+.grid{max-width:1140px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+
+/* Card */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s,transform .2s;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.card.premium{border-color:rgba(200,240,74,.3)}
+.card.premium::before{content:'★ PREMIUM';position:absolute;top:0;right:0;font-family:var(--mono);font-size:9px;font-weight:500;background:var(--lime);color:#09090b;padding:4px 11px;border-bottom-left-radius:10px;letter-spacing:.06em}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.domain{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.5px;margin-bottom:8px;line-height:1}
+.domain a{color:var(--text);text-decoration:none;transition:color .15s}.domain a:hover{color:var(--lime)}
+
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;letter-spacing:.02em}
+.tag.ai{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(154,106,240,.2)}
+.tag.dev{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(74,240,192,.2)}
+.tag.security{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(240,80,106,.2)}
+.tag.fintech{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(240,184,74,.2)}
+.tag.consumer{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(200,240,74,.2)}
+
+.reason{font-size:13px;color:var(--muted2);line-height:1.65;margin-bottom:16px}
+.reason strong{color:var(--text)}
+
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px;font-family:var(--mono);font-size:10px}
+.metric{display:flex;flex-direction:column;gap:2px}
+.metric-label{color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.metric-value{font-weight:500;color:var(--lime)}
+
+.buy-btn{width:100%;padding:10px;background:var(--lime);color:#09090b;font-family:var(--font);font-size:13px;font-weight:600;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:6px}
+.buy-btn:hover{opacity:.93;transform:translateY(-1px)}
+.buy-btn:active{transform:scale(.99)}
+
+/* Footer */
+.footer{max-width:1140px;margin:0 auto;padding:18px 24px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* Responsive */
+@media(max-width:800px){
+  .grid{grid-template-columns:1fr}
+  .hero{padding:36px 24px 24px}
+  .header-inner{height:auto;padding:10px 24px;flex-wrap:wrap}
+}
+</style>
+</head>
+<body><div class="app">
+
+<!-- Header -->
+<div class="header"><div class="header-inner">
+  <div class="logo">auto<em>DNG</em></div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="index.html" style="font-family:var(--mono);font-size:11px;color:var(--lime);text-decoration:none;padding:6px 12px;border:1px solid rgba(200,240,74,.4);border-radius:8px;background:var(--lime-dim);transition:all .15s;display:flex;align-items:center;gap:4px;font-weight:500" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(200,240,74,0.25)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      ← Home
+    </a>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Premium Domains</span>
+  </div>
+</div></div>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Own a <em>venture-scale</em> brand</h1>
+  <p>27 phonetic-first, globally pronounceable, investor-ready domains. Short. Memorable. Available now.</p>
+</section>
+
+<!-- Filters -->
+<div class="filters">
+  <button class="filter-btn on" onclick="filter('all',this)">All (27)</button>
+  <button class="filter-btn" onclick="filter('ai',this)">AI/ML</button>
+  <button class="filter-btn" onclick="filter('dev',this)">DevTools</button>
+  <button class="filter-btn" onclick="filter('security',this)">Security</button>
+  <button class="filter-btn" onclick="filter('fintech',this)">Fintech</button>
+  <button class="filter-btn" onclick="filter('consumer',this)">Consumer</button>
+</div>
+
+<!-- Grid -->
+<div class="grid">
+
+  <!-- Xyptor.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.xyptor.com" target="_blank">xyptor.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Crisp 6-char phonetic artifact. `Xyp` onset signals innovation; `-tor` ending implies action. Perfect for AI infrastructure, automation, or developer tools. Globally pronounceable, zero semantic baggage.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$3.2K+</span></div>
+    </div>
+    <a href="https://www.xyptor.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Zorteq.com -->
+  <div class="card premium" data-tags="ai fintech">
+    <div class="domain"><a href="https://www.zorteq.com" target="_blank">zorteq.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag fintech">Fintech</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Strong `zor` onset + crisp `teq` coda. Feels technical, premium, and ownable. Ideal for fintech, AI, or enterprise SaaS. Short, memorable, and passes global radio test.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.8K+</span></div>
+    </div>
+    <a href="https://www.zorteq.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Zylfra.com -->
+  <div class="card premium" data-tags="ai dev consumer">
+    <div class="domain"><a href="https://www.zylfra.com" target="_blank">zylfra.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+      <span class="tag consumer">Consumer</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Elegant CVCV structure with liquid `l` + `fr` rhythm. Feels premium, versatile, and globally safe. Works for AI, consumer tech, or creative tools. Instantly memorable.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$3.5K+</span></div>
+    </div>
+    <a href="https://www.zylfra.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Glyzar.com -->
+  <div class="card premium" data-tags="ai fintech">
+    <div class="domain"><a href="https://www.glyzar.com" target="_blank">glyzar.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag fintech">Fintech</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Invented phonetics with strong `gl` onset + `zar` coda. Feels innovative, trustworthy, and premium. Perfect for AI, fintech, or analytics. Zero trademark conflicts.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.9K+</span></div>
+    </div>
+    <a href="https://www.glyzar.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Vellyr.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.vellyr.com" target="_blank">vellyr.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Smooth `vel` onset + liquid `lyr` ending. Feels fast, elegant, and technical. Ideal for automation, AI, or developer infrastructure. Globally pronounceable, high recall.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$3.1K+</span></div>
+    </div>
+    <a href="https://www.vellyr.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Lyrgen.com -->
+  <div class="card" data-tags="ai">
+    <div class="domain"><a href="https://www.lyrgen.com" target="_blank">lyrgen.com</a></div>
+    <div class="tags"><span class="tag ai">AI/ML</span></div>
+    <div class="reason"><strong>Why buy?</strong> Short, invented, with lyrical `lyr` + tech `gen`. Good for AI/automation, though `-gen` suffix is trending toward saturation. Still ownable at 6 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.8K+</span></div>
+    </div>
+    <a href="https://www.lyrgen.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Clymind.com -->
+  <div class="card" data-tags="ai consumer">
+    <div class="domain"><a href="https://www.clymind.com" target="_blank">clymind.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag consumer">Consumer</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Cly` + `mind` suggests clarity + intelligence. Good for AI/consumer wellness, though `mind` is a dictionary word (slight TM risk). Still memorable at 7 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.5K+</span></div>
+    </div>
+    <a href="https://www.clymind.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Clyroz.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.clyroz.com" target="_blank">clyroz.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Crisp `cly` onset + `roz` ending signals growth + clarity. Perfect for analytics, AI, or productivity tools. Invented, globally safe, and highly brandable.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.7K+</span></div>
+    </div>
+    <a href="https://www.clyroz.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Xybertask.com -->
+  <div class="card" data-tags="dev security">
+    <div class="domain"><a href="https://www.xybertask.com" target="_blank">xybertask.com</a></div>
+    <div class="tags">
+      <span class="tag dev">DevTools</span>
+      <span class="tag security">Security</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Xyber` + `task` suggests cyber + action. Good for security/devtools, though 9 chars is long for premium branding. Still functional for niche use.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">9</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$900+</span></div>
+    </div>
+    <a href="https://www.xybertask.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Qyntic.com -->
+  <div class="card" data-tags="ai">
+    <div class="domain"><a href="https://www.qyntic.com" target="_blank">qyntic.com</a></div>
+    <div class="tags"><span class="tag ai">AI/ML</span></div>
+    <div class="reason"><strong>Why buy?</strong> Short, invented, with unique `qyn` onset. Good for AI/innovation, though `q` without `u` may cause spelling friction globally. Still distinctive at 6 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.6K+</span></div>
+    </div>
+    <a href="https://www.qyntic.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Zylgen.com -->
+  <div class="card" data-tags="ai">
+    <div class="domain"><a href="https://www.zylgen.com" target="_blank">zylgen.com</a></div>
+    <div class="tags"><span class="tag ai">AI/ML</span></div>
+    <div class="reason"><strong>Why buy?</strong> `Zyl` + `gen` suggests innovation + generation. Good for AI/biotech, though `-gen` suffix is trending toward saturation. Still ownable at 6 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.9K+</span></div>
+    </div>
+    <a href="https://www.zylgen.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Lexifyn.com -->
+  <div class="card" data-tags="ai dev">
+    <div class="domain"><a href="https://www.lexifyn.com" target="_blank">lexifyn.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Lex` + `ifyn` suggests language + refinement. Good for AI/NLP or devtools, though `-ifyn` ending is uncommon. Still distinctive at 7 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.4K+</span></div>
+    </div>
+    <a href="https://www.lexifyn.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Spyvor.com -->
+  <div class="card premium" data-tags="security ai">
+    <div class="domain"><a href="https://www.spyvor.com" target="_blank">spyvor.com</a></div>
+    <div class="tags">
+      <span class="tag security">Security</span>
+      <span class="tag ai">AI/ML</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Spy` + `vor` suggests intelligence + absorption. Perfect for security, AI, or analytics. Short, memorable, and globally pronounceable. High investor appeal.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$3.0K+</span></div>
+    </div>
+    <a href="https://www.spyvor.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Clydor.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.clydor.com" target="_blank">clydor.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Crisp `cly` onset + `dor` ending. Feels technical, premium, and ownable. Ideal for AI, devtools, or infrastructure. Globally safe, high recall.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.6K+</span></div>
+    </div>
+    <a href="https://www.clydor.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Vyralto.com -->
+  <div class="card" data-tags="ai consumer">
+    <div class="domain"><a href="https://www.vyralto.com" target="_blank">vyralto.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag consumer">Consumer</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Vyr` + `alto` suggests viral + elevation. Good for consumer/AI, though 7 chars is slightly long. Still memorable and brandable.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.7K+</span></div>
+    </div>
+    <a href="https://www.vyralto.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Xyroware.com -->
+  <div class="card" data-tags="dev">
+    <div class="domain"><a href="https://www.xyroware.com" target="_blank">xyroware.com</a></div>
+    <div class="tags"><span class="tag dev">DevTools</span></div>
+    <div class="reason"><strong>Why buy?</strong> `Xyro` + `ware` suggests tech + software. Good for devtools, though `-ware` is a dated suffix. Still functional for niche B2B use.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">8</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.1K+</span></div>
+    </div>
+    <a href="https://www.xyroware.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Nexroz.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.nexroz.com" target="_blank">nexroz.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Nex` + `roz` suggests connection + growth. Perfect for AI, APIs, or analytics. Invented, globally safe, and highly brandable. Strong VC appeal.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">6</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$3.3K+</span></div>
+    </div>
+    <a href="https://www.nexroz.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Zymtric.com -->
+  <div class="card premium" data-tags="ai security">
+    <div class="domain"><a href="https://www.zymtric.com" target="_blank">zymtric.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag security">Security</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Unique `zym` onset + `tric` ending. Feels technical, secure, and innovative. Perfect for AI, security, or deep-tech. Globally pronounceable, high differentiation.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.5K+</span></div>
+    </div>
+    <a href="https://www.zymtric.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- QryBase.com -->
+  <div class="card" data-tags="ai dev">
+    <div class="domain"><a href="https://www.qrybase.com" target="_blank">qrybase.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Qry` + `base` suggests query + foundation. Good for AI/data, though `q` without `u` may cause friction. Still functional for technical audiences.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.3K+</span></div>
+    </div>
+    <a href="https://www.qrybase.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Cyntrox.com -->
+  <div class="card premium" data-tags="security ai">
+    <div class="domain"><a href="https://www.cyntrox.com" target="_blank">cyntrox.com</a></div>
+    <div class="tags">
+      <span class="tag security">Security</span>
+      <span class="tag ai">AI/ML</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> `Cyn` + `trox` suggests synthesis + strength. Perfect for security, AI, or infrastructure. Invented, globally safe, and highly brandable. Strong technical appeal.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.4K+</span></div>
+    </div>
+    <a href="https://www.cyntrox.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Xovello.com -->
+  <div class="card premium" data-tags="consumer ai">
+    <div class="domain"><a href="https://www.xovello.com" target="_blank">xovello.com</a></div>
+    <div class="tags">
+      <span class="tag consumer">Consumer</span>
+      <span class="tag ai">AI/ML</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Smooth `xov` onset + `ello` ending. Feels friendly, modern, and versatile. Perfect for consumer tech, AI, or creative tools. Globally pronounceable, high recall.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.3K+</span></div>
+    </div>
+    <a href="https://www.xovello.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Zordian.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.zordian.com" target="_blank">zordian.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Strong `zor` onset + `dian` ending. Feels powerful, technical, and ownable. Perfect for AI, infrastructure, or enterprise. Globally safe, high investor appeal.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.8K+</span></div>
+    </div>
+    <a href="https://www.zordian.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Xylak.com -->
+  <div class="card premium" data-tags="ai dev">
+    <div class="domain"><a href="https://www.xylak.com" target="_blank">xylak.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag dev">DevTools</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Crisp 5-char atomic. `Xyl` onset + `ak` coda. Feels technical, premium, and instantly memorable. Perfect for AI, devtools, or automation. Globally pronounceable.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">5</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★★</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$4.1K+</span></div>
+    </div>
+    <a href="https://www.xylak.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- DexCyber.com -->
+  <div class="card" data-tags="security">
+    <div class="domain"><a href="https://www.dexcyber.com" target="_blank">dexcyber.com</a></div>
+    <div class="tags"><span class="tag security">Security</span></div>
+    <div class="reason"><strong>Why buy?</strong> `Dex` + `cyber` suggests dexterity + security. Good for cybersecurity, though compound construction reduces premium appeal. Still functional for niche B2B.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">8</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.2K+</span></div>
+    </div>
+    <a href="https://www.dexcyber.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Quzma.com -->
+  <div class="card" data-tags="ai">
+    <div class="domain"><a href="https://www.quzma.com" target="_blank">quzma.com</a></div>
+    <div class="tags"><span class="tag ai">AI/ML</span></div>
+    <div class="reason"><strong>Why buy?</strong> Short, invented, with unique `quz` onset. Good for AI/innovation, though `qu` onset may cause ambiguity globally. Still distinctive at 5 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">5</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.5K+</span></div>
+    </div>
+    <a href="https://www.quzma.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Qezor.com -->
+  <div class="card" data-tags="ai">
+    <div class="domain"><a href="https://www.qezor.com" target="_blank">qezor.com</a></div>
+    <div class="tags"><span class="tag ai">AI/ML</span></div>
+    <div class="reason"><strong>Why buy?</strong> Short, invented, with unique `qez` onset. Good for AI/innovation, though `q` without `u` may cause friction. Still distinctive at 5 chars.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">5</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★☆☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$1.4K+</span></div>
+    </div>
+    <a href="https://www.qezor.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+  <!-- Grypton.com -->
+  <div class="card premium" data-tags="ai security">
+    <div class="domain"><a href="https://www.grypton.com" target="_blank">grypton.com</a></div>
+    <div class="tags">
+      <span class="tag ai">AI/ML</span>
+      <span class="tag security">Security</span>
+    </div>
+    <div class="reason"><strong>Why buy?</strong> Strong `gryp` onset + `ton` ending. Feels secure, technical, and powerful. Perfect for AI, security, or infrastructure. Globally pronounceable, high investor appeal.</div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-label">Length</span><span class="metric-value">7</span></div>
+      <div class="metric"><span class="metric-label">Pronounce</span><span class="metric-value">★★★★☆</span></div>
+      <div class="metric"><span class="metric-label">Resale</span><span class="metric-value">$2.6K+</span></div>
+    </div>
+    <a href="https://www.grypton.com" target="_blank" class="buy-btn">🔗 Buy on .</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <span>autoDNG — Premium Domain Marketplace</span>
+  <span>Domains priced for investors • All sales via Namecheap</span>
+  <a href="index.html" style="font-family:var(--mono);font-size:11px;color:var(--lime);text-decoration:none;padding:4px 10px;border:1px solid rgba(200,240,74,.4);border-radius:6px;background:var(--lime-dim);transition:all .15s;font-weight:500" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(200,240,74,0.25)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+    ← Back to Generator
+  </a>
+</footer>
+
+<script>
+// Filter functionality
+function filter(tag, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  
+  document.querySelectorAll('.card').forEach(card => {
+    if (tag === 'all' || card.dataset.tags.includes(tag)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Add click tracking (optional)
+document.querySelectorAll('.buy-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const domain = e.target.closest('.card').querySelector('.domain a').textContent;
+    console.log('Domain purchase intent:', domain);
+    // Add analytics here if needed
+  });
+});
+</script>
+</body>
+</html>

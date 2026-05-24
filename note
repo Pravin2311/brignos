@@ -1,0 +1,147 @@
+<!-- PREMIUM DOMAINS -->
+<section class="premium-domains">
+  <div class="premium-head">
+    <div>
+      <div class="premium-kicker">Featured inventory</div>
+      <h2>Premium domains available</h2>
+    </div>
+
+    <a href="domains.html" class="premium-viewall">
+      View all →
+    </a>
+  </div>
+
+  <div class="premium-sub">
+    Curated startup-grade domains for AI, SaaS, cyber, biotech & deep-tech founders.
+  </div>
+
+  <div class="premium-grid">
+
+    <!-- COLUMN 1 -->
+    <div class="premium-col">
+
+      <a href="/lander/xyptor.html" class="premium-item">
+        <span>Xyptor.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/zorteq.html" class="premium-item">
+        <span>Zorteq.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/zylfra.html" class="premium-item">
+        <span>Zylfra.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/glyzar.html" class="premium-item">
+        <span>Glyzar.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/vellyr.html" class="premium-item">
+        <span>Vellyr.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/lyrgen.html" class="premium-item">
+        <span>Lyrgen.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/clymind.html" class="premium-item">
+        <span>Clymind.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/clyroz.html" class="premium-item">
+        <span>Clyroz.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/xybertask.html" class="premium-item">
+        <span>Xybertask.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/qyntic.html" class="premium-item">
+        <span>Qyntic.com</span>
+        <em>$2,500</em>
+      </a>
+
+    </div>
+
+    <!-- COLUMN 2 -->
+    <div class="premium-col">
+
+      <a href="/lander/zylgen.html" class="premium-item">
+        <span>Zylgen.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/lexifyn.html" class="premium-item">
+        <span>Lexifyn.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/spyvor.html" class="premium-item">
+        <span>Spyvor.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/clydor.html" class="premium-item">
+        <span>Clydor.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/vyralto.html" class="premium-item">
+        <span>Vyralto.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/xyroware.html" class="premium-item">
+        <span>Xyroware.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/nexroz.html" class="premium-item">
+        <span>Nexroz.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/zymtric.html" class="premium-item">
+        <span>Zymtric.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/qrybase.html" class="premium-item">
+        <span>QryBase.com</span>
+        <em>$2,500</em>
+      </a>
+
+      <a href="/lander/cyntrox.html" class="premium-item">
+        <span>Cyntrox.com</span>
+        <em>$2,500</em>
+      </a>
+
+    </div>
+
+    <!-- COLUMN 3 -->
+    <div class="premium-col">
+
+      <a href="/lander/xylak.html" class="premium-item featured">
+        <span>Xylak.com</span>
+        <em>$4,500</em>
+      </a>
+
+      <a href="/lander/dexcyber.html" class="premium-item">
+        <span>DexCyber.com</span>
+        <em>$2,500</em>
+      </a>
+
+
+    </div>
+
+  </div>
+</section>

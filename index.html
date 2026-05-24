@@ -187,6 +187,343 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
 .tool-card.soon{opacity:.55;pointer-events:none}
 @media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
+/* ── Premium Domains ───────────────────────── */
+
+.premium-domains{
+  max-width:1140px;
+  margin:38px auto 80px;
+  padding:28px;
+  border:1px solid var(--border2);
+  border-radius:22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(200,240,74,.04),
+      rgba(154,106,240,.04)
+    );
+  position:relative;
+  overflow:hidden;
+}
+
+.premium-domains::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(200,240,74,.08),
+      transparent 35%
+    );
+  pointer-events:none;
+}
+
+.premium-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+
+.premium-kicker{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--lime);
+  margin-bottom:7px;
+}
+
+.premium-head h2{
+  font-family:var(--serif);
+  font-size:38px;
+  font-weight:400;
+  line-height:1.05;
+}
+
+.premium-sub{
+  color:var(--muted2);
+  font-size:14px;
+  margin-bottom:10px;
+  line-height:1.7;
+}
+
+.premium-note{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:24px;
+  letter-spacing:.04em;
+}
+
+.premium-viewall{
+  text-decoration:none;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  color:var(--text);
+  padding:11px 16px;
+  border-radius:10px;
+  transition:.2s ease;
+}
+
+.premium-viewall:hover{
+  border-color:var(--lime);
+  color:var(--lime);
+}
+
+.premium-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.premium-col{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.premium-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  text-decoration:none;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:15px 18px;
+  transition:.22s ease;
+  position:relative;
+  overflow:hidden;
+  min-height:58px;
+}
+
+.premium-item::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(200,240,74,.05),
+      transparent
+    );
+  transform:translateX(-100%);
+  transition:transform .6s ease;
+}
+
+.premium-item:hover::before{
+  transform:translateX(100%);
+}
+
+.premium-item::after{
+  content:'↗';
+  color:var(--lime);
+  font-size:13px;
+  opacity:0;
+  transform:translateX(-6px);
+  transition:.2s ease;
+}
+
+.premium-item:hover::after{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.premium-item:hover{
+  border-color:rgba(200,240,74,.45);
+  background:rgba(200,240,74,.05);
+  transform:translateY(-2px);
+}
+
+.premium-item span{
+  color:var(--text);
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:-0.01em;
+}
+
+.premium-item.featured{
+  border-color:rgba(200,240,74,.35);
+  box-shadow:0 0 28px rgba(200,240,74,.06);
+}
+
+@media(max-width:900px){
+
+  .premium-grid{
+    grid-template-columns:1fr;
+  }
+
+  .premium-head h2{
+    font-size:30px;
+  }
+
+}
+/* ── Premium Home Cards ───────────────────────── */
+
+.premium-grid-cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.premium-card{
+  position:relative;
+  overflow:hidden;
+
+  text-decoration:none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.03),
+      rgba(255,255,255,.015)
+    );
+
+  border:1px solid var(--border);
+  border-radius:22px;
+
+  padding:24px;
+
+  transition:.25s ease;
+}
+
+.premium-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(200,240,74,.08),
+      transparent 40%
+    );
+
+  opacity:0;
+  transition:.25s ease;
+}
+
+.premium-card:hover::before{
+  opacity:1;
+}
+
+.premium-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(200,240,74,.35);
+}
+
+.premium-card::after{
+  content:'↗';
+  position:absolute;
+  top:22px;
+  right:22px;
+
+  color:var(--lime);
+
+  font-size:14px;
+
+  opacity:0;
+  transform:translateY(4px);
+
+  transition:.2s ease;
+}
+
+.premium-card:hover::after{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.pc-badge{
+  display:inline-flex;
+
+  font-family:var(--mono);
+  font-size:10px;
+
+  letter-spacing:.04em;
+
+  background:var(--lime-dim);
+  border:1px solid rgba(200,240,74,.15);
+
+  color:var(--lime);
+
+  padding:6px 10px;
+  border-radius:999px;
+
+  margin-bottom:18px;
+}
+
+.pc-domain{
+  font-family:var(--serif);
+  font-size:42px;
+  line-height:.95;
+  letter-spacing:-0.05em;
+
+  color:var(--text);
+
+  margin-bottom:14px;
+}
+
+.pc-tagline{
+  color:var(--lime);
+
+  font-size:13px;
+  font-weight:600;
+
+  margin-bottom:16px;
+}
+
+.pc-desc{
+  color:var(--muted);
+
+  line-height:1.8;
+  font-size:14px;
+
+  margin-bottom:22px;
+}
+
+.pc-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.pc-tags span{
+  font-family:var(--mono);
+  font-size:10px;
+
+  background:var(--bg3);
+  border:1px solid var(--border2);
+
+  color:var(--muted);
+
+  padding:6px 9px;
+  border-radius:8px;
+}
+
+.premium-card.featured{
+  border-color:rgba(200,240,74,.35);
+  box-shadow:0 0 34px rgba(200,240,74,.06);
+}
+
+@media(max-width:980px){
+
+  .premium-grid-cards{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .premium-grid-cards{
+    grid-template-columns:1fr;
+  }
+
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -412,6 +749,185 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
     <div class="esub">Claude, GPT-4o, or Gemini generates 10 VC-vetted brand names with live .com/.ai/.io/.xyz/.co checks</div>
   </div>
 </div>
+
+<!-- PREMIUM DOMAINS -->
+<section class="premium-domains">
+
+  <div class="premium-head">
+    <div>
+      <div class="premium-kicker">Featured inventory</div>
+      <h2>Premium domains available</h2>
+    </div>
+
+    <a href="domains.html" class="premium-viewall">
+      View all →
+    </a>
+  </div>
+
+  <div class="premium-sub">
+    Curated startup-grade domains for AI, SaaS, cyber, biotech & deep-tech founders.
+  </div>
+
+  <div class="premium-note">
+    Direct acquisition • Premium startup-grade domains
+  </div>
+
+  <div class="premium-grid premium-grid-cards">
+
+  <!-- Xylak -->
+  <a href="https://xylak.com" class="premium-card featured" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">AI SaaS</div>
+
+    <div class="pc-domain">
+      Xylak.com
+    </div>
+
+    <div class="pc-tagline">
+      Premium ultra-short venture-scale identity
+    </div>
+
+    <div class="pc-desc">
+      Highly brandable six-letter domain engineered for AI-native startups, modern SaaS products, developer tooling, and future-tech platforms.
+    </div>
+
+    <div class="pc-tags">
+      <span>VC-grade</span>
+      <span>Short</span>
+      <span>Memorable</span>
+    </div>
+
+  </a>
+
+  <!-- Xyptor -->
+  <a href="https://xyptor.com" class="premium-card" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">Infrastructure</div>
+
+    <div class="pc-domain">
+      Xyptor.com
+    </div>
+
+    <div class="pc-tagline">
+      Futuristic AI infrastructure branding
+    </div>
+
+    <div class="pc-desc">
+      Strong deep-tech phonetics ideal for robotics, cloud infrastructure, AI systems, automation platforms, and next-generation intelligence products.
+    </div>
+
+    <div class="pc-tags">
+      <span>Deep-tech</span>
+      <span>AI-native</span>
+      <span>Strong sound</span>
+    </div>
+
+  </a>
+
+  <!-- Zylgen -->
+  <a href="https://zylgen.com" class="premium-card" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">Biotech AI</div>
+
+    <div class="pc-domain">
+      Zylgen.com
+    </div>
+
+    <div class="pc-tagline">
+      Built for biotech + AI innovation
+    </div>
+
+    <div class="pc-desc">
+      Premium biotech-style naming structure with strong scientific credibility and venture-scale positioning for frontier healthcare startups.
+    </div>
+
+    <div class="pc-tags">
+      <span>Biotech</span>
+      <span>Scientific</span>
+      <span>Premium</span>
+    </div>
+
+  </a>
+
+  <!-- DexCyber -->
+  <a href="https://dexcyber.com" class="premium-card" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">Cybersecurity</div>
+
+    <div class="pc-domain">
+      DexCyber.com
+    </div>
+
+    <div class="pc-tagline">
+      Enterprise-ready cyber identity
+    </div>
+
+    <div class="pc-desc">
+      Powerful enterprise positioning for security infrastructure, cyber intelligence, zero-trust systems, and defense-grade platforms.
+    </div>
+
+    <div class="pc-tags">
+      <span>Enterprise</span>
+      <span>Security</span>
+      <span>B2B</span>
+    </div>
+
+  </a>
+
+  <!-- Lexifyn -->
+  <a href="https://lexifyn.com" class="premium-card" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">Language AI</div>
+
+    <div class="pc-domain">
+      Lexifyn.com
+    </div>
+
+    <div class="pc-tagline">
+      Language intelligence startup brand
+    </div>
+
+    <div class="pc-desc">
+      Ideal for AI writing tools, communication systems, legal AI, translation platforms, and modern language technologies.
+    </div>
+
+    <div class="pc-tags">
+      <span>AI</span>
+      <span>Language</span>
+      <span>Modern</span>
+    </div>
+
+  </a>
+
+  <!-- Glyzar -->
+  <a href="https://glyzar.com" class="premium-card" target="_blank" rel="noopener noreferrer">
+
+    <div class="pc-badge">Frontier Science</div>
+
+    <div class="pc-domain">
+      Glyzar.com
+    </div>
+
+    <div class="pc-tagline">
+      Scientific deep-tech startup identity
+    </div>
+
+    <div class="pc-desc">
+      High-end futuristic biotech naming designed for life sciences, medical AI, advanced diagnostics, and frontier research companies.
+    </div>
+
+    <div class="pc-tags">
+      <span>Life sciences</span>
+      <span>Future-tech</span>
+      <span>Global</span>
+    </div>
+
+  </a>
+
+</div>
+
+  </div>
+</section>
 
 <!-- Tools Section -->
 <div class="rwrap">
