@@ -734,17 +734,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   </div>
 </div></div>
 
-<!-- AI Steering Section (Hidden by default, shown if API key exists) -->
-<div id="steeringSection" style="display:none; max-width:1140px; margin:0 auto 24px; padding:16px; background:var(--bg3); border:1px solid var(--border); border-radius:12px;">
-  <label style="font-family:var(--mono); font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:8px;">
-    🧭 AI Steering: Refine Next Batch
-  </label>
-  <div style="display:flex; gap:8px;">
-    <input type="text" id="steerInput" placeholder="e.g. 'More premium', 'Avoid -gen suffixes', 'Shorter names'" style="flex:1; padding:10px; background:var(--bg2); border:1px solid var(--border2); color:var(--text); border-radius:8px; outline:none;">
-    <button onclick="applySteering()" style="padding:10px 20px; background:var(--teal); color:#000; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Apply & Regenerate</button>
-  </div>
-</div>
-
 <!-- PROGRESS -->
 <div class="pwrap" id="pw"><div class="pcard">
   <div class="ptop"><span id="ptxt">Researching VC naming patterns…</span><span class="ppct" id="ppct">0%</span></div>
@@ -1187,10 +1176,7 @@ function selMdl(id,el){
   el.classList.add('on');
 }
 function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
-function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';
-    // Show/Hide steering section based on key status
-  document.getElementById('steeringSection').style.display = ok ? 'block' : 'none';
-}
+function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';}
 function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
 function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
 function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
@@ -1570,13 +1556,7 @@ async function callOpenRouter(sys,usr,cb){
     body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
   });
   const data=await r.json();
-  if (!r.ok) {
-  const err = data?.error?.message || 'Unknown error';
-  if (r.status === 402) {
-    throw new Error('API_CREDIT_LIMIT'); // Special flag for graceful fallback
-  }
-  throw new Error(`API ${r.status}: ${err}`);
-}
+  if(!r.ok)throw new Error(`OpenRouter ${r.status}: ${data.error?.message||'Unknown error'}`);
   const text=data.choices?.[0]?.message?.content||'';
   cb(text);return text;
 }
@@ -1587,13 +1567,7 @@ async function callOpenAI(sys,usr,cb){
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
     body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
   });
-  if (!r.ok) {
-  const err = data?.error?.message || 'Unknown error';
-  if (r.status === 402) {
-    throw new Error('API_CREDIT_LIMIT'); // Special flag for graceful fallback
-  }
-  throw new Error(`API ${r.status}: ${err}`);
-}
+  if(!r.ok)throw new Error(`OpenAI ${r.status}: ${await r.text()}`);
   return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
 }
 
@@ -1608,13 +1582,7 @@ async function callGemini(sys,usr,cb){
     body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:finalTemp,topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})
   });
   const data=await r.json();
-  if (!r.ok) {
-  const err = data?.error?.message || 'Unknown error';
-  if (r.status === 402) {
-    throw new Error('API_CREDIT_LIMIT'); // Special flag for graceful fallback
-  }
-  throw new Error(`API ${r.status}: ${err}`);
-}
+  if(!r.ok)throw new Error(`Gemini ${r.status}: ${data.error?.message||'Unknown error'}`);
   const parts=data.candidates?.[0]?.content?.parts||[];
   const text=parts.map(p=>p.text||'').join('');
   cb(text);return text;
@@ -1630,13 +1598,7 @@ async function callGroq(sys,usr,cb){
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
     body:JSON.stringify({model:mdl,temperature:finalTemp,top_p:0.92,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
   });
-  if (!r.ok) {
-  const err = data?.error?.message || 'Unknown error';
-  if (r.status === 402) {
-    throw new Error('API_CREDIT_LIMIT'); // Special flag for graceful fallback
-  }
-  throw new Error(`API ${r.status}: ${err}`);
-}
+  if(!r.ok){throw new Error(`Groq ${r.status}: ${await r.text()}`);}
   return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
 }
 
@@ -1726,15 +1688,11 @@ async function go(skipAI = false) {
       }
     } catch (e) { console.warn('Procedural gen failed', e); }
     
-        // 🔥 SMART FALLBACK: Ensure enough candidates for the pipeline
-    if (candidates.length < 15) {
+    // 🔥 ROBUST FALLBACK: If strict filters killed everything, inject simple phonetic names
+    if (candidates.length < 5) {
+      toast('Injecting local fallback names for diversity...');
       const fallback = generateSimplePhoneticFallback(20);
       candidates = [...candidates, ...fallback];
-      
-      // Only show toast if running LOCAL-ONLY (no AI)
-      if (skipAI) {
-        toast('Injecting local fallback names for diversity...');
-      }
     }
     
     else{
@@ -1815,64 +1773,16 @@ for(const agent of NAMING_AGENTS){
       names = candidates.slice(0, 10).map(n => ({...n, finalScore: 65, _rubricScore: 65, _availabilityScore: 70}));
     }
     
-           // PHASE 3: AI Strategic Validation & Steering
-    if(!skipAI && PROVS[prov].val(key)){
-      pt.textContent='AI Validation & Steering…'; pp.textContent='88%';
-      
-      // Check for user steering feedback
-      const steerFeedback = localStorage.getItem('steer_feedback');
-      const steerInstruction = steerFeedback ? `\n\n🧭 CRITICAL USER DIRECTION: "${steerFeedback}"\nYou MUST prioritize names that match this direction. Reject names that violate it.` : '';
-      
-      const refinementPrompt = `You are an elite VC naming strategist. I have generated a batch of names for a "${document.getElementById('industry').value}" startup.${steerInstruction}
-      
-      Your Task:
-      1. VALIDATE each name for global pronunciation (JP/ES/DE/FR) and trademark risk.
-      2. SELECT the best candidates that match the user's direction.
-      3. RETURN ONLY valid JSON with these fields for EACH name:
-         - tagline (punchy, under 6 words)
-         - naming_pattern (e.g., "Atomic", "Invented")
-         - vc_signal (Why investors would like this)
-         - why_it_works (Phonetic/Strategic analysis)
-         - global_safe (boolean: true if no pronunciation issues)
-         - tm_risk (string: "Low", "Medium", "High")
-
-      Names to review: ${names.map(n => n.name).join(', ')}
-      
-      Return ONLY JSON array matching input order. No markdown.`;
+        // PHASE 3: AI Refinement (skip if user chose local-only)
+    if (!skipAI && PROVS[prov].val(key)) {
+      pt.textContent = 'Refining with AI…'; pp.textContent = '88%';
+      const refinementPrompt = `For these startup names, generate concise taglines, naming patterns, VC signals, and "why it works" explanations. Return ONLY JSON array matching the input order. Names: ${names.map(n => n.name).join(', ')}`;
       const refined = await (prov === 'gemini' ? callGemini : prov === 'openai' ? callOpenAI : prov === 'groq' ? callGroq : callOpenRouter)(sys, refinementPrompt, () => {});
-          try {
-      const clean = String(refined || '').replace(/```json|```/g, '').trim();
-      const llmData = JSON.parse(clean || '[]');
-      names = names.map((n, i) => ({ ...n, ...(llmData[i] || {}) }));
-    } catch (e) {
-      // Graceful fallback for 402, timeouts, or bad JSON
-      if (e.message === 'API_CREDIT_LIMIT') {
-        toast('⚠️ API credit limit reached. Switching to local engine.');
-      } else {
-        console.warn('AI enrichment failed, applying local fallback:', e.message);
-      }
-      
-      // Fill missing fields deterministically
-      names = names.map(n => ({
-        ...n,
-        tagline: n.tagline || `${n.name} — Engineered for ${document.getElementById('industry').value || 'innovation'}`,
-        naming_pattern: n.naming_pattern || 'Phonetic-First',
-        vc_signal: n.vc_signal || 'Clean, ownable, globally pronounceable',
-        why_it_works: n.why_it_works || 'Optimized for CVCV structure, zero semantic baggage, high .com availability.',
-        global_safe: true,
-        tm_risk: 'unknown'
-      }));
-    }
-        // 🔒 Final safety filter: Drop AI-generated names with banned suffixes
-    const bannedSuffixes = /-(gen|nex|ify|ly|ware|tech|proz|tra|mez)$/i;
-    names = names.filter(n => !bannedSuffixes.test(n.name));
-    
-    // If AI stripped too many, refill from local scored pool
-    if (names.length < 5 && scored.length > 0) {
-      const localBackup = scored.filter(n => !bannedSuffixes.test(n.name)).slice(0, 10 - names.length);
-      names = [...names, ...localBackup];
-    }
-    
+      try {
+        const clean = String(refined || '').replace(/```json|```/g, '').trim();
+        const llmData = JSON.parse(clean || '[]');
+        names = names.map((n, i) => ({ ...n, ...(llmData[i] || {}) }));
+      } catch (e) { console.warn('LLM refinement failed, using procedural data'); }
     } else {
       pt.textContent = 'Finalizing locally…'; pp.textContent = '88%';
       // Fallback metadata for local generation
@@ -1979,7 +1889,7 @@ Style DNA: ${style?STYLE_DNA[style]:`Mix: 30% invented, 30% compound, 20% atomic
 
 Brand Structure: ${brandStructure==='atomic'?'single-token minimal brands like Stripe, Ramp, Arc':brandStructure==='compound'?'compound semantic brands like BindEcho, ClearPath':brandStructure==='invented'?'invented phonetic brands like Klyro, Vexa':brandStructure==='hybrid'?'hybrid startup names mixing semantic + invented roots':'mixed varied structures'}
 ${kw?`Incorporate creatively: ${kw}`:''}
-${localStorage.getItem('steer_feedback') ? `\n🧭 USER STEERING DIRECTION: "${localStorage.getItem('steer_feedback')}"\nStrictly follow this direction.` : ''}
+
 Return ONLY a JSON array: [{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...]
 No markdown, no explanations.`;
 
@@ -2127,21 +2037,6 @@ function closeApiKeyModal() {
 function continueWithoutAI() {
   document.getElementById('apiKeyModal').classList.remove('on');
   go(true); // true = skip AI refinement, run local engine
-}
-
-// ── AI Steering Logic ─────────────────────────────────────────────
-function applySteering() {
-  const input = document.getElementById('steerInput');
-  if (!input.value.trim()) return;
-  
-  // Save feedback to local storage
-  localStorage.setItem('steer_feedback', input.value.trim());
-  
-  toast(`🧭 Steering applied: "${input.value.trim()}"`);
-  input.value = ''; // Clear input
-  
-  // Trigger regeneration with new steering
-  go(false); 
 }
 
 // ── Export ─────────────────────────────────────────────────────────
