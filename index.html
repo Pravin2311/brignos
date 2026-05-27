@@ -187,6 +187,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
 .tool-card.soon{opacity:.55;pointer-events:none}
 @media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
+.social-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.social-links a{color:var(--muted2);text-decoration:none;font-family:var(--mono);font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;transition:all .15s;white-space:nowrap}
+.social-links a:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim);transform:translateY(-1px)}
 /* ── Premium Domains ───────────────────────── */
 
 .premium-domains{
@@ -969,9 +972,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   </div>
 </div>
 
-<footer class="footer">
-  <span>autoDNG — Multi-provider AI naming engine</span>
-  <span>Training: a16z · YC · NameBio · Crunchbase · TechCrunch · GoDaddy Auctions</span>
+<footer class="footer" style="align-items:center;gap:12px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <span>autoDNG — Agentic AI naming engine</span>
+    <span style="font-size:10px">Training: a16z · YC · NameBio · Crunchbase · TechCrunch</span>
+  </div>
+  <div class="social-links">
+    <a href="https://twitter.com/autodng" target="_blank" rel="noopener" title="X / Twitter">𝕏</a>
+    <a href="https://facebook.com/autodng" target="_blank" rel="noopener" title="LinkedIn">𝐟</a>
+    
+    <a href="mailto:support@teachings.ai" title="Email">✉</a>
+  </div>
 </footer>
 
 <!-- Toast -->
