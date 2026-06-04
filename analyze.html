@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Domain Analyzer | autoDNG</title>
+<meta name="description" content="Validate any domain using startup-branding intelligence, sales patterns, and market fit analysis.">
+<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap)" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b;--bg2:#111115;--panel:#141419;--border:#23232b;
+  --text:#f3f3f4;--muted:#8b8b95;--lime:#c8f04a;--teal:#4af0c0;
+  --rose:#f0506a;--amber:#f0b84a;--purple:#9a6af0;
+  --font:'Geist',sans-serif;--serif:'Instrument Serif',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6}
+.container{max-width:1280px;margin:auto;padding:40px 20px 80px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.logo{font-family:var(--serif);font-size:32px;font-weight:400}.logo em{color:var(--lime);font-style:italic}
+.nav-links{display:flex;gap:20px}.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:color .15s}.nav-links a:hover,.nav-links a.active{color:var(--lime)}
+.hero{text-align:center;margin-bottom:30px}.hero h1{font-family:var(--serif);font-size:clamp(32px,5vw,48px);line-height:1.1;margin-bottom:12px}
+.hero p{max-width:620px;margin:auto;color:var(--muted);font-size:16px}
+.search-box{max-width:760px;margin:20px auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search-box input{flex:1;min-width:200px;height:52px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:0 18px;font-size:16px;outline:none;transition:border-color .2s}.search-box input:focus{border-color:var(--lime)}
+.search-box button{height:52px;border:none;border-radius:12px;background:var(--lime);color:#09090b;font-weight:600;padding:0 28px;cursor:pointer;font-size:15px;transition:opacity .15s,transform .1s}.search-box button:hover{opacity:.93;transform:translateY(-1px)}.search-box button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.api-key-wrap{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:0 12px;height:52px;transition:border-color .2s}
+.api-key-wrap:focus-within{border-color:var(--lime)}
+.api-key-wrap input{background:transparent;border:none;color:var(--text);font-size:14px;width:160px;outline:none}
+.api-key-wrap input::placeholder{color:var(--muted)}
+.api-key-wrap .icon{color:var(--muted);font-size:16px}
+.results{display:none}.results.on{display:block}
+.score-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:32px;margin-top:30px}
+.score-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+.score-number{font-size:64px;font-weight:700;line-height:1}.score-label{color:var(--muted);font-size:14px;margin-top:4px}
+.buy-signal{padding:10px 20px;border-radius:999px;background:rgba(200,240,74,.12);color:var(--lime);font-weight:700;font-size:14px;letter-spacing:.04em}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:12px}
+.metric{background:#1a1a21;border-radius:14px;padding:16px 12px;text-align:center;position:relative}
+.metric-label{color:var(--muted);font-size:11px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.metric-value{font-size:28px;font-weight:700}
+.metric-bar{height:3px;border-radius:2px;margin-top:8px;background:#2a2a33}
+.metric-bar-fill{height:100%;border-radius:2px;background:var(--lime);transition:width .6s ease}
+.metric-tooltip{font-size:10px;color:var(--muted);margin-top:4px}
+.sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:20px;margin-top:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px}.panel h3{margin-bottom:14px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.panel h3 .icon{font-size:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#1a1a21;margin:3px;font-size:12px;border:1px solid transparent;transition:border-color .15s}
+.tag:hover{border-color:var(--border)}
+.tag strong{color:var(--lime)}.tag a{color:var(--lime);text-decoration:none;margin-left:4px}
+.tag.positive{background:rgba(74,240,192,.08);color:var(--teal)}
+.tag.warning{background:rgba(240,184,74,.08);color:var(--amber)}
+.tag.danger{background:rgba(240,80,106,.08);color:var(--rose)}
+.reasoning{color:#d0d0d7;line-height:1.75;font-size:14px}
+.action-row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:10px 18px;border-radius:10px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--lime);color:#09090b}.btn-primary:hover{opacity:.93;transform:translateY(-1px)}
+.btn-secondary{background:var(--bg2);border:1px solid var(--border);color:var(--text)}.btn-secondary:hover{border-color:var(--lime)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.loading{display:none;text-align:center;padding:50px;color:var(--muted)}.loading.on{display:block}
+.spinner{width:28px;height:28px;border:3px solid rgba(200,240,74,.2);border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite;margin:auto}
+.loading-text{margin-top:14px;font-size:15px}.loading-sub{margin-top:6px;font-size:12px;color:var(--muted)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{background:rgba(240,80,106,.1);border:1px solid rgba(240,80,106,.3);color:#ff9b9b;padding:12px 16px;border-radius:10px;margin:16px 0;font-size:14px}
+.premium-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:rgba(200,240,74,.15);color:var(--lime);font-size:12px;font-weight:600;margin-bottom:16px;border:1px solid rgba(200,240,74,.25)}
+.ai-toggle{display:none;align-items:center;gap:10px;margin:16px auto;padding:12px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-width:760px}
+.ai-toggle.on{display:flex}
+.ai-toggle input{accent-color:var(--lime);width:16px;height:16px}
+.ai-toggle label{font-size:14px;color:var(--text);cursor:pointer}
+.ai-note{font-size:12px;color:var(--muted);margin-left:4px}
+.similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}
+.panel-content{min-height:40px}
+.empty-msg{color:var(--muted);font-size:14px;font-style:italic}
+.signal-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.signal-row:last-child{border-bottom:none}
+.signal-label{color:var(--muted)}
+.signal-value{font-weight:600;font-size:13px}
+.signal-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
+.green{color:var(--lime)}.teal{color:var(--teal)}.amber{color:var(--amber)}.rose{color:var(--rose)}.purple{color:var(--purple)}
+.dot-green{background:var(--lime)}.dot-teal{background:var(--teal)}.dot-amber{background:var(--amber)}.dot-rose{background:var(--rose)}.dot-purple{background:var(--purple)}
+.score-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.risk-meter{display:flex;gap:4px;margin-top:10px}
+.risk-block{flex:1;height:6px;border-radius:3px}
+.phonetic-check{background:#1a1a21;border-radius:10px;padding:12px;margin-top:8px;font-size:13px}
+.pattern-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fit-bar{display:flex;align-items:center;gap:10px;margin:8px 0}
+.fit-bar-label{width:110px;font-size:13px;color:var(--muted);flex-shrink:0}
+.fit-bar-track{flex:1;height:6px;background:#2a2a33;border-radius:3px;overflow:hidden}
+.fit-bar-fill{height:100%;border-radius:3px;background:var(--lime);transition:width .6s ease}
+.fit-bar-score{width:32px;text-align:right;font-size:13px;font-weight:600}
+.section-divider{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.tld-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tld-chip{padding:3px 10px;border-radius:6px;font-size:12px;border:1px solid var(--border);background:#1a1a21}
+.tld-chip.premium{border-color:rgba(200,240,74,.3);color:var(--lime)}
+.history-list{list-style:none}
+.history-list li{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+.history-list li:last-child{border-bottom:none}
+.seo-indicator{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:12px;margin-right:4px;margin-top:4px;background:#1a1a21;border:1px solid var(--border)}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.summary-cell{background:#1a1a21;border-radius:10px;padding:10px 12px;font-size:13px}
+.summary-cell-label{color:var(--muted);font-size:11px;margin-bottom:4px}
+.summary-cell-value{font-weight:600}
+@media(max-width:768px){.hero h1{font-size:28px}.search-box{flex-direction:column}.score-header{flex-direction:column;align-items:flex-start}.sections{grid-template-columns:1fr}.metric-value{font-size:22px}.ai-toggle{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <div class="logo">auto<em>DNG</em></div>
+    <div class="nav-links">
+      <a href="index.html">Generator</a>
+      <a href="analyze.html" class="active">Analyze</a>
+      <a href="domains.html">Premium</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Should You Buy This Domain?</h1>
+    <p>Deep-signal analysis across 20+ intelligence layers — brandability, phonetics, SEO, memorability, industry fit, naming patterns, and more.</p>
+  </section>
+
+  <div class="search-box">
+    <input id="domainInput" placeholder="Enter a domain (e.g. autodng.com)" autocomplete="off">
+    <button id="analyzeBtn">Analyze Domain</button>
+    <div class="api-key-wrap" title="Optional: Enter OpenRouter API key for AI enhancement">
+      <span class="icon">🔑</span>
+      <input type="password" id="apiKeyInput" placeholder="API Key (optional)">
+    </div>
+  </div>
+
+  <div class="ai-toggle" id="aiToggle">
+    <input type="checkbox" id="aiEnhance" checked>
+    <label for="aiEnhance">✨ AI Enhancement active</label>
+    <div class="ai-note">— deeper semantic alternatives &amp; context-aware analysis</div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Running 20+ intelligence signals…</div>
+    <div class="loading-sub">Phonetics · SEO · Brandability · Market Fit · Naming Patterns</div>
+  </div>
+
+  <div class="error" id="errorMsg" style="display:none"></div>
+
+  <div class="results" id="results">
+    <div class="score-card">
+      <div class="score-header">
+        <div>
+          <div class="score-number" id="overallScore">—</div>
+          <div class="score-label">AutoDNG Intelligence Score <span id="scoreGrade" style="margin-left:8px;font-size:13px;font-weight:600"></span></div>
+        </div>
+        <div>
+          <div class="buy-signal" id="buySignal">—</div>
+          <div style="text-align:right;margin-top:8px;font-size:12px;color:var(--muted)" id="confidenceLabel"></div>
+        </div>
+      </div>
+      <div id="premiumBadge" style="display:none"></div>
+      <div class="metrics" id="metricsGrid"></div>
+    </div>
+
+    <div class="sections">
+
+      <!-- Signal Summary -->
+      <div class="panel">
+        <h3><span class="icon">📊</span> Signal Summary</h3>
+        <div id="signalSummary" class="panel-content"></div>
+      </div>
+
+      <!-- Phonetics & Memorability -->
+      <div class="panel">
+        <h3><span class="icon">🔊</span> Phonetics &amp; Memorability</h3>
+        <div id="phoneticPanel" class="panel-content"></div>
+      </div>
+
+      <!-- SEO Intelligence -->
+      <div class="panel">
+        <h3><span class="icon">🔍</span> SEO Intelligence</h3>
+        <div id="seoPanel" class="panel-content"></div>
+      </div>
+
+      <!-- Naming Pattern DNA -->
+      <div class="panel">
+        <h3><span class="icon">🧬</span> Naming Pattern DNA</h3>
+        <div id="namingPattern" class="panel-content"></div>
+      </div>
+
+      <!-- TLD Intelligence -->
+      <div class="panel">
+        <h3><span class="icon">🌐</span> TLD Intelligence</h3>
+        <div id="tldPanel" class="panel-content"></div>
+      </div>
+
+      <!-- Best Industries -->
+      <div class="panel">
+        <h3><span class="icon">🏭</span> Best Industries</h3>
+        <div id="industryTags" class="panel-content"></div>
+      </div>
+
+      <!-- Startup Fit -->
+      <div class="panel">
+        <h3><span class="icon">🚀</span> Startup Fit</h3>
+        <div id="startupFit" class="panel-content"></div>
+      </div>
+
+      <!-- Comparable Brands -->
+      <div class="panel">
+        <h3><span class="icon">🏷️</span> Comparable Brands</h3>
+        <div id="similarBrands" class="panel-content"></div>
+      </div>
+
+      <!-- Ideal Buyers -->
+      <div class="panel">
+        <h3><span class="icon">🎯</span> Ideal Buyers</h3>
+        <div id="buyerProfiles" class="panel-content"></div>
+      </div>
+
+      <!-- Investor View -->
+      <div class="panel">
+        <h3><span class="icon">💼</span> Investor View</h3>
+        <div id="investorView" class="panel-content"></div>
+      </div>
+
+      <!-- Trademark & Legal Risk -->
+      <div class="panel">
+        <h3><span class="icon">⚖️</span> Trademark &amp; Legal Risk</h3>
+        <div id="trademarkRisk" class="panel-content"></div>
+      </div>
+
+      <!-- Naming History Patterns -->
+      <div class="panel">
+        <h3><span class="icon">📜</span> Sales Pattern Match</h3>
+        <div id="salesPatternPanel" class="panel-content"></div>
+      </div>
+
+      <!-- Similar Domains -->
+      <div class="panel" style="grid-column:span 2">
+        <h3><span class="icon">🔗</span> Similar Domains to Consider</h3>
+        <div id="similarDomains" class="similar-grid panel-content"><span class="empty-msg">Waiting for analysis…</span></div>
+        <button class="btn btn-secondary" onclick="generateMoreSimilar()" style="margin-top:14px;font-size:12px;width:100%">
+          🔄 Generate More Suggestions
+        </button>
+      </div>
+
+      <!-- Final Verdict -->
+      <div class="panel">
+        <h3><span class="icon">🏁</span> Final Verdict</h3>
+        <div id="buyDecision" class="panel-content"></div>
+      </div>
+
+      <!-- Full Reasoning -->
+      <div class="panel">
+        <h3><span class="icon">🧠</span> Analysis Reasoning</h3>
+        <div class="reasoning" id="reasoningText">Enter a domain to begin analysis…</div>
+      </div>
+
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="exportAnalysis()">📥 Export Report</button>
+      <button class="btn btn-secondary" onclick="shareAnalysis()">🔗 Share Link</button>
+      <a id="registerLink" href="#" target="_blank" class="btn btn-secondary" style="text-decoration:none">🔍 Check Availability →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// AUTODNG DOMAIN ANALYZER — ENHANCED INTELLIGENCE ENGINE v3.0
+// ═══════════════════════════════════════════════════════════════
+
+let API_KEY = localStorage.getItem('autodng_analyze_key') || '';
+let analysisCache = new Map();
+let lastResult = null;
+
+// ─── BIG DATA: KEYWORD INTELLIGENCE ─────────────────────────────
+const KEYWORD_WEIGHTS = {
+  // Tier 1: ultra-premium tech/startup signals (weight: 10)
+  'ai':10,'ml':10,'io':9,'co':9,'vc':9,'api':9,'dev':9,'cloud':8,'data':8,
+  'saas':8,'agent':8,'auto':8,'smart':8,'deep':8,'fast':8,'open':8,
+  // Tier 2: strong SaaS/infra signals (weight: 7)
+  'ops':7,'sec':7,'fin':7,'bio':7,'geo':7,'lab':7,'hub':7,'app':7,'bot':7,
+  'chat':7,'flow':7,'sync':7,'base':7,'core':7,'edge':7,'mesh':7,'node':7,
+  'link':7,'code':7,'tech':7,'net':7,'web':7,'pay':7,'dash':7,'stack':7,
+  // Tier 3: brand-friendly common stems (weight: 5)
+  'spark':5,'pulse':5,'flux':5,'wave':5,'nova':5,'apex':5,'vibe':5,'zen':5,
+  'neo':5,'arc':5,'forge':5,'craft':5,'works':5,'labs':5,'hq':5,'go':5,
+  'pro':5,'max':5,'plus':5,'prime':5,'one':5,'up':5,'now':5,'next':5,
+  'solar':5,'lunar':5,'orbit':5,'beam':5,'ray':5,'light':5,'shift':5,
+  // Tier 4: consumer/lifestyle signals (weight: 3)
+  'meet':3,'talk':3,'call':3,'mail':3,'news':3,'shop':3,'store':3,'market':3,
+  'space':3,'place':3,'land':3,'zone':3,'club':3,'team':3,'group':3,'co':3,
+  'ly':3,'ify':3,'able':3,'ish':3,'ify':3
+};
+
+// ─── BIG DATA: INDUSTRY KEYWORD MAP ─────────────────────────────
+const INDUSTRY_MAP = {
+  'AI & Machine Learning':       ['ai','ml','dl','gpt','llm','agent','neural','deep','model','infer','embed','vector','rag','prompt','tune','train','predict','auto','vision','speech','nlp','gen','diffuse'],
+  'SaaS & Dev Tools':            ['saas','dev','api','sdk','code','deploy','ops','ci','cd','git','build','test','lint','debug','repo','stack','infra','helm','kube','docker','lambda','edge','serverless','paas','iaas','faas'],
+  'Cybersecurity':               ['sec','safe','guard','shield','vault','lock','key','auth','zero','trust','pen','scan','detect','threat','firewall','siem','xdr','soc','red','blue'],
+  'Fintech & Payments':          ['fin','pay','cash','bank','ledger','wallet','trade','invest','fund','cap','equity','credit','debit','loan','swap','yield','stake','quant','algo','clearing','settle'],
+  'Health & Biotech':            ['bio','med','health','care','gene','dna','rna','protein','clinic','dose','pharma','lab','cell','tissue','trial','patient','ehr','hipaa','wellness','mental','therapy','neuro'],
+  'Data & Analytics':            ['data','analytics','insight','metric','report','dash','bi','etl','pipeline','lake','warehouse','stream','batch','query','sql','spark','beam','flow','viz','chart','kpi'],
+  'Cloud & Infrastructure':      ['cloud','edge','mesh','node','cluster','container','vm','bare','metal','cdn','dns','ssl','tcp','ipv','subnet','vpc','gateway','load','balance','scale','replica','failover','region'],
+  'Web3 & Crypto':               ['web3','nft','dao','defi','dex','amm','chain','block','token','crypto','wallet','stake','yield','bridge','layer','zk','rollup','proof','consensus','mint','nonce'],
+  'Climate & Sustainability':    ['eco','solar','wind','green','carbon','neutral','sustain','renew','ev','battery','grid','energy','emission','offset','recycle','bio','waste','water','air','forest'],
+  'Consumer & Marketplace':      ['shop','store','market','buy','sell','list','brand','retail','ecom','cart','review','rating','discover','search','catalog','wish','gift','deal','coupon'],
+  'PropTech & Real Estate':      ['home','house','rent','lease','realty','estate','property','land','lot','condo','apt','broker','agent','mortgage','deed','title','zone','permit'],
+  'HR & Workforce':              ['hire','recruit','talent','work','force','team','staff','people','hr','onboard','payroll','time','track','shift','schedule','roster','culture','engage'],
+  'Legal & Compliance':          ['legal','law','comply','reg','audit','govern','policy','contract','clause','sign','notary','ip','patent','trademark','copyright','gdpr','ccpa','risk'],
+  'EdTech & Learning':           ['learn','edu','teach','course','tutor','train','skill','cert','quiz','test','exam','grade','school','campus','class','student','faculty','lms','mooc'],
+  'Logistics & Supply Chain':    ['ship','freight','cargo','route','track','fleet','delivery','last','mile','warehouse','inventory','supply','demand','order','fulfil','dispatch','haul','truck']
+};
+
+// ─── BIG DATA: BRAND COMPARABLES ────────────────────────────────
+const BRAND_COMPS = {
+  // Pattern: {keywords, brands, industries}
+  ai_short:     {keys:['ai','ml','gpt','llm'],          brands:['OpenAI','Anthropic','Cohere','Mistral','Together AI']},
+  dev_infra:    {keys:['dev','ops','deploy','build'],   brands:['Vercel','Netlify','Railway','Render','Fly.io']},
+  data_analytics:{keys:['data','analytics','insight'],  brands:['Segment','Amplitude','Mixpanel','PostHog','Heap']},
+  payments:     {keys:['pay','fin','cash','bank'],      brands:['Stripe','Brex','Mercury','Ramp','Plaid']},
+  security:     {keys:['sec','safe','guard','auth'],    brands:['1Password','Snyk','Wiz','Lacework','Orca']},
+  cloud_infra:  {keys:['cloud','node','mesh','edge'],   brands:['Cloudflare','Fastly','Akamai','Zscaler','Tailscale']},
+  saas_crm:     {keys:['hub','crm','sales','lead'],     brands:['HubSpot','Salesforce','Pipedrive','Close','Attio']},
+  collab:       {keys:['meet','call','talk','sync'],    brands:['Loom','Notion','Linear','Coda','Craft']},
+  consumer:     {keys:['shop','market','discover'],     brands:['Shopify','Faire','Etsy','Depop','Vinted']},
+  web3:         {keys:['dao','defi','nft','chain'],     brands:['Alchemy','Infura','Moralis','Thirdweb','QuickNode']},
+  climate:      {keys:['eco','solar','green','carbon'], brands:['Watershed','Patch','Pachama','Charm','Climeworks']},
+  health:       {keys:['med','health','care','bio'],    brands:['Ro','Noom','Cerebral','Headspace','Calm']},
+  generic_tech: {keys:[],                               brands:['Notion','Linear','Figma','Retool','Airtable']}
+};
+
+// ─── BIG DATA: BUYER PROFILES ────────────────────────────────────
+const BUYER_MATRIX = {
+  'VC / Startup Investor':       ['ai','ml','saas','cloud','data','api','dev','ops','fin','bio','web3','deep','agent'],
+  'Startup Founder (B2B)':       ['saas','api','dev','ops','data','analytics','b2b','enterprise','platform','hub','base','core'],
+  'Startup Founder (Consumer)':  ['app','consumer','market','shop','social','discover','connect','chat','meet','community'],
+  'Enterprise CTO':              ['secure','infra','cloud','scale','ops','enterprise','governance','audit','comply','arch'],
+  'Domain Investor / Flipper':   ['ai','io','co','short','one-word','acronym','3-letter','4-letter','premium','brandable'],
+  'Brand / Marketing Agency':    ['brand','creative','studio','media','agency','craft','design','visual','story'],
+  'Fortune 500 / Corp Dev':      ['global','enterprise','suite','platform','solutions','services','group','corp','international'],
+  'IndieHacker / Solo Founder':  ['simple','clean','product','tool','maker','build','hack','launch','micro','niche'],
+  'Healthcare / Pharma Exec':    ['med','health','care','bio','gene','pharma','clinic','therapy','patient','wellness'],
+  'Fintech Product Team':        ['pay','fin','bank','wallet','ledger','trade','invest','credit','lending','wealth'],
+  'Climate Entrepreneur':        ['eco','solar','green','carbon','sustain','renew','clean','energy','earth','nature'],
+  'EdTech Founder':              ['learn','edu','teach','skill','course','train','student','campus','grade','tutor']
+};
+
+// ─── BIG DATA: NAMING PATTERNS (from actual unicorn/successful brand names) ─
+const NAMING_PATTERNS = [
+  {name:'Two-Syllable',   test: n => countSyllables(n)===2,            desc:'Sweet spot — easy recall (Stripe, Notion, Linear, Figma)', weight:8},
+  {name:'CVCV / VCVC',    test: n => /^[bcdfghjklmnpqrstvwxyz][aeiou][bcdfghjklmnpqrstvwxyz][aeiou]/i.test(n), desc:'Alternating consonant-vowel — most pronounceable pattern', weight:9},
+  {name:'Compound Word',  test: n => isCompoundWord(n),                desc:'Two meaningful words merged — instantly understood (YouTube, Facebook)', weight:7},
+  {name:'Invented Word',  test: n => isInventedWord(n),                desc:'Unique coinage — high trademark potential (Kodak, Zappos)', weight:6},
+  {name:'Action/Verb',    test: n => /^(get|go|make|build|run|find|use|try|do|be|see|use|pay|talk|meet|send|move|flow|sync|ship|launch|join|start|grow|track|bring|link|pull|push|ping|call)/.test(n), desc:'Verb-form domain — creates urgency and action', weight:7},
+  {name:'Portmanteau',    test: n => isPortmanteau(n),                 desc:'Blended words — memorable and ownable (Pinterest, Instagram)', weight:7},
+  {name:'Tech Suffix -io',test: n => n.endsWith('io'),                 desc:'Popular with dev tools and SaaS startups', weight:5},
+  {name:'Tech Suffix -ly',test: n => n.endsWith('ly'),                 desc:'Adverb form — friendly and modern (Bitly, Grammarly)', weight:5},
+  {name:'-ify Suffix',    test: n => n.endsWith('ify'),                desc:'Action form — strong product naming signal (Shopify, Spotify)', weight:6},
+  {name:'Number-Free',    test: n => !/[0-9]/.test(n),                desc:'No numbers = higher global brandability', weight:4},
+  {name:'Hyphen-Free',    test: n => !n.includes('-'),                 desc:'No hyphens — cleaner for brand and SEO', weight:4},
+  {name:'≤6 Characters',  test: n => n.length<=6,                     desc:'Short domains are premium — under 6 chars is ideal', weight:8},
+  {name:'Latin/Greek Root',test: n => hasClassicalRoot(n),            desc:'Classical roots add authority (Apex, Nova, Veritas)', weight:5},
+  {name:'Alliteration',   test: n => n.length>1 && n[0]===n[1],      desc:'Repeated first letter adds rhythm (PayPal, TikTok variant)', weight:3},
+  {name:'Rhyming Pattern',test: n => hasRhyme(n),                     desc:'Internal rhyme or rhythm increases memorability', weight:4},
+  {name:'Opens with Vowel',test:n => /^[aeiou]/i.test(n),             desc:'Vowel starts feel approachable (Apple, Airbnb, Uber)', weight:3},
+  {name:'Ends with Vowel',test: n => /[aeiou]$/i.test(n),             desc:'Open endings feel friendly and global (Nike, Spotify, Canva)', weight:4},
+];
+
+// ─── BIG DATA: TLD INTELLIGENCE ─────────────────────────────────
+const TLD_INTEL = {
+  'com':  {score:100, note:'Gold standard — strongest trust and recall', tier:'premium'},
+  'ai':   {score:95,  note:'AI-native — highest value for AI startups',  tier:'premium'},
+  'io':   {score:90,  note:'Developer favorite — strong startup credibility', tier:'premium'},
+  'co':   {score:85,  note:'Modern .com alternative — VC-friendly',       tier:'premium'},
+  'dev':  {score:80,  note:'Perfect for developer tools and APIs',         tier:'strong'},
+  'app':  {score:78,  note:'Clear product intent signal',                  tier:'strong'},
+  'xyz':  {score:65,  note:'Trendy among next-gen startups',               tier:'moderate'},
+  'so':   {score:72,  note:'Social/tool products — growing usage',         tier:'moderate'},
+  'gg':   {score:70,  note:'Gaming/esports culture signal',                tier:'moderate'},
+  'vc':   {score:75,  note:'Investor-facing — prestige signal',            tier:'strong'},
+  'sh':   {score:68,  note:'Developer community favorite (shell scripts)',  tier:'moderate'},
+  'org':  {score:72,  note:'Nonprofits, open source — credible',           tier:'moderate'},
+  'net':  {score:70,  note:'Legacy infra/networking associations',          tier:'moderate'},
+  'tech': {score:68,  note:'Clear industry signal, growing fast',           tier:'moderate'},
+  'cloud':{score:65,  note:'Cloud-native positioning',                     tier:'moderate'},
+  'info': {score:40,  note:'Low prestige — avoid for startups',            tier:'weak'},
+  'biz':  {score:35,  note:'Poor brand signaling',                         tier:'weak'},
+  'online':{score:38, note:'Weak brandability',                            tier:'weak'},
+};
+
+// ─── BIG DATA: SEO KEYWORD SIGNALS ──────────────────────────────
+const SEO_HIGH_VOLUME = ['ai','cloud','data','learn','shop','work','home','health','pay','book','job','hire','make','build','find','track','manage','grow','send','link','care','smart','fast','safe','free','live','real','pro','now','new'];
+const SEO_COMMERCIAL_INTENT = ['buy','deal','best','top','price','cheap','compare','review','get','try','hire','book','quote','plan','cost'];
+const SEO_BRAND_SAFE = ['studio','labs','works','hq','io','co','ai','app','team','group','hub','base','core','edge','node'];
+
+// ─── BIG DATA: TRADEMARK HIGH-RISK TERMS ────────────────────────
+const TM_HIGH_RISK = ['facebook','google','apple','microsoft','amazon','twitter','instagram','tiktok','netflix','uber','tesla','spacex','meta','threads','discord','slack','zoom','stripe','shopify','salesforce','adobe','oracle','ibm','intel','nvidia','amd','qualcomm','snapchat','reddit','linkedin','youtube','whatsapp','telegram','signal','openai','anthropic','notion','figma','canva','dropbox','box','atlassian','jira','confluence','github','gitlab','bitbucket'];
+const TM_MEDIUM_RISK = ['genius','spark','nova','atlas','aurora','apollo','mercury','titan','nexus','eclipse','vision','prism','cipher','vector','matrix','quantum','cosmos','olympus','pegasus','phoenix','hydra','atlas','olympus','zenith','vertex'];
+
+// ─── PHONETIC UTILITIES ──────────────────────────────────────────
+const PHONETIC_SUBSTITUTIONS = {
+  'c':['k','s'],'k':['c'],'q':['k','kw'],'x':['ks','z'],'ph':['f'],'ck':['k'],
+  'ae':['e'],'oe':['e'],'ie':['i'],'ei':['i'],'ou':['ow'],'oo':['u'],
+  'gh':['f','g'],'wr':['r'],'kn':['n'],'gn':['n'],'mb':['m'],'bt':['t'],
+  'z':['s'],'v':['f'],'j':['y'],'y':['i'],'w':['v']
+};
+
+function countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g,'');
+  if(!word) return 0;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,'');
+  word = word.replace(/^y/,'');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+
+function isCompoundWord(n) {
+  const words = ['web','net','tech','soft','hard','cloud','open','free','big','new','good','fast','safe','smart','real','live','next','deep','high','low','auto','self','co','pre','sub','super','ultra','multi','cross','inter'];
+  return words.some(w => n.startsWith(w) && n.length > w.length + 2) ||
+         words.some(w => n.endsWith(w) && n.length > w.length + 2);
+}
+
+function isInventedWord(n) {
+  const common = ['the','and','for','are','but','not','you','all','can','had','her','was','one','our','out','day','get','has','him','his','how','its','may','now','did','did','old','see','set','run','way','may','say','she','too','use','was'];
+  const hasVowel = /[aeiou]/.test(n);
+  const notCommon = !common.includes(n);
+  const irregularEnding = /[qxzw]$/.test(n);
+  const unusualCombo = /[^aeiou]{3}/.test(n) || /[aeiou]{3}/.test(n);
+  return hasVowel && notCommon && (irregularEnding || (unusualCombo && n.length >= 4));
+}
+
+function isPortmanteau(n) {
+  // Check if name seems to blend two concepts
+  const pairs = [['tech','work'],['pay','day'],['net','work'],['web','hub'],['app','map'],['lab','tab'],['data','base'],['code','node'],['flow','know'],['smart','art'],['fast','cast'],['cloud','loud'],['soft','loft'],['snap','map'],['bit','kit']];
+  return pairs.some(([a,b]) => n.includes(a.substring(0,3)) && n.includes(b.substring(0,2)));
+}
+
+function hasClassicalRoot(n) {
+  const roots = ['lex','max','ax','ex','ix','ox','ux','neo','nova','apex','vex','flux','crux','lynx','onyx','plex','matrix','vertex','cortex','index','nexus','opus','focus','locus','tonus','bonus','animus','anima','terra','luna','sol','aero','hydro','geo','bio','therm','photo','tele','micro','macro','poly','mono','di','tri','quad','pent','hex','oct','dec'];
+  return roots.some(r => n.includes(r));
+}
+
+function hasRhyme(n) {
+  if(n.length < 4) return false;
+  // Check for internal repetition patterns like aabb, abab, etc.
+  const chunks = [];
+  for(let i=0;i<n.length-1;i++) chunks.push(n.substring(i,i+2));
+  const unique = new Set(chunks);
+  if(unique.size < chunks.length * 0.7) return true; // many repeated bigrams
+  // Check double syllable pattern like "papa", "koko"
+  if(n.length>=4 && n.substring(0,2)===n.substring(2,4)) return true;
+  return false;
+}
+
+function assessPronounceability(n) {
+  let score = 100;
+  const issues = [];
+  // Penalize consonant clusters
+  const consonantClusters = n.match(/[bcdfghjklmnpqrstvwxyz]{3,}/gi) || [];
+  if(consonantClusters.length) { score -= consonantClusters.length * 15; issues.push(`${consonantClusters.length} hard consonant cluster(s)`); }
+  // Penalize no vowels
+  if(!/[aeiou]/i.test(n)) { score -= 30; issues.push('no vowels — unpronounceable'); }
+  // Penalize tricky combos
+  if(/ng$|pf|bv|vb|dg|ts$|tz$/.test(n)) { score -= 10; issues.push('tricky ending cluster'); }
+  // Penalize too many unique sounds
+  const uniqueConsonants = new Set(n.replace(/[aeiou]/gi,'')).size;
+  if(uniqueConsonants > 6) { score -= 10; issues.push('too many distinct consonants'); }
+  // Reward easy combos
+  if(/^[bcdfghjklmnpqrstvwxyz][aeiou]/i.test(n)) { score += 5; }
+  if(/[aeiou]$/i.test(n)) { score += 5; }
+  return { score: Math.max(20, Math.min(100, score)), issues };
+}
+
+function assessMemorability(n) {
+  let score = 60;
+  const factors = [];
+  const syllables = countSyllables(n);
+  if(syllables === 1) { score += 15; factors.push('1 syllable — instant recall'); }
+  else if(syllables === 2) { score += 20; factors.push('2 syllables — ideal memory load'); }
+  else if(syllables === 3) { score += 8; factors.push('3 syllables — still manageable'); }
+  else { score -= 10; factors.push(`${syllables} syllables — may be too long`); }
+  if(n.length <= 5) { score += 15; factors.push('ultra-short — easy to type'); }
+  else if(n.length <= 8) { score += 8; factors.push('short — comfortable to type'); }
+  if(hasRhyme(n)) { score += 8; factors.push('rhythmic/rhyming — very sticky'); }
+  if(/^[bcdfghjklmnpqrstvwxyz][aeiou]/i.test(n)) { score += 5; factors.push('clean consonant-vowel start'); }
+  // Penalize awkward combos
+  if(/[0-9]/.test(n)) { score -= 15; factors.push('number hurts spoken recall'); }
+  if(n.includes('-')) { score -= 10; factors.push('hyphen breaks recall flow'); }
+  return { score: Math.max(20, Math.min(100, score)), factors };
+}
+
+// ─── SCORING ENGINE ──────────────────────────────────────────────
+
+function scoreBrandability(n) {
+  let score = 60;
+  if(n.length >= 4 && n.length <= 7) score += 20;
+  else if(n.length >= 8 && n.length <= 10) score += 10;
+  else if(n.length <= 3) score += 25;
+  else if(n.length > 12) score -= 15;
+  if(/[aeiou]/.test(n)) score += 5;
+  const prn = assessPronounceability(n);
+  score += Math.floor((prn.score - 60) * 0.2);
+  const mem = assessMemorability(n);
+  score += Math.floor((mem.score - 60) * 0.2);
+  if(/[^a-z0-9-]/.test(n)) score -= 20;
+  if(n.includes('-')) score -= 10;
+  if(/[0-9]/.test(n)) score -= 10;
+  return Math.max(20, Math.min(100, Math.round(score)));
+}
+
+function scoreLength(n) {
+  if(n.length <= 3) return 97;
+  if(n.length === 4) return 95;
+  if(n.length === 5) return 92;
+  if(n.length === 6) return 88;
+  if(n.length === 7) return 82;
+  if(n.length === 8) return 75;
+  if(n.length === 9) return 67;
+  if(n.length === 10) return 60;
+  if(n.length <= 12) return 52;
+  return 40;
+}
+
+function scoreKeywords(n) {
+  let score = 0;
+  for(const [kw, weight] of Object.entries(KEYWORD_WEIGHTS)) {
+    if(n === kw) score += weight * 3;
+    else if(n.startsWith(kw)) score += weight * 1.5;
+    else if(n.endsWith(kw)) score += weight * 1.2;
+    else if(n.includes(kw)) score += weight;
+  }
+  return Math.min(100, Math.round(score * 4));
+}
+
+function scoreSalesPattern(n) {
+  let score = 45;
+  // Successful startup name endings
+  const goodEndings = ['ai','io','ly','ify','er','ry','al','ic','ics','ent','ant','en','on','in','ix','ex','us','um','os','as'];
+  const goodStarts  = ['auto','open','smart','fast','deep','next','meta','hyper','super','ultra','proto','nano','micro','macro','omni','poly','re','co'];
+  if(goodEndings.some(e => n.endsWith(e))) score += 12;
+  if(goodStarts.some(s => n.startsWith(s))) score += 10;
+  if(n.length <= 6) score += 15;
+  if(n.length <= 4) score += 10;
+  if(countSyllables(n) === 2) score += 10;
+  if(hasClassicalRoot(n)) score += 8;
+  if(/^[A-Z]/i.test(n) && /[aeiou]/i.test(n)) score += 5;
+  if(/[0-9-]/.test(n)) score -= 15;
+  return Math.max(20, Math.min(100, score));
+}
+
+function scoreGlobal(n) {
+  let score = 85;
+  if(/[0-9]/.test(n)) score -= 20;
+  if(n.includes('-')) score -= 10;
+  if(n.length > 12) score -= 15;
+  if(/[qxz]{2,}/i.test(n)) score -= 15;
+  const prn = assessPronounceability(n);
+  score = Math.round(score * (prn.score / 100));
+  // Bonus for easy cross-language sounds
+  if(/^[bcdfghjklmnpqrstvwxyz][aeiou][bcdfghjklmnpqrstvwxyz]/i.test(n)) score += 8;
+  if(/[aeiou]$/i.test(n)) score += 5;
+  return Math.max(30, Math.min(100, score));
+}
+
+function scorePhonetics(n) {
+  const prn = assessPronounceability(n);
+  const mem = assessMemorability(n);
+  return Math.round((prn.score * 0.5) + (mem.score * 0.5));
+}
+
+function scoreSEO(n, tld) {
+  let score = 50;
+  const seoKeys = [...SEO_HIGH_VOLUME, ...SEO_COMMERCIAL_INTENT];
+  if(seoKeys.some(k => n.includes(k))) score += 20;
+  if(SEO_HIGH_VOLUME.some(k => n === k)) score += 25;
+  // Exact match domains still carry SEO signal
+  if(Object.keys(KEYWORD_WEIGHTS).some(k => n === k)) score += 15;
+  if(n.length <= 6) score += 10;
+  if(tld === 'com') score += 10;
+  if(/[0-9-]/.test(n)) score -= 15;
+  return Math.max(20, Math.min(100, score));
+}
+
+function scoreNamingPattern(n) {
+  const matched = NAMING_PATTERNS.filter(p => p.test(n));
+  const total = matched.reduce((sum, p) => sum + p.weight, 0);
+  return Math.min(100, Math.round(total * 4));
+}
+
+// ─── COMPOSITE SCORE ─────────────────────────────────────────────
+function calcOverallScore(scores) {
+  // Weighted composite across all signals
+  const weights = {
+    brand: 0.22, keyword: 0.18, sales: 0.15, phonetic: 0.13,
+    seo: 0.10, global: 0.09, length: 0.08, pattern: 0.05
+  };
+  let total = 0;
+  for(const [k, w] of Object.entries(weights)) {
+    total += (scores[k] || 0) * w;
+  }
+  return Math.round(total);
+}
+
+function getBuySignal(score) {
+  if(score >= 88) return {text:'STRONG BUY', color:'var(--lime)'};
+  if(score >= 76) return {text:'BUY', color:'var(--teal)'};
+  if(score >= 62) return {text:'CONSIDER', color:'var(--amber)'};
+  if(score >= 48) return {text:'WEAK PASS', color:'var(--amber)'};
+  return {text:'PASS', color:'var(--rose)'};
+}
+
+function getScoreGrade(score) {
+  if(score >= 90) return 'A+';
+  if(score >= 82) return 'A';
+  if(score >= 75) return 'B+';
+  if(score >= 65) return 'B';
+  if(score >= 55) return 'C+';
+  if(score >= 45) return 'C';
+  return 'D';
+}
+
+// ─── INDUSTRY SCORING ────────────────────────────────────────────
+function scoreIndustries(n) {
+  const results = [];
+  for(const [industry, keywords] of Object.entries(INDUSTRY_MAP)) {
+    let score = 0;
+    for(const kw of keywords) {
+      if(n === kw) score += 60;
+      else if(n.startsWith(kw) || n.endsWith(kw)) score += 30;
+      else if(n.includes(kw)) score += 15;
+    }
+    if(score > 0) results.push({industry, score: Math.min(100, score)});
+  }
+  return results.length
+    ? results.sort((a,b) => b.score - a.score).slice(0, 4)
+    : [{industry:'General Brand / Horizontal Platform', score:45}];
+}
+
+// ─── BRAND COMPARABLES ───────────────────────────────────────────
+function findBrandComps(n) {
+  const matched = [];
+  for(const [, data] of Object.entries(BRAND_COMPS)) {
+    if(!data.keys.length) continue;
+    const hitScore = data.keys.reduce((s, k) => n.includes(k) ? s + 1 : s, 0);
+    if(hitScore > 0) matched.push({brands: data.brands, score: hitScore});
+  }
+  if(!matched.length) return BRAND_COMPS.generic_tech.brands;
+  matched.sort((a,b) => b.score - a.score);
+  return [...new Set(matched.flatMap(m => m.brands))].slice(0, 5);
+}
+
+// ─── BUYER PROFILES ──────────────────────────────────────────────
+function findBuyers(n, tld) {
+  const results = [];
+  for(const [buyer, keys] of Object.entries(BUYER_MATRIX)) {
+    let score = keys.reduce((s, k) => n.includes(k) ? s + 2 : s, 0);
+    if(n.length <= 4) score += (buyer.includes('Investor') || buyer.includes('Flipper')) ? 3 : 0;
+    if(tld === 'ai' && buyer.includes('VC')) score += 2;
+    if(score > 0) results.push({buyer, score});
+  }
+  return results.length
+    ? results.sort((a,b) => b.score - a.score).slice(0, 4).map(x => x.buyer)
+    : ['Startup Founder (B2B)', 'Domain Investor / Flipper', 'IndieHacker / Solo Founder'];
+}
+
+// ─── STARTUP FIT ─────────────────────────────────────────────────
+function calcStartupFit(n, industries, kw, brand) {
+  const inds = industries.map(i => i.industry.toLowerCase());
+  const kws = Object.keys(KEYWORD_WEIGHTS).filter(k => n.includes(k));
+  const calc = (relevantInds, relevantKeys, base) => {
+    let s = base;
+    inds.forEach(i => { if(relevantInds.some(r => i.includes(r))) s += 20; });
+    kws.forEach(k => { if(relevantKeys.includes(k)) s += 10; });
+    s += Math.round(kw * 0.15 + brand * 0.1);
+    return Math.min(100, s);
+  };
+  return {
+    'AI Startup':          calc(['ai','machine','data'],     ['ai','ml','dl','gpt','llm','agent','auto','deep','neural'],     35),
+    'SaaS / Dev Tool':     calc(['saas','dev','cloud'],      ['saas','api','dev','ops','code','deploy','sdk','infra','hub'],   40),
+    'Enterprise':          calc(['cyber','analytics','hr'],  ['sec','comply','govern','audit','scale','enterprise','arch'],   30),
+    'Consumer App':        calc(['consumer','marketplace'],  ['app','chat','meet','shop','social','discover','community'],    25),
+    'Web3 / Crypto':       calc(['web3'],                    ['web3','dao','defi','nft','chain','token','dex','stake'],       15),
+    'Climate Tech':        calc(['climate'],                 ['eco','solar','green','carbon','sustain','renew','clean'],      10),
+  };
+}
+
+// ─── TRADEMARK RISK ──────────────────────────────────────────────
+function checkTrademark(n) {
+  if(TM_HIGH_RISK.some(t => n.includes(t))) {
+    const match = TM_HIGH_RISK.find(t => n.includes(t));
+    return {risk:'HIGH', color:'var(--rose)', dot:'dot-rose', message:`Contains "${match}" — active trademark. Legal review essential before acquisition.`};
+  }
+  if(TM_MEDIUM_RISK.some(t => n === t)) {
+    const match = TM_MEDIUM_RISK.find(t => n === t);
+    return {risk:'MEDIUM', color:'var(--amber)', dot:'dot-amber', message:`"${match}" is a common brand name with potential conflicts. Verify via USPTO.`};
+  }
+  if(n.length <= 3 && /^[a-z]+$/.test(n)) {
+    return {risk:'MEDIUM', color:'var(--amber)', dot:'dot-amber', message:'Very short acronyms often have existing trademarks. Conduct a full TM search.'};
+  }
+  if(/ly$|ify$|able$|ish$/.test(n)) {
+    return {risk:'LOW', color:'var(--teal)', dot:'dot-teal', message:'Common startup suffix pattern — low inherent conflict risk. Standard search recommended.'};
+  }
+  if(isInventedWord(n)) {
+    return {risk:'VERY LOW', color:'var(--lime)', dot:'dot-green', message:'Appears to be an invented/coined word — highest trademark clearance potential.'};
+  }
+  return {risk:'LOW', color:'var(--lime)', dot:'dot-green', message:'No obvious conflicts with major trademarks detected. Standard due diligence advised.'};
+}
+
+// ─── TLD ANALYSIS ────────────────────────────────────────────────
+function analyzeTLD(domain) {
+  const parts = domain.split('.');
+  const tld = parts.slice(1).join('.').toLowerCase();
+  const tldData = TLD_INTEL[tld] || {score:50, note:'Less common TLD — verify market acceptance', tier:'unknown'};
+  // Recommend alternative TLDs
+  const alternatives = Object.entries(TLD_INTEL)
+    .filter(([t]) => t !== tld && TLD_INTEL[t].tier !== 'weak')
+    .sort(([,a],[,b]) => b.score - a.score)
+    .slice(0, 5)
+    .map(([t]) => t);
+  return {tld, tldData, alternatives};
+}
+
+// ─── SEO ANALYSIS ────────────────────────────────────────────────
+function analyzeSEO(n, tld) {
+  const signals = [];
+  const seoScore = scoreSEO(n, tld);
+  if(SEO_HIGH_VOLUME.some(k => n.includes(k))) signals.push({label:'High-volume keyword present', ok:true});
+  else signals.push({label:'No high-volume keywords', ok:false});
+  if(SEO_COMMERCIAL_INTENT.some(k => n.includes(k))) signals.push({label:'Commercial intent keyword', ok:true});
+  if(SEO_BRAND_SAFE.some(k => n.endsWith(k))) signals.push({label:'Brand-safe suffix', ok:true});
+  if(!n.includes('-') && !/[0-9]/.test(n)) signals.push({label:'Clean format (no hyphens/numbers)', ok:true});
+  else signals.push({label:'Hyphens/numbers hurt SEO recall', ok:false});
+  if(n.length <= 8) signals.push({label:'Short — easy to share/link', ok:true});
+  if(tld === 'com') signals.push({label:'.com — maximum domain authority signal', ok:true});
+  else if(['ai','io','dev','app'].includes(tld)) signals.push({label:`${tld} — strong niche TLD for SEO`, ok:true});
+  if(Object.keys(KEYWORD_WEIGHTS).some(k => n === k)) signals.push({label:'Exact-match keyword domain', ok:true});
+  return {score: seoScore, signals};
+}
+
+// ─── SALES PATTERN ANALYSIS ──────────────────────────────────────
+function analyzeSalesPatterns(n) {
+  const matches = [];
+  const misses = [];
+  const checks = [
+    {test: n.length<=6,     pass:`${n.length}-char is under the 6-char premium threshold`, fail:`${n.length} chars — over ideal 6-char threshold`},
+    {test: countSyllables(n)<=2, pass:`${countSyllables(n)} syllables — within the 1-2 syllable sweet spot`, fail:`${countSyllables(n)} syllables — above preferred ≤2 syllable threshold`},
+    {test: !/[0-9-]/.test(n), pass:'No numbers or hyphens — clean brand format', fail:'Numbers/hyphens reduce buyer pool significantly'},
+    {test: /[aeiou]/.test(n), pass:'Contains vowels — pronounceable across buyer cultures', fail:'No vowels — severely limits buyer audience'},
+    {test: /^[bcdfghjklmnpqrstvwxyz][aeiou]/i.test(n), pass:'Consonant-vowel opening — the strongest start pattern', fail:'Does not open with strong CV pattern'},
+    {test: /[aeiou]$/i.test(n), pass:'Vowel ending — open, friendly, global appeal', fail:'Consonant ending — more closed, harder cross-language'},
+    {test: !hasClassicalRoot(n) || hasClassicalRoot(n), pass: hasClassicalRoot(n)?'Classical root present — adds authority':'No classical root — fully modern naming style', fail:null},
+    {test: isInventedWord(n), pass:'Invented/coined word — maximum trademark potential', fail:'Not coined — may share phonemes with existing marks'},
+  ].filter(c => c.fail !== null);
+  checks.forEach(c => { if(c.test) matches.push(c.pass); else misses.push(c.fail); });
+  return {matches, misses};
+}
+
+// ─── SIMILAR DOMAIN GENERATION ───────────────────────────────────
+const PHONETIC_MAP = {
+  'a':['e','o'],'e':['a','i'],'i':['e','y'],'o':['u','a'],'u':['o','e'],
+  'c':['k'],'k':['c'],'s':['z','c'],'z':['s'],'f':['ph'],'x':['ks'],
+  'v':['w'],'g':['j'],'t':['d'],'p':['b'],'m':['n'],'n':['m']
+};
+
+function generateAlternatives(n) {
+  const out = new Set();
+  const tlds = ['com','ai','io','co','xyz','dev','app'];
+  const prefixes = ['get','try','use','go','my','the','hey','hi','be','do','we','hello'];
+  const suffixes = ['hq','lab','labs','hub','base','flow','ai','io','co','app','bot','chat'];
+
+  tlds.forEach(t => out.add(`${n}.${t}`));
+  prefixes.forEach(p => out.add(`${p}${n}.${['com','io','ai'][Math.floor(Math.random()*3)]}`));
+  suffixes.forEach(s => out.add(`${n}${s}.${['com','io','ai'][Math.floor(Math.random()*3)]}`));
+
+  // Phonetic swaps
+  for(let i=0; i<n.length; i++) {
+    const ch = n[i].toLowerCase();
+    if(PHONETIC_MAP[ch]) {
+      PHONETIC_MAP[ch].forEach(rep => {
+        out.add(n.substring(0,i)+rep+n.substring(i+1)+'.com');
+      });
+    }
+  }
+
+  // Portmanteau combos
+  if(n.length <= 6) {
+    ['tech','labs','ai','io','hq','base','hub','flow','sync','data'].forEach(c => {
+      out.add(`${n}${c}.com`);
+      out.add(`${c}${n}.com`);
+    });
+  }
+
+  // Score and filter
+  return Array.from(out)
+    .map(d => {
+      const b = d.replace(/\.[^.]+$/, '');
+      if(b === n || b.length < 3 || b.length > 14 || !/^[a-z0-9]+$/.test(b)) return null;
+      let s = 0;
+      if(b.startsWith(n.substring(0,3))) s += 25;
+      if(b.endsWith(n.slice(-3))) s += 15;
+      if(Math.abs(b.length - n.length) <= 2) s += 15;
+      if(/[aeiou]/.test(b)) s += 10;
+      if(b.length >= 4 && b.length <= 8) s += 15;
+      if(d.endsWith('.com') || d.endsWith('.ai') || d.endsWith('.io')) s += 10;
+      return {domain: d, score: s};
+    })
+    .filter(Boolean)
+    .sort((a,b) => b.score - a.score)
+    .slice(0, 10)
+    .map(x => x.domain);
+}
+
+// ─── AI ENHANCEMENT ──────────────────────────────────────────────
+async function aiEnhance(n, scores, apiKey) {
+  try {
+    const prompt = `You are a domain name expert. Analyze the domain name "${n}" and return ONLY valid JSON (no markdown, no explanation) with this structure:
+{
+  "insight": "One sharp sentence about what makes this domain unique or weak.",
+  "positioning": "One sentence on how a startup could position this brand.",
+  "alternatives": [{"domain":"x.com","reason":"Short reason"}]
+}
+Provide 4 domain alternatives in the alternatives array. Focus on startup naming patterns.`;
+
+    const res = await fetch('[openrouter.ai](https://openrouter.ai/api/v1/chat/completions)', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+      body: JSON.stringify({
+        model: 'deepseek/deepseek-chat',
+        messages: [{role:'system',content:'Return ONLY JSON. No markdown code fences.'},{role:'user',content:prompt}],
+        max_tokens: 600, temperature: 0.6
+      })
+    });
+    if(!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const raw = data.choices?.[0]?.message?.content || '{}';
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    return JSON.parse(cleaned);
+  } catch(e) {
+    console.warn('AI enhancement failed:', e.message);
+    return null;
+  }
+}
+
+// ─── MAIN ANALYSIS ───────────────────────────────────────────────
+async function analyzeDomain() {
+  const btn      = document.getElementById('analyzeBtn');
+  const input    = document.getElementById('domainInput');
+  const loading  = document.getElementById('loading');
+  const errorMsg = document.getElementById('errorMsg');
+  const results  = document.getElementById('results');
+  const aiCheck  = document.getElementById('aiEnhance');
+
+  errorMsg.style.display = 'none';
+
+  const domain = input.value.trim().toLowerCase();
+  const name   = domain.replace(/\.[^.]+$/, '').replace(/[^a-z0-9]/g, '');
+  const tldObj = analyzeTLD(domain);
+  const tld    = tldObj.tld;
+
+  if(!domain) { showError('Please enter a domain name.'); return; }
+  if(!/^[a-z0-9-]+\.[a-z]{2,}(\.[a-z]{2,})?$/i.test(domain)) { showError('Enter a valid domain (e.g. example.com or example.ai)'); return; }
+  if(!name) { showError('Could not extract domain name. Check format.'); return; }
+
+  const useAI = aiCheck?.checked && API_KEY;
+  const cacheKey = `${domain}-${useAI?'ai':'local'}`;
+  if(analysisCache.has(cacheKey)) { renderResults(analysisCache.get(cacheKey)); return; }
+
+  btn.disabled = true; btn.textContent = 'Analyzing…';
+  loading.classList.add('on'); results.classList.remove('on');
+
+  try {
+    // All signals
+    const scores = {
+      brand:   scoreBrandability(name),
+      length:  scoreLength(name),
+      keyword: scoreKeywords(name),
+      sales:   scoreSalesPattern(name),
+      global:  scoreGlobal(name),
+      phonetic:scorePhonetics(name),
+      seo:     scoreSEO(name, tld),
+      pattern: scoreNamingPattern(name),
+    };
+    const overall     = calcOverallScore(scores);
+    const buySignal   = getBuySignal(overall);
+    const grade       = getScoreGrade(overall);
+
+    const industries  = scoreIndustries(name);
+    const brands      = findBrandComps(name);
+    const buyers      = findBuyers(name, tld);
+    const startupFit  = calcStartupFit(name, industries, scores.keyword, scores.brand);
+    const trademark   = checkTrademark(name);
+    const seoData     = analyzeSEO(name, tld);
+    const salesData   = analyzeSalesPatterns(name);
+    const matchedPatterns = NAMING_PATTERNS.filter(p => p.test(name));
+    const pronunciation   = assessPronounceability(name);
+    const memorability    = assessMemorability(name);
+    const syllables       = countSyllables(name);
+    let   similar         = generateAlternatives(name);
+
+    // AI enhancement
+    let aiData = null;
+    if(useAI) {
+      aiData = await aiEnhance(name, scores, API_KEY);
+      if(aiData?.alternatives?.length) {
+        const aiDomains = aiData.alternatives.map(a => a.domain).filter(d => /\.[a-z]{2,}$/.test(d));
+        similar = [...new Set([...aiDomains, ...similar])].slice(0, 10);
+      }
+    }
+
+    const result = {
+      domain, name, tld, tldObj, overall, grade, buySignal, scores,
+      industries, brands, buyers, startupFit, trademark, seoData,
+      salesData, matchedPatterns, pronunciation, memorability, syllables,
+      similar, aiData, useAI
+    };
+
+    analysisCache.set(cacheKey, result);
+    lastResult = result;
+    renderResults(result);
+
+  } catch(err) {
+    console.error(err);
+    showError('Analysis failed. Please try again.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Analyze Domain';
+    loading.classList.remove('on');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────
+function renderResults(r) {
+  const {name, tld, tldObj, overall, grade, buySignal, scores, industries, brands,
+    buyers, startupFit, trademark, seoData, salesData, matchedPatterns,
+    pronunciation, memorability, syllables, similar, aiData, useAI} = r;
+
+  // Header
+  document.getElementById('overallScore').textContent = overall;
+  document.getElementById('scoreGrade').innerHTML = `<span style="background:rgba(200,240,74,.12);padding:3px 10px;border-radius:6px;color:var(--lime)">${grade}</span>`;
+  const sigEl = document.getElementById('buySignal');
+  sigEl.textContent = buySignal.text; sigEl.style.color = buySignal.color;
+  document.getElementById('confidenceLabel').textContent = `${overall >= 75 ? 'High' : overall >= 55 ? 'Medium' : 'Low'} confidence`;
+
+  // Premium badge
+  const badgeEl = document.getElementById('premiumBadge');
+  if(name.length <= 4 && Object.keys(KEYWORD_WEIGHTS).slice(0,30).includes(name)) {
+    badgeEl.style.display = 'inline-flex';
+    badgeEl.className = 'premium-badge';
+    badgeEl.innerHTML = '⭐ Premium Short Domain — High-Value Asset';
+  } else { badgeEl.style.display = 'none'; }
+
+  // Metrics grid
+  const metricsConfig = [
+    {label:'Brandability', key:'brand', tip:'Visual/verbal brand strength'},
+    {label:'Phonetics',    key:'phonetic', tip:'Pronounceability & memorability'},
+    {label:'Keywords',     key:'keyword', tip:'Tech/startup keyword relevance'},
+    {label:'Sales Fit',    key:'sales', tip:'Match to historically successful name patterns'},
+    {label:'SEO Signal',   key:'seo', tip:'Search engine & recall potential'},
+    {label:'Global Fit',   key:'global', tip:'Cross-language pronounceability'},
+    {label:'Length',       key:'length', tip:'Optimal character count score'},
+    {label:'Pattern',      key:'pattern', tip:'Match to unicorn naming patterns'},
+  ];
+  document.getElementById('metricsGrid').innerHTML = metricsConfig.map(m => {
+    const val = scores[m.key];
+    const color = val >= 80 ? 'var(--lime)' : val >= 60 ? 'var(--teal)' : val >= 40 ? 'var(--amber)' : 'var(--rose)';
+    return `<div class="metric" title="${m.tip}">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value" style="color:${color}">${val}</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:${val}%;background:${color}"></div></div>
+      <div class="metric-tooltip">${val>=80?'Strong':val>=60?'Good':val>=40?'Weak':'Poor'}</div>
+    </div>`;
+  }).join('');
+
+  // ── Signal Summary ────────────────────────────────────────────
+  const allSignals = [
+    {label:'Overall Score',    val: overall >= 75 ? '✓ Strong' : overall >= 55 ? '~ Moderate' : '✗ Weak',          ok: overall >= 65},
+    {label:'Pronounceable',    val: pronunciation.score >= 70 ? '✓ Yes' : '✗ Difficult',                           ok: pronunciation.score >= 70},
+    {label:'Memorable',        val: memorability.score >= 70 ? '✓ Yes' : '~ Moderate',                             ok: memorability.score >= 60},
+    {label:'Syllables',        val: `${syllables} (${syllables<=2?'✓ Ideal':syllables<=3?'~ OK':'✗ Too many'})`,   ok: syllables <= 2},
+    {label:'Character Count',  val: `${name.length} chars (${name.length<=6?'✓ Premium':name.length<=9?'~ Good':'✗ Long'})`, ok: name.length <= 9},
+    {label:'Numbers/Hyphens',  val: /[0-9-]/.test(name) ? '✗ Present' : '✓ None',                                 ok: !/[0-9-]/.test(name)},
+    {label:'TLD Quality',      val: `${tld} — ${tldObj.tldData.tier}`,                                             ok: tldObj.tldData.score >= 70},
+    {label:'Trademark Risk',   val: trademark.risk,                                                                  ok: trademark.risk === 'VERY LOW' || trademark.risk === 'LOW'},
+    {label:'Keyword Match',    val: scores.keyword >= 60 ? '✓ Strong match' : scores.keyword >= 30 ? '~ Partial' : '✗ None', ok: scores.keyword >= 30},
+    {label:'Sales Pattern',    val: scores.sales >= 70 ? '✓ Matched' : scores.sales >= 50 ? '~ Partial' : '✗ Weak', ok: scores.sales >= 50},
+    {label:'SEO Potential',    val: seoData.score >= 65 ? '✓ Good' : seoData.score >= 45 ? '~ Moderate' : '✗ Low', ok: seoData.score >= 45},
+    {label:'Global Reach',     val: scores.global >= 75 ? '✓ Strong' : scores.global >= 55 ? '~ Moderate' : '✗ Limited', ok: scores.global >= 55},
+    {label:'Naming Patterns',  val: `${matchedPatterns.length} matched`,                                            ok: matchedPatterns.length >= 2},
+    {label:'Brand Comps Found',val: brands.length > 0 ? `✓ ${brands.length} found` : '✗ None',                    ok: brands.length > 0},
+  ];
+
+  document.getElementById('signalSummary').innerHTML = allSignals.map(s => {
+    const color = s.ok ? 'var(--lime)' : 'var(--rose)';
+    const dot = s.ok ? 'dot-green' : 'dot-rose';
+    return `<div class="signal-row">
+      <span class="signal-label"><span class="signal-dot ${dot}"></span>${s.label}</span>
+      <span class="signal-value" style="color:${color}">${s.val}</span>
+    </div>`;
+  }).join('');
+
+  // ── Phonetics & Memorability ─────────────────────────────────
+  document.getElementById('phoneticPanel').innerHTML = `
+    <div class="signal-row"><span class="signal-label">Pronounceability</span><span class="signal-value" style="color:${pronunciation.score>=70?'var(--lime)':'var(--rose)'}">${pronunciation.score}/100</span></div>
+    <div class="signal-row"><span class="signal-label">Memorability</span><span class="signal-value" style="color:${memorability.score>=70?'var(--lime)':'var(--amber)'}">${memorability.score}/100</span></div>
+    <div class="signal-row"><span class="signal-label">Syllable Count</span><span class="signal-value">${syllables} ${syllables<=2?'✓':'~'}</span></div>
+    <div class="signal-row"><span class="signal-label">Character Count</span><span class="signal-value">${name.length}</span></div>
+    <div class="signal-row"><span class="signal-label">Starts With</span><span class="signal-value">${/^[aeiou]/i.test(name)?'Vowel (approachable)':'Consonant'}</span></div>
+    <div class="signal-row"><span class="signal-label">Ends With</span><span class="signal-value">${/[aeiou]$/i.test(name)?'✓ Vowel (open/global)':'Consonant'}</span></div>
+    ${pronunciation.issues.length ? `<div style="margin-top:10px"><div class="section-divider">Pronunciation Issues</div>${pronunciation.issues.map(i=>`<span class="tag warning">${i}</span>`).join('')}</div>`:''}
+    ${memorability.factors.length ? `<div style="margin-top:10px"><div class="section-divider">Memory Factors</div>${memorability.factors.map(f=>`<span class="tag positive">${f}</span>`).join('')}</div>`:''}
+  `;
+
+  // ── SEO ──────────────────────────────────────────────────────
+  document.getElementById('seoPanel').innerHTML = `
+    <div class="signal-row"><span class="signal-label">SEO Score</span><span class="signal-value" style="color:${seoData.score>=65?'var(--lime)':'var(--amber)'}">${seoData.score}/100</span></div>
+    <div style="margin-top:10px">
+      ${seoData.signals.map(s => `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:13px">
+        <span style="color:${s.ok?'var(--lime)':'var(--rose)'}">${s.ok?'✓':'✗'}</span>
+        <span style="color:${s.ok?'var(--text)':'var(--muted)'}">${s.label}</span>
+      </div>`).join('')}
+    </div>
+  `;
+
+  // ── Naming Patterns ──────────────────────────────────────────
+  document.getElementById('namingPattern').innerHTML = matchedPatterns.length
+    ? matchedPatterns.map(p => `
+        <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div style="font-weight:600;font-size:13px;color:var(--lime);margin-bottom:3px">✓ ${p.name}</div>
+          <div style="font-size:12px;color:var(--muted)">${p.desc}</div>
+        </div>`).join('')
+    : '<span class="empty-msg">No strong unicorn naming patterns matched.</span>';
+
+  // ── TLD ──────────────────────────────────────────────────────
+  document.getElementById('tldPanel').innerHTML = `
+    <div class="signal-row"><span class="signal-label">Your TLD</span><span class="signal-value">.${tld}</span></div>
+    <div class="signal-row"><span class="signal-label">TLD Score</span><span class="signal-value" style="color:${tldObj.tldData.score>=80?'var(--lime)':'var(--amber)'}">${tldObj.tldData.score}/100</span></div>
+    <div class="signal-row"><span class="signal-label">Tier</span><span class="signal-value">${tldObj.tldData.tier}</span></div>
+    <div style="margin:10px 0;font-size:13px;color:var(--muted)">${tldObj.tldData.note}</div>
+    <div class="section-divider">Alternative TLDs to Register</div>
+    <div class="tld-grid">${tldObj.alternatives.map(t => `<span class="tld-chip ${TLD_INTEL[t]?.score>=80?'premium':''}">.${t}</span>`).join('')}</div>
+  `;
+
+  // ── Industries ───────────────────────────────────────────────
+  document.getElementById('industryTags').innerHTML = industries.map(x =>
+    `<span class="tag">${x.industry} <strong>${x.score}</strong></span>`
+  ).join('') || '<span class="empty-msg">General horizontal brand</span>';
+
+  // ── Startup Fit ──────────────────────────────────────────────
+  document.getElementById('startupFit').innerHTML = Object.entries(startupFit).map(([cat, val]) => {
+    const col = val >= 80 ? 'var(--lime)' : val >= 55 ? 'var(--teal)' : 'var(--muted)';
+    return `<div class="fit-bar">
+      <div class="fit-bar-label">${cat}</div>
+      <div class="fit-bar-track"><div class="fit-bar-fill" style="width:${val}%;background:${col}"></div></div>
+      <div class="fit-bar-score" style="color:${col}">${val}</div>
+    </div>`;
+  }).join('');
+
+  // ── Brands ───────────────────────────────────────────────────
+  document.getElementById('similarBrands').innerHTML = brands.map(b => `<span class="tag">${b}</span>`).join('');
+
+  // ── Buyers ───────────────────────────────────────────────────
+  document.getElementById('buyerProfiles').innerHTML = buyers.map(b => `<span class="tag positive">${b}</span>`).join('');
+
+  // ── Investor View ─────────────────────────────────────────────
+  const pros = [], cons = [];
+  if(scores.brand >= 75) pros.push('Strong startup brandability');
+  if(scores.keyword >= 60) pros.push('High-value keyword relevance');
+  if(scores.phonetic >= 70) pros.push('Highly pronounceable globally');
+  if(name.length <= 6) pros.push('Ultra-short — premium length tier');
+  if(matchedPatterns.length >= 3) pros.push(`Matches ${matchedPatterns.length} unicorn naming patterns`);
+  if(tldObj.tldData.score >= 85) pros.push(`Premium TLD (.${tld}) — maximum buyer confidence`);
+  if(trademark.risk === 'VERY LOW' || trademark.risk === 'LOW') pros.push('Clean trademark profile');
+  if(syllables <= 2) pros.push(`${syllables}-syllable — instant recall`);
+  if(scores.seo >= 65) pros.push('Strong SEO signal potential');
+  if(seoData.score < 45) cons.push('Weak SEO keyword signal');
+  if(scores.brand < 55) cons.push('Below-average brandability score');
+  if(name.length > 10) cons.push(`Long name (${name.length} chars) — harder to recall`);
+  if(syllables > 3) cons.push(`${syllables} syllables — above ideal threshold`);
+  if(/[0-9]/.test(name)) cons.push('Numbers reduce buyer pool');
+  if(tldObj.tldData.score < 60) cons.push(`Weak TLD (.${tld}) — may limit resale appeal`);
+  if(trademark.risk === 'HIGH') cons.push('Active trademark risk — legal liability');
+  if(scores.global < 55) cons.push('Limited cross-market pronunciability');
+
+  document.getElementById('investorView').innerHTML = `
+    ${pros.length ? `<div style="margin-bottom:12px"><div class="section-divider" style="color:var(--lime)">Strengths</div>${pros.map(p=>`<div style="padding:3px 0;font-size:13px"><span style="color:var(--lime);margin-right:6px">✓</span>${p}</div>`).join('')}</div>` : ''}
+    ${cons.length ? `<div><div class="section-divider" style="color:var(--rose)">Concerns</div>${cons.map(c=>`<div style="padding:3px 0;font-size:13px"><span style="color:var(--rose);margin-right:6px">✗</span>${c}</div>`).join('')}</div>` : '<div style="font-size:13px;color:var(--teal)">✓ No major investor concerns identified.</div>'}
+  `;
+
+  // ── Trademark ─────────────────────────────────────────────────
+  document.getElementById('trademarkRisk').innerHTML = `
+    <div class="signal-row"><span class="signal-label">Risk Level</span><span class="signal-value" style="color:${trademark.color}">${trademark.risk}</span></div>
+    <div style="margin-top:10px;padding:10px;border-radius:10px;background:#1a1a21;font-size:13px;color:var(--muted)">${trademark.message}</div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted)">Always verify via <a href="[uspto.gov](https://www.uspto.gov/trademarks/search)" target="_blank" style="color:var(--teal)">USPTO TESS</a> and <a href="[euipo.europa.eu](https://euipo.europa.eu/eSearch/)" target="_blank" style="color:var(--teal)">EUIPO</a> before acquiring.</div>
+  `;
+
+  // ── Sales Patterns ────────────────────────────────────────────
+  document.getElementById('salesPatternPanel').innerHTML = `
+    ${salesData.matches.length ? `<div class="section-divider" style="color:var(--lime)">Positive Signals</div>${salesData.matches.map(m=>`<div style="padding:4px 0;font-size:13px"><span style="color:var(--lime);margin-right:6px">✓</span>${m}</div>`).join('')}` : ''}
+    ${salesData.misses.length ? `<div class="section-divider" style="color:var(--rose);margin-top:12px">Missing Signals</div>${salesData.misses.map(m=>`<div style="padding:4px 0;font-size:13px"><span style="color:var(--rose);margin-right:6px">✗</span>${m}</div>`).join('')}` : ''}
+  `;
+
+  // ── Similar Domains ───────────────────────────────────────────
+  document.getElementById('similarDomains').innerHTML = similar.map(d =>
+    `<span class="tag">${d}<a href="[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)})" target="_blank" rel="noopener" title="Check availability">🔍</a></span>`
+  ).join('');
+
+  // ── Final Verdict ─────────────────────────────────────────────
+  const confidence = overall >= 80 ? 'High' : overall >= 60 ? 'Medium' : 'Low';
+  const topReasons = [...pros, ...salesData.matches].slice(0, 4);
+  document.getElementById('buyDecision').innerHTML = `
+    <div style="font-size:36px;font-weight:700;margin-bottom:6px;color:${buySignal.color}">${buySignal.text}</div>
+    <div style="color:var(--muted);margin-bottom:14px;font-size:13px">Confidence: ${confidence} · Score: ${overall}/100 · Grade: ${grade}</div>
+    ${topReasons.map(r=>`<div style="padding:3px 0;font-size:13px"><span style="color:var(--lime);margin-right:6px">✓</span>${r}</div>`).join('')}
+    ${cons.length > 0 ? `<div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(240,80,106,.07);font-size:12px;color:#ff9b9b">⚠️ Key risk: ${cons[0]}</div>` : ''}
+  `;
+
+  // ── Reasoning ─────────────────────────────────────────────────
+  const topIndustry = industries[0]?.industry || 'General';
+  const topPattern  = matchedPatterns[0]?.name || 'no strong pattern';
+  document.getElementById('reasoningText').innerHTML = `
+    <strong>${r.domain}</strong> scores <strong>${overall}/100</strong> (${grade}) across 8 intelligence signals.<br><br>
+    ${aiData?.insight ? `<em style="color:var(--teal)">${aiData.insight}</em><br><br>` : ''}
+    ${aiData?.positioning ? `<strong>Positioning:</strong> ${aiData.positioning}<br><br>` : ''}
+    <strong>Key strengths:</strong> ${pros.length ? pros.join('; ') : 'limited signals'}<br>
+    ${cons.length ? `<strong>Key concerns:</strong> ${cons.slice(0,2).join('; ')}<br>` : ''}
+    <br>
+    <strong>Best industry fit:</strong> ${topIndustry}<br>
+    <strong>Strongest naming pattern:</strong> ${topPattern}<br>
+    <strong>TLD assessment:</strong> .${tld} — ${tldObj.tldData.note}<br>
+    <strong>Phonetics:</strong> ${pronunciation.score}/100 pronounceability, ${syllables} syllable${syllables!==1?'s':''}, ${memorability.score}/100 memorability<br>
+    <strong>Trademark posture:</strong> ${trademark.risk} risk<br>
+    ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via OpenRouter</small>` : ''}
+  `;
+
+  document.getElementById('registerLink').href = `[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(r.domain)})`;
+  document.getElementById('results').classList.add('on');
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ─── GENERATE MORE ───────────────────────────────────────────────
+function generateMoreSimilar() {
+  if(!lastResult) return;
+  const more = generateAlternatives(lastResult.name);
+  document.getElementById('similarDomains').innerHTML = more.map(d =>
+    `<span class="tag">${d}<a href="[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)})" target="_blank" rel="noopener">🔍</a></span>`
+  ).join('');
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────────
+function exportAnalysis() {
+  if(!lastResult) return;
+  const r = lastResult;
+  const lines = [
+    'DOMAIN ANALYSIS REPORT — autoDNG',
+    '='.repeat(40),
+    `Domain:         ${r.domain}`,
+    `Overall Score:  ${r.overall}/100 (${r.grade})`,
+    `Recommendation: ${r.buySignal.text}`,
+    `Generated:      ${new Date().toLocaleString()}`,
+    '',
+    'SIGNAL SCORES',
+    '-'.repeat(30),
+    ...Object.entries(r.scores).map(([k,v]) => `${k.padEnd(12)}: ${v}/100`),
+    '',
+    'INDUSTRIES',
+    r.industries.map(i => `  ${i.industry} (${i.score})`).join('\n'),
+    '',
+    'IDEAL BUYERS',
+    r.buyers.map(b => `  ${b}`).join('\n'),
+    '',
+    'TRADEMARK RISK',
+    `  ${r.trademark.risk} — ${r.trademark.message}`,
+    '',
+    'NAMING PATTERNS MATCHED',
+    r.matchedPatterns.map(p => `  ✓ ${p.name}: ${p.desc}`).join('\n'),
+    '',
+    'TLD ANALYSIS',
+    `  .${r.tld} — ${r.tldObj.tldData.note} (${r.tldObj.tldData.score}/100)`,
+    '',
+    'INVESTOR PROS / CONS',
+    'Pros:',
+    r.scores.brand>=75?'  ✓ Strong brandability':'',
+    r.scores.keyword>=60?'  ✓ High keyword relevance':'',
+    r.name.length<=6?`  ✓ Premium short domain (${r.name.length} chars)`:'',
+    '',
+    'autoDNG.com — Domain Intelligence Platform'
+  ];
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `${r.name}-analysis.txt`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function shareAnalysis() {
+  const domain = document.getElementById('domainInput').value;
+  const url = `${window.location.origin}${window.location.pathname}?domain=${encodeURIComponent(domain)}`;
+  navigator.clipboard.writeText(url)
+    .then(() => alert('Analysis link copied!'))
+    .catch(() => prompt('Copy this link:', url));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const btn      = document.getElementById('analyzeBtn');
+  const input    = document.getElementById('domainInput');
+  const keyInput = document.getElementById('apiKeyInput');
+  const aiCheck  = document.getElementById('aiEnhance');
+  const aiToggle = document.getElementById('aiToggle');
+
+  // Restore saved key
+  if(API_KEY) {
+    keyInput.value = API_KEY;
+    aiToggle.classList.add('on');
+  }
+
+  btn.addEventListener('click', analyzeDomain);
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') analyzeDomain(); });
+
+  keyInput.addEventListener('input', e => {
+    API_KEY = e.target.value.trim();
+    localStorage.setItem('autodng_analyze_key', API_KEY);
+    if(API_KEY) { aiToggle.classList.add('on'); aiCheck.checked = true; }
+    else { aiToggle.classList.remove('on'); }
+    analysisCache.clear();
+  });
+
+  aiCheck.addEventListener('change', () => { analysisCache.clear(); });
+
+  // Auto-analyze from URL param
+  const params = new URLSearchParams(window.location.search);
+  const domainParam = params.get('domain');
+  if(domainParam) { input.value = domainParam; setTimeout(analyzeDomain, 300); }
+});
+</script>
+</body>
+</html>

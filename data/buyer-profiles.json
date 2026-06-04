@@ -1,0 +1,33 @@
+{
+  "AI Agent Startup": [
+    "ai","agent","mind","logic","brain","model","llm"
+  ],
+
+  "Developer Platform": [
+    "cloud","stack","core","dev","api","code","data"
+  ],
+
+  "Healthcare AI": [
+    "health","bio","med","gene","care","vita"
+  ],
+
+  "Cybersecurity": [
+    "secure","trust","vault","guard","shield","cyber"
+  ],
+
+  "Fintech": [
+    "pay","fund","capital","bank","money","finance"
+  ],
+
+  "SaaS Startup": [
+    "flow","hub","sync","pilot","base","works"
+  ],
+
+
+  "Startup Founder": ["startup","founder","launch","build","ship","mvp","seed","series","venture","scale"],
+  "VC Investor": ["vc","invest","fund","capital","portfolio","return","exit","unicorn","growth","equity"],
+  "Enterprise CTO": ["enterprise","cto","infra","scale","security","compliance","integration","legacy","modernize"],
+  "Product Manager": ["product","pm","user","feature","roadmap","iterate","ship","metric","growth","engagement"],
+  "Developer Advocate": ["devrel","community","docs","tutorial","open","source","contribute","learn","teach"],
+  "Brand Marketer": ["brand","marketing","campaign","audience","conversion","funnel","retention","loyalty","awareness"]
+}

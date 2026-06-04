@@ -1,0 +1,161 @@
+{
+  "OpenAI": {
+    "industry": "AI",
+    "style": "open+tech",
+    "keywords": ["open","ai","platform","agent"]
+  },
+
+  "Anthropic": {
+    "industry": "AI",
+    "style": "invented-word",
+    "keywords": ["ai","research","model"]
+  },
+
+  "Perplexity": {
+    "industry": "AI",
+    "style": "dictionary-word",
+    "keywords": ["search","ai","knowledge"]
+  },
+
+  "Mistral": {
+    "industry": "AI",
+    "style": "single-word",
+    "keywords": ["ai","model","research"]
+  },
+
+  "OpenRouter": {
+    "industry": "AI",
+    "style": "open+tech",
+    "keywords": ["open","developer","infrastructure"]
+  },
+
+  "Cursor": {
+    "industry": "Developer",
+    "style": "dictionary-word",
+    "keywords": ["developer","coding","ai"]
+  },
+
+  "Vercel": {
+    "industry": "Developer",
+    "style": "invented-word",
+    "keywords": ["developer","cloud","hosting"]
+  },
+
+  "Datadog": {
+    "industry": "Developer",
+    "style": "compound",
+    "keywords": ["data","monitoring","developer"]
+  },
+
+  "Cloudflare": {
+    "industry": "Developer",
+    "style": "compound",
+    "keywords": ["cloud","infrastructure","security"]
+  },
+
+  "DigitalOcean": {
+    "industry": "Developer",
+    "style": "compound",
+    "keywords": ["cloud","developer","hosting"]
+  },
+
+  "Stripe": {
+    "industry": "Fintech",
+    "style": "dictionary-word",
+    "keywords": ["payments","finance","api"]
+  },
+
+  "Plaid": {
+    "industry": "Fintech",
+    "style": "dictionary-word",
+    "keywords": ["banking","finance","data"]
+  },
+
+  "Ramp": {
+    "industry": "Fintech",
+    "style": "short-word",
+    "keywords": ["finance","payments","growth"]
+  },
+
+  "Brex": {
+    "industry": "Fintech",
+    "style": "invented-word",
+    "keywords": ["finance","startup","corporate"]
+  },
+
+  "Mercury": {
+    "industry": "Fintech",
+    "style": "dictionary-word",
+    "keywords": ["banking","startup","finance"]
+  },
+
+  "CrowdStrike": {
+    "industry": "Cyber",
+    "style": "compound",
+    "keywords": ["security","threat","protection"]
+  },
+
+  "Darktrace": {
+    "industry": "Cyber",
+    "style": "compound",
+    "keywords": ["security","ai","monitoring"]
+  },
+
+  "SentinelOne": {
+    "industry": "Cyber",
+    "style": "compound",
+    "keywords": ["security","endpoint","protection"]
+  },
+
+  "Wiz": {
+    "industry": "Cyber",
+    "style": "short-word",
+    "keywords": ["cloud","security","infrastructure"]
+  },
+
+  "Palo Alto Networks": {
+    "industry": "Cyber",
+    "style": "descriptive",
+    "keywords": ["security","enterprise","network"]
+  },
+
+  "Moderna": {
+    "industry": "Biotech",
+    "style": "invented-word",
+    "keywords": ["health","bio","medicine"]
+  },
+
+  "Illumina": {
+    "industry": "Biotech",
+    "style": "invented-word",
+    "keywords": ["gene","bio","science"]
+  },
+
+  "Tempus": {
+    "industry": "Biotech",
+    "style": "single-word",
+    "keywords": ["health","ai","medical"]
+  },
+
+  "23andMe": {
+    "industry": "Biotech",
+    "style": "compound",
+    "keywords": ["genetics","health","consumer"]
+  },
+
+  "Recursion": {
+    "industry": "Biotech",
+    "style": "dictionary-word",
+    "keywords": ["drug","ai","research"]
+  },
+  
+ 
+  "Figma": {"keywords": ["fig","design","collab","vector","ui"]},
+  "Notion": {"keywords": ["notion","note","workspace","doc","team"]},
+  "Linear": {"keywords": ["linear","task","project","issue","track"]},
+  "Raycast": {"keywords": ["ray","cast","launch","shortcut","productivity"]},
+  "Supabase": {"keywords": ["supa","base","database","backend","open"]},
+  "PlanetScale": {"keywords": ["planet","scale","database","mysql","serverless"]},
+  "Railway": {"keywords": ["rail","way","deploy","infra","cloud"]}
+}
+ 

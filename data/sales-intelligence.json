@@ -1,0 +1,27 @@
+{
+  "generated": "2026-06-04",
+  "domain_count": 120000,
+
+  "preferred_lengths": [4,5,6,7,8,9],
+
+  "preferred_bigrams": [
+    "on","in","ar","ta","re",
+    "en","io","el","or","al",
+    "ai","ix","ex","ox","va",
+    "vo","ro","an","lo","ra"
+  ],
+
+  "preferred_endings": [
+    "io","ly","on","ix","ex",
+    "ia","os","ra","ta","el",
+    "ox","eo","iq","um","is"
+  ],
+
+  "preferred_starts": [
+    "op","au","qu","xy","vo",
+    "el","ne","cy","da","in",
+    "br","gr","cl","fl","tr"
+  ],
+
+  "avg_vowel_ratio": 0.38
+}

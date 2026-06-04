@@ -1,0 +1,12 @@
+{
+  "open": ["OpenAI","OpenRouter"],
+  "cloud": ["Cloudflare","DigitalOcean","Wiz"],
+  "data": ["Datadog","Plaid"],
+  "health": ["Tempus","Moderna"],
+  "bio": ["Moderna","Illumina"],
+  "finance": ["Stripe","Brex","Ramp","Mercury"],
+  "security": ["CrowdStrike","Darktrace","SentinelOne","Wiz"],
+  "agent": ["OpenAI","Anthropic"],
+  "ai": ["OpenAI","Anthropic","Mistral","Perplexity","Tempus"],
+  "developer": ["Cursor","Vercel","Datadog"]
+}

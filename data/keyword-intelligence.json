@@ -1,0 +1,28 @@
+{
+ 
+  "logic": 82,
+ 
+  "quant": 87,
+  
+  "forge": 86,
+  "pilot": 82,
+ 
+  "mind": 78,
+  "vision": 85,
+  "nova": 76,
+  "zen": 74,
+ 
+  "base": 80,
+  "grid": 78,
+  
+
+
+  "ai": 15, "agent": 12, "auto": 10, "smart": 10, "deep": 8, "neural": 12,
+  "cloud": 10, "data": 8, "flow": 6, "sync": 6, "core": 5, "labs": 4,
+  "bio": 12, "health": 10, "med": 8, "care": 7, "well": 6, "vital": 8,
+  "fin": 10, "pay": 9, "coin": 8, "vault": 7, "mint": 6, "trade": 8,
+  "dev": 9, "code": 8, "stack": 7, "build": 6, "deploy": 7, "api": 8,
+  "cyber": 11, "secure": 9, "shield": 8, "guard": 7, "trust": 8, "safe": 6,
+  "eco": 9, "green": 8, "clean": 7, "solar": 8, "wind": 7, "carbon": 9,
+  "open": 10, "free": 6, "public": 5, "social": 7, "connect": 8, "link": 6
+}

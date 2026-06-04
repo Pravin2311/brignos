@@ -218,5 +218,15 @@
     "tld_distribution": { ".com": 0.80, ".io": 0.10, ".logistics": 0.05, ".tech": 0.05 },
     "avoid_terms": [ "logistics", "supply", "chain", "shipping", "freight", "cargo" ],
     "example_names": [ "Flexport", "Convoy", "Project44", "FourKites", "Shippo" ]
-  }
+  },
+
+
+
+  "AI & Machine Learning": ["ai","agent","auto","smart","neural","deep","learn","mind","cognit","synth"],
+  "SaaS & Developer Tools": ["dev","code","stack","build","deploy","api","cloud","sync","flow","hub"],
+  "Fintech & Payments": ["fin","pay","coin","vault","mint","trade","bank","wealth","capit","fund"],
+  "Healthcare & Biotech": ["bio","health","med","care","well","vital","life","gene","cell","thera"],
+  
+  "Consumer Brands": ["social","connect","link","share","chat","talk","voice","face","hand","home"],
+  "Enterprise Software": ["enterprise","corp","biz","work","team","group","unite","scale","prime","apex"]
 }
