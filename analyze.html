@@ -99,13 +99,71 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
 .summary-cell{background:#1a1a21;border-radius:10px;padding:10px 12px;font-size:13px}
 .summary-cell-label{color:var(--muted);font-size:11px;margin-bottom:4px}
 .summary-cell-value{font-weight:600}
-@media(max-width:768px){.hero h1{font-size:28px}.search-box{flex-direction:column}.score-header{flex-direction:column;align-items:flex-start}.sections{grid-template-columns:1fr}.metric-value{font-size:22px}.ai-toggle{flex-direction:column;align-items:flex-start}}
+@media(max-width:768px){
+
+.hero h1{
+  font-size:28px;
+}
+
+.search-box{
+  flex-direction:column;
+  width:100%;
+}
+
+.search-box input,
+.search-box button,
+.api-key-wrap{
+  width:100%;
+  min-width:100%;
+}
+
+.search-box button{
+  margin-top:4px;
+}
+
+.api-key-wrap{
+  margin-top:4px;
+}
+
+.score-header{
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.sections{
+  grid-template-columns:1fr;
+}
+
+.metric-value{
+  font-size:22px;
+}
+
+.ai-toggle{
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+}
+@media(max-width:600px){
+
+.nav{
+  flex-direction:column;
+  gap:14px;
+}
+
+.nav-links{
+  width:100%;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+}
 </style>
 </head>
 <body>
 <div class="container">
   <nav class="nav">
-    <div class="logo">auto<em>DNG</em></div>
+    <div class="logo">auto<em>DNG.com</em></div>
     <div class="nav-links">
       <a href="index.html">Generator</a>
       <a href="analyze.html" class="active">Analyze</a>
@@ -936,7 +994,8 @@ function renderResults(r) {
   const {name, tld, tldObj, overall, grade, buySignal, scores, industries, brands,
     buyers, startupFit, trademark, seoData, salesData, matchedPatterns,
     pronunciation, memorability, syllables, similar, aiData, useAI} = r;
-
+document.getElementById('registerLink').href =
+  `register.html?domain=${encodeURIComponent(r.domain)}`;
   // Header
   document.getElementById('overallScore').textContent = overall;
   document.getElementById('scoreGrade').innerHTML = `<span style="background:rgba(200,240,74,.12);padding:3px 10px;border-radius:6px;color:var(--lime)">${grade}</span>`;
@@ -1135,7 +1194,8 @@ function renderResults(r) {
     ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via OpenRouter</small>` : ''}
   `;
 
-  document.getElementById('registerLink').href = `[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(r.domain)})`;
+  document.getElementById('registerLink').href =
+`https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(r.domain)}`;
   document.getElementById('results').classList.add('on');
   document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
 }
