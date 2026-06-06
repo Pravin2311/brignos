@@ -78,7 +78,19 @@ body::after{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50
 .icard{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:26px}
 .ic-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:22px;display:flex;align-items:center;gap:8px}
 .ic-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.flbl{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.flbl{
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:7px;
+
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
 .finput,.fselect,.ftextarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:12px 14px;border-radius:9px;outline:none;transition:border-color .2s,background .2s}
 .finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--gold);background:var(--bg4)}
 .finput::placeholder,.ftextarea::placeholder{color:var(--muted)}
@@ -526,6 +538,102 @@ canvas,
 table,
 iframe{
   max-width:100%;
+}
+
+/* ===== CRITICAL MOBILE OVERFLOW FIX ===== */
+
+html,
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden !important;
+}
+
+.app,
+.hero,
+.main,
+.icard,
+.rpanel,
+.result-wrap,
+.val-hero,
+.asec{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+*{
+  min-width:0;
+}
+
+.finput,
+.fselect,
+.ftextarea,
+.runbtn,
+.sec-btn,
+.exp-btn{
+  width:100%;
+  max-width:100%;
+}
+
+.flbl{
+  display:block;
+  width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:normal;
+  word-break:break-word;
+}
+
+@media (max-width:768px){
+
+  .hero,
+  .main{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+  .icard,
+  .rpanel{
+    padding:12px !important;
+  }
+
+  .tld-chips,
+  .cat-chips{
+    display:flex;
+    flex-wrap:wrap !important;
+    overflow:visible !important;
+  }
+
+  .tld-chip,
+  .cat-chip{
+    flex:0 0 auto;
+    max-width:100%;
+  }
+
+  .runbtn{
+    width:100%;
+    font-size:14px;
+  }
+
+  .vh-domain{
+    font-size:24px !important;
+  }
+
+  .vh-value{
+    font-size:30px !important;
+  }
+
+  .market-strip{
+    display:block !important;
+  }
+
+  .ms-item{
+    width:100%;
+    min-width:0 !important;
+    margin-bottom:8px;
+  }
+
 }
 </style>
 </head>
