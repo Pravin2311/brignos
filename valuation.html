@@ -234,6 +234,30 @@ body::after{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50
 @media(max-width:1100px){.hero-top{grid-template-columns:1fr}.market-strip{display:grid;grid-template-columns:repeat(3,1fr)}.stats-row{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:960px){.main{grid-template-columns:1fr}.rpanel{position:static}.sig-grid{grid-template-columns:repeat(4,1fr)}.comps-grid,.buyer-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.hd-in{height:auto;padding:12px 20px;flex-wrap:wrap}.hright{width:100%;flex-wrap:wrap}.kwrap{flex:1;max-width:none}.fg2,.fg3,.fg4{grid-template-columns:1fr}.sig-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:repeat(2,1fr)}.hero{padding:36px 20px 28px}.main{padding:0 20px 50px}.vh-value{font-size:38px}.vh-domain{font-size:32px}}
+/* Fix: Ultra-small screens (iPhone SE, older Android) */
+@media (max-width: 360px) {
+  .dc-tlds { grid-template-columns: 1fr; }
+  .wl-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .wl-head, .wl-row { min-width: 320px; }
+  .cname { font-size: 28px; word-break: break-word; }
+}
+
+/* Fix: Long names breaking card layout */
+.cname {
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Fix: Export row wrapping on narrow screens */
+.exprow { flex-wrap: wrap; }
+.expbtn { min-width: 100px; }
+
+/* Fix: Ensure modals are scrollable on small viewports */
+.mc {
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
