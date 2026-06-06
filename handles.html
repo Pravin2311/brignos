@@ -255,6 +255,123 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
   }
 
 }
+/* ===== FOOTER ===== */
+
+.site-footer{
+  margin-top:60px;
+  background:#111115;
+  border-top:1px solid var(--border);
+}
+
+.footer-inner{
+  max-width:1280px;
+  margin:auto;
+  padding:50px 20px;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+}
+
+.footer-brand h3{
+  font-family:var(--serif);
+  font-size:32px;
+  font-weight:400;
+  margin-bottom:12px;
+}
+
+.footer-brand em{
+  color:var(--lime);
+}
+
+.footer-brand p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.8;
+}
+
+.footer-col h4{
+  color:var(--lime);
+  margin-bottom:14px;
+  font-size:14px;
+}
+
+.footer-col ul{
+  list-style:none;
+}
+
+.footer-col li{
+  margin-bottom:8px;
+}
+
+.footer-col a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:14px;
+}
+
+.footer-col a:hover{
+  color:var(--lime);
+}
+
+.footer-socials{
+  margin-top:16px;
+  display:flex;
+  gap:10px;
+}
+
+.footer-socials a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:18px;
+}
+
+.footer-socials a:hover{
+  color:var(--lime);
+}
+
+.footer-bottom{
+  border-top:1px solid var(--border);
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.footer-bottom p{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.footer-bottom-links{
+  display:flex;
+  gap:14px;
+}
+
+.footer-bottom-links a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+}
+
+.footer-bottom-links a:hover{
+  color:var(--lime);
+}
+
+@media(max-width:768px){
+
+  .footer-inner{
+    grid-template-columns:1fr;
+    gap:24px;
+  }
+
+  .footer-bottom{
+    flex-direction:column;
+    text-align:center;
+  }
+
+}
 </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -458,6 +575,50 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 </div>
 
 <div class="toast" id="toast"></div>
+<!-- ══ SEO FOOTER ══ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    
+    <!-- Brand Column -->
+    <div class="footer-brand">
+      <h3>auto<em>DNG</em></h3>
+      <p>The world's most advanced AI brand name generator and domain valuation engine. Powered by 18-signal quality gates, VC naming DNA, and live RDAP domain checks.</p>
+      <div class="footer-socials">
+        <a href="https://twitter.com/autodng" target="_blank" rel="noopener" aria-label="Twitter">𝕏</a>
+        
+        <a href="https://github.com/autodng" target="_blank" rel="noopener" aria-label="GitHub">⌘</a>
+        <a href="mailto:support@teachings.ai" aria-label="Email Support">✉</a>
+      </div>
+    </div>
+
+    <!-- Tools Column (Crucial for SEO Internal Linking) -->
+    <nav class="footer-col" aria-label="Core Tools">
+      <h4>Tools</h4>
+      <ul>
+        <li><a href="index.html">AI Name Generator</a></li>
+        <li><a href="domains.html">Premium Domains</a></li>
+        <li><a href="valuation.html">Domain Valuation</a></li>
+        <li><a href="trademarks.html">Trademark Checker</a></li>
+      </ul>
+    </nav>
+
+    <!-- Analytics Column -->
+    <nav class="footer-col" aria-label="Analytics Tools">
+      <h4>Analytics</h4>
+      <ul>
+        <li><a href="vc-score.html">VC Brand Score</a></li>
+        <li><a href="handles.html">Social Handle Checker</a></li>
+        <li><a href="index.html?page=tools">Phonetics Analyzer</a></li>
+        <li><a href="index.html?page=tools">Bulk Name Analyzer</a></li>
+      </ul>
+    </nav>
+
+    
+  </div>
+
+  
+  </div>
+</footer>
 
 <script>
 
