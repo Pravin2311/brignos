@@ -2,1450 +2,1675 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>autoDNG — AI Auto Name Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<link rel="shortcut icon" href="img/favicon.ico">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>autoDNG — VC Brand Score Engine</title>
+<meta name="description" content="The world's most comprehensive VC brand signal analyzer. 14 dimensions, local pre-scoring, AI enhancement, competitive benchmarking.">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#09090b;--bg2:#111115;--bg3:#18181e;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-  --text:#ededee;--muted:#6b6b72;--muted2:#9898a2;
-  --lime:#c8f04a;--lime-dim:rgba(200,240,74,0.1);--lime-glow:rgba(200,240,74,0.25);
-  --teal:#4af0c0;--teal-dim:rgba(74,240,192,0.1);
-  --rose:#f0506a;--rose-dim:rgba(240,80,106,0.1);
-  --amber:#f0b84a;--amber-dim:rgba(240,184,74,0.1);
-  --purple:#9a6af0;--purple-dim:rgba(154,106,240,0.1);
+  --bg:#07070a;--bg2:#0f0f13;--bg3:#161619;--bg4:#1c1c21;--bg5:#222228;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);
+  --text:#eeeef0;--muted:#5c5c66;--muted2:#8a8a96;--muted3:#b2b2be;
+  --lime:#c8f04a;--lime-dim:rgba(200,240,74,.08);--lime-mid:rgba(200,240,74,.16);--lime-glow:rgba(200,240,74,.3);
+  --teal:#3de8b0;--teal-dim:rgba(61,232,176,.08);--teal-mid:rgba(61,232,176,.15);
+  --rose:#f04a6a;--rose-dim:rgba(240,74,106,.08);--rose-mid:rgba(240,74,106,.15);
+  --amber:#f0b84a;--amber-dim:rgba(240,184,74,.08);--amber-mid:rgba(240,184,74,.15);
+  --purple:#9d6af0;--purple-dim:rgba(157,106,240,.08);--purple-mid:rgba(157,106,240,.15);
+  --blue:#4a9ef0;--blue-dim:rgba(74,158,240,.08);
   --font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* Ambient */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(200,240,74,.04) 0%,transparent 70%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.008) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.008) 1px,transparent 1px);
+  background-size:60px 60px}
 .app{position:relative;z-index:1}
-.header{position:sticky;top:0;z-index:200;background:rgba(9,9,11,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.header-inner{max-width:1140px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
+
+/* ── Header ── */
+.hd{position:sticky;top:0;z-index:200;background:rgba(7,7,10,.95);backdrop-filter:blur(32px);border-bottom:1px solid var(--border)}
+.hd-in{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-1.5px;white-space:nowrap;text-decoration:none;color:var(--text)}
 .logo em{color:var(--lime);font-style:italic}
+.logo sup{color:var(--muted);font-size:11px;font-family:var(--mono);letter-spacing:0;vertical-align:super;margin-left:2px}
 .hright{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:nowrap}
 .ptabs{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:3px;flex-shrink:0}
-.ptab{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:6px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.ptab.on{background:var(--bg2);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.ptab{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.ptab.on{background:var(--bg2);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.6)}
 .ptab:hover:not(.on){color:var(--text)}
-.kwrap{position:relative;flex:1;max-width:250px}
-.kwrap input{width:100%;font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:8px 32px 8px 12px;border-radius:8px;outline:none;transition:border-color .2s,color .2s}
-.kwrap input:focus{border-color:var(--lime);color:var(--text)}
+.kwrap{position:relative;flex:1;max-width:240px}
+.kwrap input{width:100%;font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:9px 36px 9px 12px;border-radius:8px;outline:none;transition:all .2s}
+.kwrap input:focus{border-color:var(--lime);color:var(--text);background:var(--bg4)}
 .kwrap input::placeholder{color:var(--muted)}
-.eyebtn{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0}
-.spill{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:5px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
-.sdot.ok{background:var(--lime);box-shadow:0 0 7px var(--lime-glow)}
-.helpbtn{background:none;border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--muted2);font-family:var(--mono);font-size:13px;cursor:pointer;min-height:44px}
-.helpbtn:hover{border-color:var(--lime);color:var(--lime)}
-.helpbar{position:relative;z-index:300;max-width:1140px;margin:0 auto;padding:10px 24px 0;display:none}
-.helpbar.on{display:block}
-.helpbar-inner{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.hb-txt{font-size:13px;color:var(--muted2);line-height:1.6}
-.hb-txt strong{color:var(--text)}
-.hb-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.hblink{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);text-decoration:none;transition:all .15s;white-space:nowrap}
-.hblink:hover{border-color:var(--lime);color:var(--lime)}
-.hbclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0}
-.hero{max-width:1140px;margin:0 auto;padding:52px 24px 36px;display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:center}
-.hero h1{font-family:var(--serif);font-size:clamp(34px,4.5vw,56px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:12px}
+.eyebtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:0;transition:color .15s}
+.eyebtn:hover{color:var(--lime)}
+.mdl-sel{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:8px 10px;border-radius:8px;outline:none;cursor:pointer;max-width:150px;flex-shrink:0}
+.mdl-sel:focus{border-color:var(--lime)}
+.kstat{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:6px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .4s;flex-shrink:0}
+.sdot.ok{background:var(--lime);box-shadow:0 0 8px var(--lime-glow)}
+.hdbtn{font-family:var(--mono);font-size:11px;padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.hdbtn:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}
+
+/* ── Hero ── */
+.hero{max-width:1280px;margin:0 auto;padding:52px 24px 40px;text-align:center}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:1px;background:var(--border2)}
+.hero h1{font-family:var(--serif);font-size:clamp(40px,5.5vw,72px);font-weight:400;letter-spacing:-2.5px;line-height:1.02;margin-bottom:18px}
 .hero h1 em{font-style:italic;color:var(--lime)}
-.hero p{font-size:15px;color:var(--muted2);line-height:1.75}
-.chips{display:flex;flex-direction:column;gap:6px}
-.chip{display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--muted2)}
-.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.cval{margin-left:auto;color:var(--lime);font-weight:500}
-.fwrap{max-width:1140px;margin:0 auto;padding:0 24px 32px}
-.fcard{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px}
-.flbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
-.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
-.fg4{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px}
-@media(max-width:800px){.fg4{grid-template-columns:1fr}.helpbtn{width:100%;padding:12px;text-align:center;font-size:13px}}
-.fg2{display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:18px}
-.field label{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.field select,.field input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:10px 13px;border-radius:8px;outline:none;appearance:none;transition:border-color .2s}
-.field select:focus,.field input:focus{border-color:var(--lime)}
-.field select option{background:#1a1a22}
-.tld-check{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted2);cursor:pointer}
-.tld-check input{accent-color:var(--lime);width:15px;height:15px}
-.model-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.mchip{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
-.mchip:hover{color:var(--text);border-color:var(--border2)}
-.mchip.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
-.genbtn{width:100%;padding:14px;background:var(--lime);color:#09090b;font-family:var(--font);font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;margin-bottom:12px}
-.genbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-100%);transition:transform .5s}
-.genbtn:hover::after{transform:translateX(100%)}
-.genbtn:hover{opacity:.93}
-.genbtn:active{transform:scale(.99)}
-.genbtn:disabled{opacity:.4;cursor:not-allowed}
-.spin{width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#09090b;border-radius:50%;animation:spin .7s linear infinite;display:none}
-.genbtn.ld .spin{display:block}
-.genbtn.ld .blbl{opacity:.6}
+.hero p{font-size:16px;color:var(--muted2);line-height:1.8;max-width:580px;margin:0 auto 28px}
+.hero-stats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap}
+.hstat{text-align:center}
+.hstat-val{font-family:var(--serif);font-size:32px;font-weight:400;color:var(--lime);line-height:1}
+.hstat-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Layout ── */
+.main{max-width:1280px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+
+/* ── Input Card ── */
+.icard{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px}
+.icard-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:22px;display:flex;align-items:center;gap:8px}
+.icard-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.flbl{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.finput,.fselect,.ftextarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:12px 14px;border-radius:10px;outline:none;transition:border-color .2s,background .2s}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--lime);background:var(--bg4)}
+.finput::placeholder,.ftextarea::placeholder{color:var(--muted)}
+.ftextarea{resize:vertical;min-height:88px;line-height:1.6;font-family:var(--font)}
+.fselect{appearance:none;cursor:pointer}
+.fselect option{background:#1a1a22}
+.fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:14px}
+.fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-top:14px}
+.fgroup{margin-top:14px}
+
+/* Industry chips */
+.ind-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ind-chip{font-family:var(--mono);font-size:10px;padding:5px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
+.ind-chip:hover{color:var(--text);border-color:var(--border3)}
+.ind-chip.on{background:var(--lime-dim);border-color:rgba(200,240,74,.35);color:var(--lime)}
+
+/* Run button */
+.runbtn{width:100%;margin-top:20px;padding:16px;background:var(--lime);color:#07070a;font-family:var(--font);font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s,transform .1s,box-shadow .2s;position:relative;overflow:hidden;letter-spacing:-.2px}
+.runbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-100%);transition:transform .7s}
+.runbtn:hover::after{transform:translateX(100%)}
+.runbtn:hover{opacity:.94;box-shadow:0 0 28px var(--lime-glow)}
+.runbtn:active{transform:scale(.99)}.runbtn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn-spin{width:16px;height:16px;border:2.5px solid rgba(0,0,0,.2);border-top-color:#07070a;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0}
+.runbtn.ld .btn-spin{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.expbtn{flex:1;min-width:120px;padding:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.expbtn:hover{border-color:var(--lime);background:var(--lime-dim)}
-.expbtn:disabled{opacity:.4;cursor:not-allowed}
-.pwrap{max-width:1140px;margin:0 auto;padding:0 24px 26px;display:none}
-.pwrap.on{display:block}
-.pcard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
-.ptop{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted2);margin-bottom:9px}
-.ppct{color:var(--lime);font-weight:500}
-.pbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:9px}
-.pfill{height:100%;background:var(--lime);border-radius:99px;width:0%;transition:width .4s ease}
-.pstream{font-family:var(--mono);font-size:10px;color:var(--muted);max-height:32px;overflow:hidden;line-height:1.6;word-break:break-all}
-.rwrap{max-width:1140px;margin:0 auto;padding:0 24px 80px}
-.rhdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.rtitle{font-family:var(--serif);font-size:26px;font-weight:400}
-.rsub{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.frow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.fpill{font-family:var(--mono);font-size:10px;padding:5px 11px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
-.fpill:hover{border-color:var(--lime);color:var(--lime)}
-.fpill.on{background:var(--lime-dim);border-color:rgba(200,240,74,.4);color:var(--lime)}
-.cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s,transform .2s;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
-.card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.card.win{border-color:rgba(200,240,74,.3)}
-.card.win::before{content:'★ TOP PICK';position:absolute;top:0;right:0;font-family:var(--mono);font-size:9px;font-weight:500;background:var(--lime);color:#09090b;padding:4px 11px;border-bottom-left-radius:10px;letter-spacing:.06em}
-.cbar{position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:14px 0 0 14px}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.cname{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.5px;margin-bottom:3px;line-height:1}
-.cline{font-size:13px;color:var(--muted2);font-style:italic;line-height:1.5;margin-bottom:13px}
-.ctags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
-.tag{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;letter-spacing:.02em}
-.tp{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(154,106,240,.2)}
-.tv{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(74,240,192,.2)}
-.cwhy{font-size:13px;color:var(--muted2);line-height:1.65;margin-bottom:14px}
-.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
-.slbl{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
-.snum{font-family:var(--mono);font-size:13px;font-weight:500;margin-bottom:3px}
-.sbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden}
-.sfill{height:100%;border-radius:99px}
-.drow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.dchip{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);display:inline-flex;align-items:center;gap:4px;transition:all .2s}
-.dchip.ck{animation:pulse 1.4s ease infinite}
-.dchip.av{border-color:rgba(200,240,74,.4);color:var(--lime);background:var(--lime-dim);cursor:pointer}
-.dchip.av:hover{background:rgba(200,240,74,.2)}
-.dchip.tk{border-color:rgba(240,80,106,.3);color:var(--rose);opacity:.6}
-.dchip.un{border-color:rgba(240,184,74,.3);color:var(--amber);cursor:pointer}
-.dchip a{color:inherit;text-decoration:none}
-@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
-.caution{font-family:var(--mono);font-size:10px;color:var(--muted);padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;line-height:1.5}
-.empty{text-align:center;padding:72px 24px;border:1px dashed var(--border2);border-radius:14px}
-.eicon{font-size:36px;margin-bottom:12px;opacity:.35}
-.etitle{font-family:var(--serif);font-size:22px;margin-bottom:8px}
-.esub{font-size:14px;color:var(--muted2)}
-.footer{max-width:1140px;margin:0 auto;padding:18px 24px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 16px;font-family:var(--mono);font-size:12px;color:var(--text);transform:translateY(70px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;max-width:300px}
+
+/* Secondary buttons */
+.sec-btn{font-family:var(--mono);font-size:12px;padding:9px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.sec-btn:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}
+.actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* ── Info Panel ── */
+.info-panel{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:22px;position:sticky;top:80px}
+.ip-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ip-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.signal-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.sig-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);padding:6px 0;border-bottom:1px solid var(--border)}
+.sig-item:last-child{border-bottom:none}
+.sig-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tier-legend{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.tleg{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted2)}
+.tleg-badge{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.bench-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.bench-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.bench-item{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
+.bench-name{width:72px;flex-shrink:0;font-family:var(--mono);font-size:11px;color:var(--muted3)}
+.bench-bar-tr{flex:1;height:4px;background:var(--border2);border-radius:2px;overflow:hidden}
+.bench-bar-f{height:100%;border-radius:2px}
+.bench-val{font-family:var(--mono);font-size:10px;color:var(--muted2);width:26px;text-align:right}
+
+/* ── Progress / Loading ── */
+.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-top:16px;display:none}
+.prog-wrap.on{display:block}
+.prog-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted2);margin-bottom:10px}
+.prog-pct{color:var(--lime);font-weight:600}
+.prog-bar{height:3px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--lime),var(--teal));width:0%;transition:width .5s ease}
+.prog-steps{display:flex;flex-wrap:wrap;gap:5px}
+.pst{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);transition:all .3s}
+.pst.done{color:var(--lime);border-color:rgba(200,240,74,.3);background:var(--lime-dim)}
+.pst.active{color:var(--text);border-color:var(--border2);background:var(--bg4)}
+
+/* ── Result ── */
+.result-wrap{display:none;margin-top:20px;animation:fadeUp .4s ease}
+.result-wrap.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Score hero */
+.score-hero{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
+.score-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;pointer-events:none;opacity:.06}
+.sh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.sh-brand{font-family:var(--serif);font-size:44px;font-weight:400;letter-spacing:-1px;line-height:1}
+.sh-industry{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:4px}
+.sh-right{text-align:right;flex-shrink:0}
+.sh-score{font-family:var(--serif);font-size:72px;font-weight:400;line-height:1;letter-spacing:-3px}
+.sh-score-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.tier-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;margin-top:10px}
+.tier-elite  {background:rgba(200,240,74,.15);border:1px solid rgba(200,240,74,.3);color:var(--lime)}
+.tier-strong {background:rgba(61,232,176,.12);border:1px solid rgba(61,232,176,.3);color:var(--teal)}
+.tier-moderate{background:rgba(240,184,74,.12);border:1px solid rgba(240,184,74,.3);color:var(--amber)}
+.tier-weak   {background:rgba(240,74,106,.12);border:1px solid rgba(240,74,106,.3);color:var(--rose)}
+
+/* Gauge */
+.gauge-wrap{background:var(--bg4);border-radius:10px;padding:14px 16px}
+.gauge-track{height:8px;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:8px;position:relative}
+.gauge-fill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.gauge-ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.gauge-marker{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.gm{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;color:var(--muted2)}
+.gm-dot{width:6px;height:6px;border-radius:50%}
+
+/* 14-dimension grid */
+.dims-section{margin-bottom:16px}
+.dims-header{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dims-header::after{content:'';flex:1;height:1px;background:var(--border)}
+.dims-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.dim{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;transition:border-color .2s}
+.dim:hover{border-color:var(--border2)}
+.dim-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;line-height:1.3}
+.dim-val{font-family:var(--mono);font-size:18px;font-weight:600;margin-bottom:5px}
+.dim-bar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden}
+.dim-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.dim-emoji{font-size:10px;margin-bottom:3px;display:block}
+
+/* Radar chart */
+.radar-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.radar-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px}
+.radar-svg{display:block;margin:0 auto}
+
+/* Analysis sections */
+.asec{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.asec-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.asec-title::before{content:'';width:3px;height:12px;border-radius:2px;background:currentColor;flex-shrink:0}
+.asec-title.lime{color:var(--lime)}.asec-title.teal{color:var(--teal)}.asec-title.amber{color:var(--amber)}.asec-title.rose{color:var(--rose)}.asec-title.purple{color:var(--purple)}.asec-title.blue{color:var(--blue)}
+.summary-box{font-size:14px;color:var(--muted3);line-height:1.8;background:var(--bg4);border-left:3px solid var(--lime);padding:12px 14px;border-radius:0 8px 8px 0}
+.list-items{display:flex;flex-direction:column;gap:7px}
+.li{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:13px;color:var(--muted3);line-height:1.6;display:flex;align-items:flex-start;gap:10px}
+.li-icon{flex-shrink:0;font-size:13px;margin-top:1px}
+
+/* Comparables */
+.comps-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.comp-card{background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:12px}
+.comp-name{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--lime);margin-bottom:3px}
+.comp-sim{font-family:var(--mono);font-size:10px;margin-bottom:5px}
+.comp-reason{font-size:12px;color:var(--muted2);line-height:1.5}
+
+/* Pitch readiness */
+.pitch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pitch-item{background:var(--bg4);border-radius:8px;padding:12px}
+.pi-label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.pi-val{font-size:13px;color:var(--muted3);line-height:1.5}
+.pi-score{font-family:var(--mono);font-size:20px;font-weight:600}
+
+/* Risk meter */
+.risk-meter{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.risk-chip{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;gap:5px}
+
+/* Export */
+.export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.exp-btn{font-family:var(--mono);font-size:11px;padding:9px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.exp-btn:hover{border-color:var(--lime);background:var(--lime-dim);color:var(--lime)}
+
+/* Competitive benchmark in results */
+.bench-result{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.br-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px}
+.br-name{width:80px;flex-shrink:0;font-family:var(--mono);font-size:11px;color:var(--muted3)}
+.br-bar-tr{flex:1;height:6px;background:var(--border2);border-radius:3px;overflow:hidden}
+.br-bar-f{height:100%;border-radius:3px;transition:width .8s ease}
+.br-val{font-family:var(--mono);font-size:11px;font-weight:600;width:30px;text-align:right;flex-shrink:0}
+.br-label{font-family:var(--mono);font-size:9px;color:var(--muted);width:50px;flex-shrink:0}
+
+/* Local pre-score badge */
+.prescore-banner{background:var(--lime-dim);border:1px solid rgba(200,240,74,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--lime);display:flex;align-items:center;gap:8px;display:none}
+.prescore-banner.on{display:flex}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:12px 18px;font-family:var(--mono);font-size:12px;color:var(--text);transform:translateY(70px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;max-width:320px;line-height:1.5}
 .toast.on{transform:translateY(0);opacity:1}
-.modal{position:fixed;inset:0;z-index:1000;background:rgba(9,9,11,0.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:1000;background:rgba(7,7,10,.9);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.on{display:flex}
-.modal-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;padding:24px;animation:fadeUp .3s ease}
-.modal-title{font-family:var(--serif);font-size:22px;margin-bottom:8px}
-.modal-sub{font-size:13px;color:var(--muted2);margin-bottom:16px;line-height:1.6}
-.modal-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.modal-opt{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;transition:all .15s}
-.modal-opt:hover{border-color:var(--lime);background:var(--lime-dim)}
-.modal-opt input{accent-color:var(--lime)}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end}
-.modal-btn{padding:9px 18px;border-radius:8px;border:none;font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s}
-.modal-btn.primary{background:var(--lime);color:#09090b;font-weight:600}
-.modal-btn.secondary{background:var(--bg3);border:1px solid var(--border2);color:var(--text)}
-.modal-btn:hover{opacity:.92}
-@media(max-width:800px){
-  .hero{grid-template-columns:1fr}
-  .chips{display:none}
-  .fg3,.fg2{grid-template-columns:1fr}
-  .cgrid{grid-template-columns:1fr}
-  .scores{grid-template-columns:repeat(2,1fr)}
-  .ptabs{display:flex;width:100%;justify-content:space-between}
-  .ptab{flex:1;text-align:center}
-  .header-inner{height:auto;padding:10px 24px;flex-wrap:wrap}
+.mcard{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:520px;width:100%;padding:28px;animation:fadeUp .3s ease;max-height:85vh;overflow-y:auto}
+.mcard h3{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:8px}
+.mcard p{font-size:13px;color:var(--muted2);margin-bottom:18px;line-height:1.7}
+.mlink{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-decoration:none;margin-bottom:10px;transition:border-color .15s}
+.mlink:hover{border-color:var(--lime)}
+.mlink strong{display:block;color:var(--text);font-size:14px}
+.mlink span{font-size:12px;color:var(--muted2)}
+.mlink code{font-family:var(--mono);font-size:11px;color:var(--lime)}
+.mclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0;float:right;line-height:1}
+.mclose:hover{color:var(--rose)}
+
+/* Responsive */
+@media(max-width:960px){
+  .main{grid-template-columns:1fr}
+  .info-panel{position:static}
+  .dims-grid{grid-template-columns:repeat(2,1fr)}
+  .hd-in{height:auto;padding:12px 20px;flex-wrap:wrap}
   .hright{width:100%;flex-wrap:wrap}
   .kwrap{flex:1;max-width:none}
-  .modal-opts{grid-template-columns:1fr}
+  .ptabs{flex-shrink:0}
+  .pitch-grid,.comps-grid{grid-template-columns:1fr}
 }
-.footer{margin-top:60px;border-top:1px solid var(--border);background:rgba(9,9,11,.95);backdrop-filter:blur(10px)}
-.footer-inner{max-width:1100px;margin:auto;padding:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.fbtn{text-decoration:none;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;transition:.2s ease}
-.fbtn:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-1px)}
-.tools-section{margin-top:34px;padding-top:28px;border-top:1px solid var(--border)}
-.tools-head{font-family:var(--serif);font-size:28px;margin-bottom:18px}
-.tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.tool-card{text-decoration:none;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;transition:.2s ease;display:block}
-.tool-card:hover{border-color:var(--lime);transform:translateY(-2px)}
-.tool-icon{font-size:28px;margin-bottom:14px}
-.tool-title{color:var(--text);font-size:18px;font-weight:600;margin-bottom:8px}
-.tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
-.tool-card.soon{opacity:.55;pointer-events:none}
-@media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
-.social-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.social-links a{color:var(--muted2);text-decoration:none;font-family:var(--mono);font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;transition:all .15s;white-space:nowrap}
-.social-links a:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim);transform:translateY(-1px)}
-/* ── Premium Domains ───────────────────────── */
-.premium-domains{max-width:1140px;margin:38px auto 80px;padding:28px;border:1px solid var(--border2);border-radius:22px;background:linear-gradient(135deg,rgba(200,240,74,.04),rgba(154,106,240,.04));position:relative;overflow:hidden}
-.premium-domains::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(200,240,74,.08),transparent 35%);pointer-events:none}
-.premium-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:10px;flex-wrap:wrap}
-.premium-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);margin-bottom:7px}
-.premium-head h2{font-family:var(--serif);font-size:38px;font-weight:400;line-height:1.05}
-.premium-sub{color:var(--muted2);font-size:14px;margin-bottom:10px;line-height:1.7}
-.premium-note{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:24px;letter-spacing:.04em}
-.premium-viewall{text-decoration:none;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:11px 16px;border-radius:10px;transition:.2s ease}
-.premium-viewall:hover{border-color:var(--lime);color:var(--lime)}
-.premium-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.premium-card{position:relative;overflow:hidden;text-decoration:none;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:22px;padding:24px;transition:.25s ease}
-.premium-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(200,240,74,.08),transparent 40%);opacity:0;transition:.25s ease}
-.premium-card:hover::before{opacity:1}
-.premium-card:hover{transform:translateY(-4px);border-color:rgba(200,240,74,.35)}
-.premium-card::after{content:'↗';position:absolute;top:22px;right:22px;color:var(--lime);font-size:14px;opacity:0;transform:translateY(4px);transition:.2s ease}
-.premium-card:hover::after{opacity:1;transform:translateY(0)}
-.pc-badge{display:inline-flex;font-family:var(--mono);font-size:10px;letter-spacing:.04em;background:var(--lime-dim);border:1px solid rgba(200,240,74,.15);color:var(--lime);padding:6px 10px;border-radius:999px;margin-bottom:18px}
-.pc-domain{font-family:var(--serif);font-size:42px;line-height:.95;letter-spacing:-0.05em;color:var(--text);margin-bottom:14px}
-.pc-tagline{color:var(--lime);font-size:13px;font-weight:600;margin-bottom:16px}
-.pc-desc{color:var(--muted);line-height:1.8;font-size:14px;margin-bottom:22px}
-.pc-tags{display:flex;flex-wrap:wrap;gap:8px}
-.pc-tags span{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted);padding:6px 9px;border-radius:8px}
-.premium-card.featured{border-color:rgba(200,240,74,.35);box-shadow:0 0 34px rgba(200,240,74,.06)}
-@media(max-width:980px){.premium-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.premium-grid{grid-template-columns:1fr}}
-
-/* ── AI Steering UI ───────────────────────── */
-.steering-wrap{margin-top:16px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;display:none}
-.steering-wrap.on{display:block}
-.steering-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.steering-head label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
-.steering-active{font-family:var(--mono);font-size:10px;color:var(--lime);display:none}
-.steering-active.on{display:inline}
-.steering-input{display:flex;gap:8px}
-.steering-input input{flex:1;padding:9px 12px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:8px;font-family:var(--font);font-size:13px;outline:none}
-.steering-input input:focus{border-color:var(--lime)}
-.steering-input button{padding:9px 16px;background:var(--teal);color:#000;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:var(--font);font-size:13px}
-.steering-input button:hover{opacity:.92}
-.steering-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.steering-preset{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s}
-.steering-preset:hover{border-color:var(--lime);color:var(--lime)}
-.steering-clear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1}
-.steering-clear:hover{color:var(--rose)}
+@media(max-width:600px){
+  .fgrid2,.fgrid3{grid-template-columns:1fr}
+  .dims-grid{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:36px 20px 28px}
+  .main{padding:0 20px 60px}
+  .sh-score{font-size:52px}
+  .sh-brand{font-size:32px}
+}
 </style>
 </head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PVV83DRSFT');
-</script>
-<body><div class="app">
+<body>
+<div class="app">
 
-<!-- HEADER -->
-<div class="header"><div class="header-inner">
-  <div class="logo">auto<em>DNG</em>.com</div>
-  <div class="hright">
-    <div class="ptabs" id="ptabs">
-      <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
-      <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
-      <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
-      <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-    </div>
-    <form style="display:inline" onsubmit="return false">
+<!-- ══ HEADER ══ -->
+<header class="hd">
+  <div class="hd-in">
+    <a href="#" class="logo">auto<em>DNG</em><sup>.com</sup></a>
+    <div class="hright">
+      <div class="ptabs" id="ptabs">
+        <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
+        <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
+        <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+        <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
+      </div>
       <div class="kwrap">
-        <input type="password" id="akey" placeholder="Paste API key…" autocomplete="off" oninput="onKey()">
-        <button class="eyebtn" type="button" onclick="toggleEye()">👁</button>
+        <input type="password" id="akey" placeholder="API key…" autocomplete="off" oninput="onKey()">
+        <button class="eyebtn" onclick="toggleEye()">👁</button>
       </div>
-    </form>
-    <div class="spill"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
-    <button class="helpbtn" onclick="toggleHelp()">get key ?</button>
-  </div>
-</div></div>
-
-<!-- HELP BANNER -->
-<div class="helpbar" id="helpbar"><div class="helpbar-inner">
-  <div class="hb-txt">
-    <strong>Get your free API key</strong> — choose a provider in the header, then grab a key:
-    <div class="hb-links">
-      <a class="hblink" href="https://openrouter.ai/keys" rel="noopener">→ OpenRouter</a>
-      <a class="hblink" href="https://console.anthropic.com/settings/keys" rel="noopener">→ Anthropic Console</a>
-      <a class="hblink" href="https://platform.openai.com/api-keys" rel="noopener">→ OpenAI Platform</a>
-      <a class="hblink" href="https://aistudio.google.com/app/apikey" rel="noopener">→ Google AI Studio (free)</a>
-      <a class="hblink" href="https://console.groq.com/keys" rel="noopener">→ Groq Console</a>
+      <select class="mdl-sel" id="mdlSel" onchange="onMdl()"></select>
+      <div class="kstat"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
+      <button class="hdbtn" onclick="openModal('keyModal')">get key ?</button>
     </div>
-    <div style="margin-top:8px;font-size:12px">OpenRouter: starts with <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-or-</code> &nbsp;|&nbsp; OpenAI: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">sk-</code> &nbsp;|&nbsp; Gemini: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">AIza</code></div>
   </div>
-  <button class="hbclose" onclick="toggleHelp()">×</button>
-</div></div>
+</header>
 
-<!-- HERO -->
+<!-- ══ HERO ══ -->
 <section class="hero">
-  <div>
-    <h1>Names that get<br><em>funded.</em><br>Domains actually available.</h1>
-    <p>Real-time AI brand generator trained on a16z, YC, NameBio & Crunchbase data — with live .com, .ai, .io, .xyz, .co availability. Works with Claude, GPT-4o, or Gemini.</p>
-  </div>
-  <div class="chips">
-    <div class="chip"><span class="cdot" style="background:var(--lime)"></span>a16z + YC naming patterns<span class="cval">6,130+</span></div>
-    <div class="chip"><span class="cdot" style="background:var(--teal)"></span>NameBio sales intelligence<span class="cval">live</span></div>
-    <div class="chip"><span class="cdot" style="background:var(--amber)"></span>5 TLDs checked: .com .ai .io .xyz .co<span class="cval">RDAP</span></div>
-    <div class="chip"><span class="cdot" style="background:var(--purple)"></span>LLM providers<span class="cval">Claude · GPT · Gemini · Groq · OpenRouter</span></div>
-    <div class="chip"><span class="cdot" style="background:var(--rose)"></span>Global + English modes<span class="cval">new</span></div>
+  <div class="hero-eyebrow">VC Brand Intelligence Engine</div>
+  <h1>The most rigorous<br>brand <em>signal analyzer</em><br>ever built for founders.</h1>
+  <p>14 investor signals. Local pre-scoring works without an API key. AI-enhanced depth analysis. Competitive benchmarking against 40 unicorn brands. Pitch readiness scoring.</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-val">14</div><div class="hstat-lbl">Scoring signals</div></div>
+    <div class="hstat"><div class="hstat-val">40+</div><div class="hstat-lbl">Benchmark brands</div></div>
+    <div class="hstat"><div class="hstat-val">6</div><div class="hstat-lbl">Risk categories</div></div>
+    <div class="hstat"><div class="hstat-val">∞</div><div class="hstat-lbl">Analyses free</div></div>
   </div>
 </section>
 
-<!-- FORM -->
-<div class="fwrap"><div class="fcard">
-  <div class="flbl">Configure your brand search</div>
-  
-  <!-- Model row -->
-  <div style="margin-bottom:18px">
-    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:7px">AI Model</div>
-    <div class="model-row" id="mrow"></div>
-  </div>
-  
-  <!-- Row 1: Industry, Archetype, Language -->
-  <div class="fg4">
-    <div class="field">
-      <label for="industry">Industry</label>
-      <select id="industry">
-        <option value="">— select —</option>
-        <option>AI Agents & Automation</option>
-        <option>Healthcare AI</option>
-        <option>Fintech & Neobanking</option>
-        <option>Developer Tools</option>
-        <option>B2B SaaS / Enterprise</option>
-        <option>Defense & Aerospace</option>
-        <option>Biotech & Life Sciences</option>
-        <option>Climate & CleanTech</option>
-        <option>Consumer & E-commerce</option>
-        <option>Education & EdTech</option>
-        <option>Cybersecurity</option>
-        <option>Logistics & Supply Chain</option>
-        <option>Crypto & Web3</option>
-        <option>Food & FoodTech</option>
-        <option>Mental Health & Wellness</option>
-        <option>Real Estate & PropTech</option>
-        <option>Gaming & Esports</option>
-        <option>Legal Tech</option>
-        <option>HR & Future of Work</option>
-        <option>Supply Chain & Robotics</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="archetype">Brand Archetype</label>
-      <select id="archetype">
-        <option value="">Mix styles (recommended)</option>
-        <option value="linear">Linear-style (clean SaaS)</option>
-        <option value="stripe">Stripe-style (premium fintech)</option>
-        <option value="figma">Figma-style (creative modern)</option>
-        <option value="cursor">Cursor-style (AI-native)</option>
-        <option value="anduril">Anduril-style (deep-tech)</option>
-        <option value="palantir">Palantir-style (intelligence)</option>
-        <option value="vanta">Vanta-style (security SaaS)</option>
-        <option value="vercel">Vercel-style (developer infra)</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="language">Language Focus</label>
-      <select id="language">
-        <option value="global" selected>🌍 Global-friendly</option>
-        <option value="en">🇺🇸 English-only</option>
-        <option value="non-en">🗾 Non-English optimized</option>
-        <option value="multilingual">🌐 Multilingual adaptable</option>
-      </select>
-    </div>
-  </div>
-  
-  <!-- Row 2: Style, TLD, Audience -->
-  <div class="fg3">
-    <div class="field">
-      <label for="style">Naming style</label>
-      <select id="style" onchange="onFilterChange()">
-        <option value="">Mixed styles (recommended)</option>
-        <option value="ultra_short">Ultra-short (4–5 letters)</option>
-        <option value="invented">Premium invented brandables</option>
-        <option value="real_adjacent">Real-word adjacent</option>
-        <option value="infra">Technical infrastructure</option>
-        <option value="luxury">Luxury minimal</option>
-        <option value="enterprise">Enterprise-grade</option>
-        <option value="playful">Playful modern startup</option>
-        <option value="future">Futuristic AI-native</option>
-        <option value="mythic">Mythological / powerful</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="tld">Primary TLD</label>
-      <select id="tld" onchange="onFilterChange()">
-        <option value="mix">Mixed TLDs (recommended)</option>
-        <option value="com">.com (universal)</option>
-        <option value="ai">.ai (AI-native)</option>
-        <option value="io">.io (SaaS / dev)</option>
-        <option value="co">.co (modern)</option>
-        <option value="xyz">.xyz (Web3 / emerging)</option>
-      </select>
-      <label class="tld-check">
-        <input type="checkbox" id="strictTld">
-        <span>Prioritize available primary TLD names</span>
-      </label>
-    </div>
-    <div class="field">
-      <label for="aud">Target audience</label>
-      <select id="aud">
-        <option>B2B Enterprise</option><option>B2C Consumer</option>
-        <option>Developers</option><option>VC / Investor pitch</option>
-        <option>Global / Multilingual</option><option>SMB / Mid-market</option>
-      </select>
-    </div>
-  </div>
-  
-  <!-- Keywords -->
-  <div class="fg2" style="margin-bottom:18px">
-    <div class="field" style="grid-column:1/-1">
-      <label for="kw">Product idea / keywords (optional)</label>
-      <input type="text" id="kw" placeholder="e.g. agentic AI for medical records, zero-trust security…" onkeydown="if(event.key==='Enter')go()">
-    </div>
-  </div>
-  
-  <button class="genbtn" id="gbtn" onclick="go()">
-    <div class="spin"></div><span class="blbl">Generate brand names →</span>
-  </button>
-  
-  <!-- 🧭 AI Steering (Compact, Effective) -->
-  <div class="steering-wrap" id="steeringWrap">
-    <div class="steering-head">
-      <label for="steerInput">🧭 Refine next batch</label>
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+  <!-- Input column -->
+  <div>
+    <div class="icard">
+      <div class="icard-title">Configure brand analysis</div>
+
+      <!-- Brand name -->
       <div>
-        <span class="steering-active" id="steerActive">● Active</span>
-        <button class="steering-clear" onclick="clearSteering()" title="Clear steering">✕</button>
+        <label class="flbl" for="brand">Startup Brand Name *</label>
+        <input class="finput" id="brand" placeholder="e.g. Linear, Figma, Notion, Synara…" autocomplete="off" oninput="onBrandInput()" onkeydown="if(event.key==='Enter')run()">
+        <div class="prescore-banner" id="prescoreBanner">⚡ Local pre-score: <span id="prescoreVal">—</span> — Add API key for full AI analysis</div>
+      </div>
+
+      <div class="fgrid2">
+        <div>
+          <label class="flbl" for="industry">Industry / Category</label>
+          <input class="finput" id="industry" placeholder="e.g. Developer Tools">
+        </div>
+        <div>
+          <label class="flbl" for="region">Target Region</label>
+          <select class="fselect" id="region">
+            <option value="global">🌍 Global</option>
+            <option value="us">🇺🇸 United States</option>
+            <option value="eu">🇪🇺 Europe</option>
+            <option value="apac">🌏 Asia-Pacific</option>
+            <option value="latam">🌎 Latin America</option>
+            <option value="mena">🌐 Middle East</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick industry chips -->
+      <div class="fgroup">
+        <label class="flbl">Quick Industry Select</label>
+        <div class="ind-chips" id="indChips">
+          <button class="ind-chip" onclick="setIndustry('AI & Automation',this)">AI & Automation</button>
+          <button class="ind-chip" onclick="setIndustry('Fintech',this)">Fintech</button>
+          <button class="ind-chip" onclick="setIndustry('Developer Tools',this)">Dev Tools</button>
+          <button class="ind-chip" onclick="setIndustry('Cybersecurity',this)">Cybersecurity</button>
+          <button class="ind-chip" onclick="setIndustry('Healthcare AI',this)">Healthcare AI</button>
+          <button class="ind-chip" onclick="setIndustry('B2B SaaS',this)">B2B SaaS</button>
+          <button class="ind-chip" onclick="setIndustry('Consumer App',this)">Consumer App</button>
+          <button class="ind-chip" onclick="setIndustry('Crypto & Web3',this)">Crypto / Web3</button>
+          <button class="ind-chip" onclick="setIndustry('Climate Tech',this)">Climate Tech</button>
+          <button class="ind-chip" onclick="setIndustry('Defense & Aerospace',this)">Defense</button>
+          <button class="ind-chip" onclick="setIndustry('EdTech',this)">EdTech</button>
+          <button class="ind-chip" onclick="setIndustry('Marketplace',this)">Marketplace</button>
+        </div>
+      </div>
+
+      <div class="fgrid3">
+        <div>
+          <label class="flbl" for="stage">Funding Stage</label>
+          <select class="fselect" id="stage">
+            <option value="pre-seed">Pre-seed</option>
+            <option value="seed" selected>Seed</option>
+            <option value="series-a">Series A</option>
+            <option value="series-b">Series B+</option>
+            <option value="growth">Growth / IPO</option>
+          </select>
+        </div>
+        <div>
+          <label class="flbl" for="tld">Primary Domain</label>
+          <select class="fselect" id="tld">
+            <option value=".com">.com</option>
+            <option value=".ai">.ai</option>
+            <option value=".io">.io</option>
+            <option value=".co">.co</option>
+            <option value="none">No domain yet</option>
+          </select>
+        </div>
+        <div>
+          <label class="flbl" for="audience">Audience</label>
+          <select class="fselect" id="audience">
+            <option value="b2b">B2B Enterprise</option>
+            <option value="b2c">B2C Consumer</option>
+            <option value="dev">Developers</option>
+            <option value="vc">VC / Investors</option>
+            <option value="gov">Government</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <label class="flbl" for="context">Product Context (optional — improves AI analysis)</label>
+        <textarea class="ftextarea" id="context" rows="3" placeholder="Describe what your product does, your target customer, unique angle, or anything relevant to the brand…"></textarea>
+      </div>
+
+      <div class="fgroup">
+        <label class="flbl" for="competitors">Known Competitors (optional, comma-separated)</label>
+        <input class="finput" id="competitors" placeholder="e.g. Linear, Jira, Notion, Asana">
+      </div>
+
+      <button class="runbtn" id="runBtn" onclick="run()">
+        <div class="btn-spin"></div>
+        <span id="runLbl">Run VC Brand Score →</span>
+      </button>
+
+      <div class="actions-row">
+        <button class="sec-btn" onclick="runLocalOnly()">⚡ Local Score Only (no API)</button>
+        <button class="sec-btn" onclick="clearAll()">✕ Clear</button>
       </div>
     </div>
-    <div class="steering-input">
-      <input type="text" id="steerInput" placeholder="e.g. 'Shorter names', 'Avoid -gen suffixes', 'More premium feel'">
-      <button onclick="applySteering()">Apply</button>
+
+    <!-- Progress -->
+    <div class="prog-wrap" id="progWrap">
+      <div class="prog-top"><span id="progTxt">Initializing…</span><span class="prog-pct" id="progPct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-steps" id="progSteps"></div>
     </div>
-    <div class="steering-presets">
-      <button class="steering-preset" onclick="setPreset('Shorter names (5-6 letters)')">⏱ Shorter</button>
-      <button class="steering-preset" onclick="setPreset('Avoid -gen, -nex, -ify suffixes')">🚫 No suffixes</button>
-      <button class="steering-preset" onclick="setPreset('More premium / luxury feel')">✨ Premium</button>
-      <button class="steering-preset" onclick="setPreset('Focus on .com availability')">🌐 .com focus</button>
-      <button class="steering-preset" onclick="setPreset('More technical / infra vibe')">⚙️ Technical</button>
-      <button class="steering-preset" onclick="setPreset('Softer, consumer-friendly sound')">🎵 Softer</button>
+
+    <!-- Result -->
+    <div class="result-wrap" id="resultWrap">
+
+      <!-- Score hero -->
+      <div class="score-hero" id="scoreHero">
+        <div class="sh-top">
+          <div>
+            <div class="sh-brand" id="shBrand">—</div>
+            <div class="sh-industry" id="shIndustry">—</div>
+            <div id="tierBadge" class="tier-badge tier-moderate">✨ Moderate VC Signal</div>
+          </div>
+          <div class="sh-right">
+            <div class="sh-score" id="shScore">—</div>
+            <div class="sh-score-lbl">VC brand score / 100</div>
+          </div>
+        </div>
+        <!-- Gauge -->
+        <div class="gauge-wrap">
+          <div class="gauge-track"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div>
+          <div class="gauge-ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <div class="gauge-marker">
+            <div class="gm"><div class="gm-dot" style="background:var(--rose)"></div>Weak &lt;50</div>
+            <div class="gm"><div class="gm-dot" style="background:var(--amber)"></div>Moderate 50–74</div>
+            <div class="gm"><div class="gm-dot" style="background:var(--teal)"></div>Strong 75–89</div>
+            <div class="gm"><div class="gm-dot" style="background:var(--lime)"></div>Elite 90–100</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14 Dimensions -->
+      <div class="dims-section">
+        <div class="dims-header">14-Dimension Breakdown</div>
+        <div class="dims-grid" id="dimsGrid"></div>
+      </div>
+
+      <!-- Radar chart -->
+      <div class="radar-wrap">
+        <div class="radar-title">Signal radar — investor perception map</div>
+        <svg class="radar-svg" id="radarSvg" width="320" height="320" viewBox="0 0 320 320"></svg>
+      </div>
+
+      <!-- Competitive benchmark -->
+      <div class="bench-result">
+        <div class="dims-header">Competitive Benchmark</div>
+        <div id="benchRows"></div>
+      </div>
+
+      <!-- Summary -->
+      <div class="asec">
+        <div class="asec-title lime">Analysis Summary</div>
+        <div class="summary-box" id="summaryBox">—</div>
+      </div>
+
+      <!-- Risk meter -->
+      <div class="asec">
+        <div class="asec-title rose">Risk Assessment</div>
+        <div class="risk-meter" id="riskMeter"></div>
+        <div class="list-items" id="riskItems"></div>
+      </div>
+
+      <!-- Investor signals -->
+      <div class="asec">
+        <div class="asec-title teal">Positive Investor Signals</div>
+        <div class="list-items" id="signalsList"></div>
+      </div>
+
+      <!-- Weaknesses -->
+      <div class="asec">
+        <div class="asec-title amber">Concerns & Considerations</div>
+        <div class="list-items" id="weakList"></div>
+      </div>
+
+      <!-- Pitch readiness -->
+      <div class="asec">
+        <div class="asec-title purple">Pitch Readiness</div>
+        <div class="pitch-grid" id="pitchGrid"></div>
+      </div>
+
+      <!-- Expansion -->
+      <div class="asec">
+        <div class="asec-title blue">Category Expansion Potential</div>
+        <div class="list-items" id="expandList"></div>
+      </div>
+
+      <!-- Comparables -->
+      <div class="asec">
+        <div class="asec-title lime">Comparable Brands</div>
+        <div class="comps-grid" id="compsGrid"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="asec">
+        <div class="asec-title teal">Strategic Recommendations</div>
+        <div class="list-items" id="recsList"></div>
+      </div>
+
+      <!-- Strategic insights -->
+      <div class="asec">
+        <div class="asec-title purple">Non-Obvious Insights</div>
+        <div class="list-items" id="insightsList"></div>
+      </div>
+
+      <!-- Export -->
+      <div class="export-row">
+        <button class="exp-btn" onclick="copyReport()">📋 Copy Full Report</button>
+        <button class="exp-btn" onclick="exportJSON()">⚙️ JSON</button>
+        <button class="exp-btn" onclick="exportPDF()">📕 PDF</button>
+        <button class="exp-btn" onclick="shareLink()">🔗 Share</button>
+      </div>
+
+    </div><!-- /result-wrap -->
+  </div><!-- /input col -->
+
+  <!-- Info panel -->
+  <div class="info-panel">
+    <div class="ip-title">14 Scoring Signals</div>
+    <div class="signal-list">
+      <div class="sig-item"><div class="sig-dot" style="background:var(--lime)"></div>Pronounceability & phonetic quality</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--lime)"></div>Memorability & recall latency</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--teal)"></div>Spellability on first hearing</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--teal)"></div>Global cross-language safety</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--teal)"></div>TM proximity risk (50 major brands)</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--amber)"></div>Investor credibility perception</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--amber)"></div>Venture-scale naming potential</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--amber)"></div>Sound symbolism & emotional fit</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--purple)"></div>SEO & digital discoverability</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--purple)"></div>Category expansion flexibility</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--purple)"></div>Naming pattern DNA (unicorn match)</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--rose)"></div>Pitch deck & board-room readiness</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--rose)"></div>2026 trend alignment</div>
+      <div class="sig-item"><div class="sig-dot" style="background:var(--rose)"></div>Domain & social handle viability</div>
+    </div>
+
+    <div class="ip-title">VC Score Tiers</div>
+    <div class="tier-legend">
+      <div class="tleg"><span class="tleg-badge" style="background:rgba(200,240,74,.15);color:var(--lime);border:1px solid rgba(200,240,74,.3)">ELITE 90–100</span><span>Premium — highly fundable, brand moat</span></div>
+      <div class="tleg"><span class="tleg-badge" style="background:rgba(61,232,176,.12);color:var(--teal);border:1px solid rgba(61,232,176,.3)">STRONG 75–89</span><span>Solid startup, strong investor appeal</span></div>
+      <div class="tleg"><span class="tleg-badge" style="background:rgba(240,184,74,.12);color:var(--amber);border:1px solid rgba(240,184,74,.3)">MODERATE 50–74</span><span>Niche appeal, refinement helps</span></div>
+      <div class="tleg"><span class="tleg-badge" style="background:rgba(240,74,106,.12);color:var(--rose);border:1px solid rgba(240,74,106,.3)">WEAK &lt;50</span><span>High risk, likely investor skepticism</span></div>
+    </div>
+
+    <div class="ip-title">Unicorn Benchmarks</div>
+    <div class="bench-box">
+      <div class="bench-title">Top VC-backed brands (avg scores)</div>
+      <div class="bench-item"><div class="bench-name">Figma</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:96%;background:var(--lime)"></div></div><div class="bench-val">96</div></div>
+      <div class="bench-item"><div class="bench-name">Linear</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:94%;background:var(--lime)"></div></div><div class="bench-val">94</div></div>
+      <div class="bench-item"><div class="bench-name">Notion</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:91%;background:var(--teal)"></div></div><div class="bench-val">91</div></div>
+      <div class="bench-item"><div class="bench-name">Stripe</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:89%;background:var(--teal)"></div></div><div class="bench-val">89</div></div>
+      <div class="bench-item"><div class="bench-name">Vercel</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:87%;background:var(--teal)"></div></div><div class="bench-val">87</div></div>
+      <div class="bench-item"><div class="bench-name">Ramp</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:85%;background:var(--amber)"></div></div><div class="bench-val">85</div></div>
+      <div class="bench-item"><div class="bench-name">Brex</div><div class="bench-bar-tr"><div class="bench-bar-f" style="width:83%;background:var(--amber)"></div></div><div class="bench-val">83</div></div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.6;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
+      ⓘ Local scoring runs instantly in your browser. Add an API key to unlock AI-enhanced taglines, strategic depth, comparable brands, and pitch coaching.
     </div>
   </div>
-  
-  <!-- Export buttons -->
-  <div class="export-row" id="exportRow" style="display:none">
-    <button class="expbtn" onclick="exportCSV()">📄 Export CSV</button>
-    <button class="expbtn" onclick="exportPDF()">📕 Export PDF</button>
-    <button class="expbtn" onclick="exportJSON()">⚙️ Export JSON</button>
-    <button class="expbtn" onclick="copyAll()">📋 Copy All Names</button>
-  </div>
-</div></div>
 
-<!-- PROGRESS -->
-<div class="pwrap" id="pw"><div class="pcard">
-  <div class="ptop"><span id="ptxt">Researching VC naming patterns…</span><span class="ppct" id="ppct">0%</span></div>
-  <div class="pbar"><div class="pfill" id="pfill"></div></div>
-  <div class="pstream" id="pstream"></div>
-</div></div>
-
-<!-- RESULTS -->
-<div class="rwrap" id="results">
-  <div class="empty">
-    <div class="eicon">◈</div>
-    <div class="etitle">Pick a provider, add your key &amp; select an industry</div>
-    <div class="esub">Claude, GPT-4o, or Gemini generates 10 VC-vetted brand names with live .com/.ai/.io/.xyz/.co checks</div>
-  </div>
-</div>
-
-<!-- PREMIUM DOMAINS -->
-<section class="premium-domains">
-  <div class="premium-head">
-    <div>
-      <div class="premium-kicker">Featured inventory</div>
-      <h2>Premium domains available</h2>
-    </div>
-    <a href="domains.html" class="premium-viewall">View all →</a>
-  </div>
-  <div class="premium-sub">Curated startup-grade domains for AI, SaaS, cyber, biotech & deep-tech founders.</div>
-  <div class="premium-note">Direct acquisition • Premium startup-grade domains</div>
-  <div class="premium-grid">
-    <a href="https://xylak.com" class="premium-card featured" target="_blank" rel="noopener noreferrer">
-      <div class="pc-badge">AI SaaS</div>
-      <div class="pc-domain">Xylak.com</div>
-      <div class="pc-tagline">Premium ultra-short venture-scale identity</div>
-      <div class="pc-desc">Highly brandable six-letter domain engineered for AI-native startups, modern SaaS products, developer tooling, and future-tech platforms.</div>
-      <div class="pc-tags"><span>VC-grade</span><span>Short</span><span>Memorable</span></div>
-    </a>
-    <a href="https://xyptor.com" class="premium-card" target="_blank" rel="noopener noreferrer">
-      <div class="pc-badge">Infrastructure</div>
-      <div class="pc-domain">Xyptor.com</div>
-      <div class="pc-tagline">Futuristic AI infrastructure branding</div>
-      <div class="pc-desc">Strong deep-tech phonetics ideal for robotics, cloud infrastructure, AI systems, automation platforms, and next-generation intelligence products.</div>
-      <div class="pc-tags"><span>Deep-tech</span><span>AI-native</span><span>Strong sound</span></div>
-    </a>
-    <a href="https://zylgen.com" class="premium-card" target="_blank" rel="noopener noreferrer">
-      <div class="pc-badge">Biotech AI</div>
-      <div class="pc-domain">Zylgen.com</div>
-      <div class="pc-tagline">Built for biotech + AI innovation</div>
-      <div class="pc-desc">Premium biotech-style naming structure with strong scientific credibility and venture-scale positioning for frontier healthcare startups.</div>
-      <div class="pc-tags"><span>Biotech</span><span>Scientific</span><span>Premium</span></div>
-    </a>
-  </div>
-</section>
-
-<!-- Tools Section -->
-<div class="rwrap">
-  <div class="tools-section">
-    <div class="tools-head">autoDNG Tools</div>
-    <div class="tools-grid">
-      <a href="trademarks.html" class="tool-card"><div class="tool-icon">™</div><div class="tool-title">Trademark Checker</div><div class="tool-sub">Analyze legal conflict probability, startup overlap, and safer alternatives.</div></a>
-      <a href="valuation.html" class="tool-card"><div class="tool-icon">💎</div><div class="tool-title">Domain Valuation</div><div class="tool-sub">Estimate startup brand value, liquidity, and aftermarket potential.</div></a>
-      <a href="handles.html" class="tool-card"><div class="tool-icon">🌐</div><div class="tool-title">Social Handle Checker</div><div class="tool-sub">Analyze username, startup branding consistency, and social identity strength.</div></a>
-      <a href="vc-score.html" class="tool-card"><div class="tool-icon">📈</div><div class="tool-title">VC Brand Score</div><div class="tool-sub">Analyze investor perception, startup readiness, memorability, and venture-scale branding potential.</div></a>
-    </div>
-  </div>
-</div>
-
-<footer class="footer" style="align-items:center;gap:12px">
-  <div style="display:flex;flex-direction:column;gap:4px">
-    <span>autoDNG — Agentic AI naming engine</span>
-    <span style="font-size:10px">Training: a16z · YC · NameBio · Crunchbase · TechCrunch</span>
-  </div>
-  <div class="social-links">
-    <a href="https://twitter.com/autodng" target="_blank" rel="noopener" title="X / Twitter">𝕏</a>
-    <a href="https://facebook.com/autodng" target="_blank" rel="noopener" title="LinkedIn">𝐟</a>
-    <a href="https://instagram.com/autodng" target="_blank" rel="noopener" title="Instagram">IG</a>
-    <a href="mailto:support@teachings.ai" title="Email">✉</a>
-  </div>
-</footer>
+</div><!-- /main -->
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Export Modal -->
-<div class="modal" id="exportModal">
-  <div class="modal-card">
-    <div class="modal-title">Export Options</div>
-    <div class="modal-sub">Select which names to export and format preferences:</div>
-    <div class="modal-opts">
-      <label class="modal-opt"><input type="checkbox" id="expAll" checked> All names (10)</label>
-      <label class="modal-opt"><input type="checkbox" id="expAvail" onchange="document.getElementById('expAll').checked=false"> Available domains only</label>
-      <label class="modal-opt"><input type="checkbox" id="expTop" onchange="document.getElementById('expAll').checked=false"> Top 3 picks only</label>
-      <label class="modal-opt"><input type="checkbox" id="expScores" checked> Include scoring metrics</label>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeExportModal()">Cancel</button>
-      <button class="modal-btn primary" id="modalExportBtn" onclick="confirmExport()">Export</button>
-    </div>
+<!-- Key Modal -->
+<div class="modal" id="keyModal">
+  <div class="mcard">
+    <button class="mclose" onclick="closeModal('keyModal')">×</button>
+    <h3>Get API Keys</h3>
+    <p>Connect your preferred AI provider for deep VC brand analysis. All providers have free tiers.</p>
+    <a class="mlink" href="https://openrouter.ai/keys" target="_blank" rel="noopener">
+      <div><strong>OpenRouter</strong><span>Best overall — access to 50+ models</span></div><code>sk-or-…</code>
+    </a>
+    <a class="mlink" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">
+      <div><strong>OpenAI</strong><span>GPT-4o & GPT-4o Mini</span></div><code>sk-…</code>
+    </a>
+    <a class="mlink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
+      <div><strong>Google Gemini</strong><span>Free tier — highly capable</span></div><code>AIza…</code>
+    </a>
+    <a class="mlink" href="https://console.groq.com/keys" target="_blank" rel="noopener">
+      <div><strong>Groq</strong><span>Ultra-fast free inference</span></div><code>gsk…</code>
+    </a>
   </div>
 </div>
-<!-- API Key Warning Modal -->
-<div class="modal" id="apiKeyModal">
-  <div class="modal-card">
-    <div class="modal-title">⚠️ No API Key Detected</div>
-    <div class="modal-sub">
-      Would you like to generate names using the <strong>local procedural engine only</strong>?<br><br>
-      <span style="color:var(--amber)">AI refinement can significantly improve naming quality, taglines, and VC signals.</span><br>
-      We recommend adding a <strong>FREE</strong> or paid API key for best results.
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeApiKeyModal()">Add API Key</button>
-      <button class="modal-btn primary" onclick="continueWithoutAI()">Generate Locally</button>
-    </div>
-  </div>
-</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// ── Config ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// autoDNG VC BRAND SCORE ENGINE — COMPLETE PRODUCTION BUILD
+// 14 local signals + AI deep analysis + competitive benchmarking
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Providers ──────────────────────────────────────────────────────────
 const PROVS = {
-  openrouter:{ph:'sk-or-…',val:k=>k.startsWith('sk-or-'),models:[{id:'deepseek/deepseek-chat',l:'DeepSeek Chat'},{id:'meta-llama/llama-3.3-70b-instruct',l:'Llama 3.3'},{id:'google/gemini-2.0-flash-001',l:'Gemini Flash'}]},
-  openai:{ph:'sk-proj-…',val:k=>k.startsWith('sk-'),models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'}]},
-  gemini:{ph:'AIzaSy…',val:k=>k.startsWith('AIza'),models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
-  groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
+  openrouter:{ ph:'sk-or-…', val:k=>k.startsWith('sk-or-'),
+    models:['deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','google/gemini-2.0-flash-001','openai/gpt-4o-mini']},
+  openai:    { ph:'sk-…', val:k=>k.startsWith('sk-'),
+    models:['gpt-4o','gpt-4o-mini']},
+  gemini:    { ph:'AIzaSy…', val:k=>k.startsWith('AIza'),
+    models:['gemini-2.5-flash','gemini-2.5-pro']},
+  groq:      { ph:'gsk…', val:k=>k.startsWith('gsk'),
+    models:['llama-3.3-70b-versatile','qwen-qwq-32b','llama-3.1-8b-instant']}
 };
 
-const NAMING_AGENTS = [
-{ id:'atomic', weight:0.30, style:'minimal vc-grade startup names', rules:['4-6 letters','single token','hard consonants','minimal vowels'] },
-{ id:'invented', weight:0.25, style:'invented globally pronounceable brands', rules:['balanced vowels','global pronunciation','modern startup feel'] },
-{ id:'luxury', weight:0.10, style:'premium elegant brands', rules:['smooth cadence','luxury feel','soft endings'] },
-{ id:'infra', weight:0.12, style:'developer infrastructure naming', rules:['technical sound','compressed rhythm','strong consonants'] },
-{ id:'future', weight:0.10, style:'deep-tech futuristic names', rules:['unique phonetics','non-generic','distinctive'] },
-{ id:'consumer', weight:0.08, style:'friendly modern consumer brands', rules:['easy pronunciation','warm energy','memorable'] },
-{ id:'antiTrend', weight:0.05, style:'anti-startup original naming', rules:['avoid trendy structures','high originality','unexpected phonetics'] }
+// ── TM Brand pool ──────────────────────────────────────────────────────
+const TMBRANDS = ['apple','google','amazon','microsoft','meta','stripe','figma','notion','linear',
+  'vercel','anthropic','openai','slack','zoom','dropbox','github','shopify','salesforce','hubspot',
+  'atlassian','twilio','datadog','snowflake','palantir','crowdstrike','okta','cloudflare','mongodb',
+  'confluent','databricks','airbnb','uber','lyft','doordash','robinhood','coinbase','plaid','brex',
+  'ramp','rippling','lattice','workday','servicenow','zendesk','intercom','segment','amplitude',
+  'mixpanel','sentry','wiz','vanta','lacework','snyk','supabase','cursor','replit','anduril','discord'];
+
+// ── Unicorn benchmark data ─────────────────────────────────────────────
+const BENCHMARKS = [
+  {name:'Figma',  score:96,industry:'Design',pattern:'Invented-CVCV'},
+  {name:'Linear', score:94,industry:'Dev Tools',pattern:'2-syllable'},
+  {name:'Notion', score:91,industry:'Productivity',pattern:'Compound'},
+  {name:'Stripe', score:89,industry:'Fintech',pattern:'1-syllable'},
+  {name:'Vercel', score:87,industry:'Infra',pattern:'Invented'},
+  {name:'Canva',  score:86,industry:'Design',pattern:'CVCV'},
+  {name:'Ramp',   score:85,industry:'Fintech',pattern:'Atomic'},
+  {name:'Brex',   score:83,industry:'Fintech',pattern:'Atomic'},
+  {name:'Loom',   score:81,industry:'Async video',pattern:'1-syllable'},
+  {name:'Arc',    score:78,industry:'Browser',pattern:'Atomic'},
 ];
 
-const TLDS = {com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],mix:['.com','.ai','.io','.xyz','.co']};
-const SC_C=['#c8f04a','#4af0c0','#9a6af0','#f0b84a'],SC_K=['brand_strength','memorability','global_fit','trend_alignment'],SC_L=['Brand','Memory','Global','Trend'];
-const LANG_LABELS={en:'🇺🇸 EN',global:'🌍 Global','non-en':'🗾 Non-EN',multilingual:'🌐 Multi'};
+// ── Negative global meaning blocklist ─────────────────────────────────
+const NEGROOTS = ['mord','tot','krank','gift','faul','dreck','mal','mort','laid','triste','peur',
+  'feo','loco','muerto','mierda','odio','shi','ku','aku','baka','dame','yami','mara','bura','mau',
+  'kill','die','dead','sick','evil','hate','hell','damn','fart','shit','ass','crap','turd',
+  'wank','twat','slag','knob','piss','anus','scum','nazi','rape','gore'];
 
-// ── Phonetic Utilities ─────────────────────────────────────────────
-function normalizeBrandName(name){ return name.toLowerCase().replace(/[^a-z]/g,'').replace(/ph/g,'f').replace(/x/g,'ks').replace(/z/g,'s').replace(/q/g,'k').replace(/[aeiou]+/g,'a').replace(/(.)\1+/g,'$1'); }
-function bigrams(str){const s=str.toLowerCase();const out=[];for(let i=0;i<s.length-1;i++){out.push(s.slice(i,i+2));}return out;}
-function diceCoefficient(a,b){const bgA=bigrams(normalizeBrandName(a));const bgB=bigrams(normalizeBrandName(b));let matches=0;const used=new Set();for(let i=0;i<bgA.length;i++){for(let j=0;j<bgB.length;j++){if(!used.has(j)&&bgA[i]===bgB[j]){matches++;used.add(j);break;}}}const total=bgA.length+bgB.length;if(total===0){return 0;}return (2*matches)/total;}
-function similarityScore(a,b){return Math.round(diceCoefficient(a,b)*100);}
-function isNearDuplicate(a,b){return similarityScore(a,b)>=72;}
-function getPhoneticRoot(name){return normalizeBrandName(name).slice(0,4);}
-function escapeHtml(str=''){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
-function getWordCount(name){return name.trim().split(/\s+/).filter(Boolean).length;}
-function hasCVCVPattern(str){const s=str.toLowerCase().replace(/[^a-z]/g,'');return /^[^aeiou][aeiou][^aeiou][aeiou]/i.test(s)||/[aeiou][^aeiou][aeiou][^aeiou]/i.test(s);}
-function pickWeighted(arr){if(!arr.length)return null;const total=arr.reduce((sum,i)=>sum+(i.weight||1),0);let rand=Math.random()*total;for(const item of arr){if(rand<(item.weight||1))return item;rand-=(item.weight||1);}return arr[arr.length-1];}
-function capitalize(str){return str.charAt(0).toUpperCase()+str.slice(1).toLowerCase();}
+// ── State ──────────────────────────────────────────────────────────────
+let prov = localStorage.getItem('vcs_p') || 'openrouter';
+let key  = localStorage.getItem('vcs_k_'+prov) || '';
+let mdl  = localStorage.getItem('vcs_m_'+prov) || PROVS[prov].models[0];
+let lastResult = null;
+let busy = false;
 
-// 🔧 Tier Utilities (Scoring Only — No Filtering)
-function isInventedBrandable(name) {
-  const lower = name.toLowerCase().replace(/[^a-z]/g, '');
-  const commonWords = ['cloud','data','sync','flow','core','labs','tech','app','web','net','ai','bot','meta','nova','quantum'];
-  if (commonWords.some(w => lower === w || lower.includes(w))) return false;
-  const inventedPatterns = [/^[kqvxz][aeiou]/i, /[aeiou][kqvxz]$/i, /[aeiou][^aeiou][aeiou][^aeiou][aeiou]/i, /^(?!.*(.).*\1\1)/];
-  return inventedPatterns.some(p => p.test(lower)) && lower.length >= 4;
+// ═══════════════════════════════════════════════════════════════════════
+// LOCAL SCORING ENGINE — 14 DIMENSIONS
+// ═══════════════════════════════════════════════════════════════════════
+
+function normName(n){
+  return n.toLowerCase().replace(/[^a-z]/g,'')
+    .replace(/ph/g,'f').replace(/x/g,'ks').replace(/z/g,'s')
+    .replace(/q/g,'k').replace(/[aeiou]+/g,'a').replace(/(.)\1+/g,'$1');
+}
+function bigrams(s){const n=normName(s),o=[];for(let i=0;i<n.length-1;i++)o.push(n.slice(i,i+2));return o;}
+function diceScore(a,b){
+  const ba=bigrams(a),bb=bigrams(b);
+  if(!ba.length&&!bb.length)return 0;
+  let m=0;const used=new Set();
+  for(let i=0;i<ba.length;i++)for(let j=0;j<bb.length;j++)if(!used.has(j)&&ba[i]===bb[j]){m++;used.add(j);break;}
+  return(2*m)/(ba.length+bb.length);
+}
+function countSyllables(w){
+  w=w.toLowerCase().replace(/[^a-z]/g,'');
+  if(!w)return 0;
+  w=w.replace(/(?:[^laeiouy]es|[^laeiouy]ed|[^laeiouy]e)$/,'').replace(/^y/,'');
+  const m=w.match(/[aeiouy]{1,2}/g);
+  return m?m.length:1;
 }
 
-function isPhoneticallyValid(name) {
-  const s = name.toLowerCase().replace(/[^a-z]/g, '');
-  if (/[^aeiou]{4,}/.test(s)) return false;
-  if (/(srk|nlt|lrk|vlt|snt|lnt|lkt|rkt|vnt|rk|nt|lt)$/i.test(s)) return false;
-  if (/^[zxq][bcdfghjklmnpqrstvwxyz]/i.test(s)) return false;
-  if ((s.match(/[aeiou]/g) || []).length < 2) return false;
-  return true;
+// 1. Pronounceability
+function scorePronounce(n){
+  const s=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=100;
+  const cl=(s.match(/[bcdfghjklmnpqrstvwxyz]{3,}/gi)||[]);
+  if(cl.length)score-=cl.length*18;
+  if(!/[aeiou]/i.test(s))score-=35;
+  if(/[^aeiou]{4,}/.test(s))score-=20;
+  if(/kn|gn|wr|mb|pn|pt/.test(s))score-=15;
+  if(/^[^aeiou][aeiou]/i.test(s))score+=8;
+  if(/[aeiou]$/i.test(s))score+=6;
+  if(/^[^aeiou][aeiou][^aeiou][aeiou]/i.test(s))score+=12;
+  const vr=(s.match(/[aeiou]/g)||[]).length/Math.max(1,s.length);
+  if(vr>=0.3&&vr<=0.6)score+=8;
+  return{score:clamp(score),detail:cl.length?`${cl.length} consonant cluster(s)`:'Clean phonetics'};
 }
 
-function getTierBonus(name) {
-  const len = name.replace(/\s+/g, '').length;
-  const invented = isInventedBrandable(name);
-  if (invented && len >= 5 && len <= 7) return 8;
-  if (invented && len >= 3 && len <= 4) return 5;
-  if (len >= 5 && len <= 7) return 4;
-  if (len >= 3 && len <= 4) return 2;
-  return 0;
+// 2. Memorability
+function scoreMemory(n){
+  const syl=countSyllables(n),len=n.replace(/[^a-z]/gi,'').length;
+  let score=55;
+  if(syl===1)score+=20;else if(syl===2)score+=24;else if(syl===3)score+=8;else score-=14;
+  if(len<=4)score+=18;else if(len<=6)score+=12;else if(len<=8)score+=4;else score-=10;
+  if(/^[^aeiou][aeiou][^aeiou][aeiou]/i.test(n))score+=10;
+  if(/[0-9]/.test(n))score-=20;if(n.includes('-'))score-=14;
+  return{score:clamp(score),detail:`${syl} syllable${syl!==1?'s':''}, ${len} chars`};
 }
 
-// ── State ──────────────────────────────────────────────────────────
-let prov=localStorage.getItem('bl_p')||'openrouter';
-let key=localStorage.getItem('bl_k_'+prov)||'';
-let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
-if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
-let busy=false,domC={},pill='all',helpOn=false,language='global',filtersChanged=false;
-let lastGeneratedNames=[],rufloIntel=null,namingIntel=null,industryIntel={},promptSummary='';
-const recentNamesCache=new Set(JSON.parse(localStorage.getItem('dng_recent_names')||'[]'));
+// 3. Spellability
+function scoreSpell(n){
+  let score=100;const traps=[];
+  if(/ph/.test(n)){score-=18;traps.push('ph→f confusion');}
+  if(/[ck]/.test(n)){score-=7;traps.push('k/c ambiguity');}
+  if(/^[sz]/i.test(n)){score-=5;traps.push('s/z start');}
+  if(/x/i.test(n)){score-=10;traps.push('x varies by region');}
+  if(/kn|gn|wr|mb/.test(n)){score-=22;traps.push('silent letter');}
+  if(/(.)\1/.test(n)){score-=8;traps.push('double letter trap');}
+  if(/ie|ei|ae|oe/.test(n)){score-=8;traps.push('vowel digraph');}
+  if(/^[^aeiou][aeiou][^aeiou][aeiou]/i.test(n))score+=20;
+  return{score:clamp(score),detail:traps.length?traps[0]:'No spelling traps'};
+}
 
-// ── Intelligence Loading (Safe Fallback) ───────────────────────────
-async function loadIntelligence(){
-  try {
-    const [intelRes, rufloRes, promptRes, industryRes] = await Promise.all([
-      fetch('./data/naming-intelligence.json').catch(()=>null),
-      fetch('./data/ruflo-intelligence.json').catch(()=>null),
-      fetch('./data/prompt-summary.txt').catch(()=>null),
-      fetch('./data/industry-intelligence.json').catch(()=>null)
-    ]);
-    if (intelRes?.ok) namingIntel = await intelRes.json();
-    if (rufloRes?.ok) { rufloIntel = await rufloRes.json(); window.rufloIntel = rufloIntel; }
-    if (promptRes?.ok) promptSummary = await promptRes.text();
-    if (industryRes?.ok) industryIntel = await industryRes.json();
-  } catch(err) { console.warn('⚠️ Using fallback defaults'); }
-  
-  if (!rufloIntel) {
-    rufloIntel = { scoring_rubric:{}, global_pronounceability:{risk_patterns:[],min_threshold:0.7}, risk_heuristics:{trademark_risk:{}}, semantic_taxonomy:{high_value_roots:{}}, predictive_signals:{trend_weights:{rising_patterns:1}}, pipeline_config:{stage_1_local_generation:{target_count:100}}, constraints:{hard_exclusions:[]}, negative_similarity_filters:{overused_prefixes:[],overused_suffixes:[],forbidden_combinations:[]} };
-    window.rufloIntel = rufloIntel;
+// 4. Global safety (negative meaning check)
+function scoreGlobalSafety(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  const hits=NEGROOTS.filter(r=>lo.includes(r));
+  let score=hits.length===0?92:Math.max(20,92-hits.length*35);
+  if(/[aeiou]$/i.test(n))score=Math.min(100,score+5);
+  if(/^[^aeiou][aeiou][^aeiou][aeiou]/i.test(n))score=Math.min(100,score+5);
+  return{score:clamp(score),detail:hits.length?`⚠ "${hits[0]}" negative in some language`:'Globally clean'};
+}
+
+// 5. TM Proximity Risk (inverse — higher = safer)
+function scoreTMSafety(n){
+  let maxS=0,closest='';
+  for(const brand of TMBRANDS){
+    const s=diceScore(n.toLowerCase(),brand);
+    if(s>maxS){maxS=s;closest=brand;}
   }
-  if (!namingIntel) namingIntel = { oversaturated_terms: [['cloud'],['data'],['sync'],['flow'],['core'],['labs'],['tech'],['app'],['web'],['net']] };
-  if (!industryIntel) industryIntel = {};
-  if (!promptSummary) promptSummary = '';
+  const pct=Math.round(maxS*100);
+  const score=Math.max(10,100-pct);
+  const risk=pct>=72?'HIGH':pct>=50?'MEDIUM':'LOW';
+  return{score:clamp(score),pct,closest,risk,detail:`${risk} TM risk${closest?` — closest: ${closest}`:''}`};
 }
 
-// ── Boot (DOM-Safe) ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async function init(){
-  await loadIntelligence();
-  document.querySelectorAll('.ptab')?.forEach(t=>t.classList.remove('on'));
-  document.querySelector(`.ptab[onclick*="${prov}"]`)?.classList.add('on');
-  const akey = document.getElementById('akey');
-  if (akey) { akey.value = key; akey.placeholder = PROVS[prov]?.ph || 'sk-…'; }
-  setKeyUI(key);
-  renderModels();
-  const langEl = document.getElementById('language');
-  if (langEl) language = localStorage.getItem('bl_lang') || 'global', langEl.value = language;
-  
-  // Show steering section if API key is present
-  const steeringWrap = document.getElementById('steeringWrap');
-  if (steeringWrap && PROVS[prov].val(key)) {
-    steeringWrap.classList.add('on');
+// 6. Investor Credibility (pattern matching to funded brands)
+function scoreCredibility(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  const len=lo.length;
+  let score=50;
+  if(len>=4&&len<=7)score+=18;else if(len<=3)score+=22;else if(len>10)score-=12;
+  if(isInvented(n))score+=12;
+  if(hasClassical(n))score+=8;
+  if(/^[^aeiou][aeiou]/i.test(n))score+=6;
+  if(/[aeiou]$/i.test(n))score+=5;
+  if(['ly','io','ai','co','er','ry','al','ic','en','ix','ex'].some(e=>lo.endsWith(e)))score+=8;
+  if(/[0-9-]/.test(n))score-=18;
+  if(/^(get|try|use|go|my|the)/i.test(n))score-=8; // too generic
+  return{score:clamp(score),detail:isInvented(n)?'Invented word — high TM value':'Pattern matches credible brands'};
+}
+
+// 7. Venture-scale potential
+function scoreVCScale(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  const len=lo.length;
+  let score=50;
+  if(len<=5)score+=20;else if(len<=7)score+=10;else if(len>10)score-=15;
+  if(isInvented(n))score+=15;
+  if(!/[0-9-]/.test(n))score+=8;
+  if(countSyllables(n)<=2)score+=12;
+  // Unicorn pattern match
+  const unicornEnds=['ra','la','va','ka','ma','na','ta','io','ai','ex','ix','ix','or','on','en'];
+  if(unicornEnds.some(e=>lo.endsWith(e)))score+=10;
+  const unicornStarts=['a','e','i','o','v','s','f','n','c','r','l'];
+  if(unicornStarts.includes(lo[0]))score+=5;
+  return{score:clamp(score),detail:len<=5?'Ultra-short — premium VC signal':len<=7?'Good VC length':'Length may limit investor recall'};
+}
+
+// 8. Sound symbolism & emotional fit
+function scoreSoundFit(n,industry){
+  const lo=n.toLowerCase();
+  let score=55;
+  const hardCons=[...lo].filter(c=>'kxzvtpbd'.includes(c)).length;
+  const softSounds=[...lo].filter(c=>'lmnrwf'.includes(c)).length;
+  const total=lo.length;
+  const hardRatio=hardCons/Math.max(1,total);
+  const softRatio=softSounds/Math.max(1,total);
+  const techIndustries=['cybersecurity','developer','devops','ai','automation','crypto','gaming','defense','robotics','infra'];
+  const warmIndustries=['health','wellness','education','consumer','food','mental','edtech','marketplace'];
+  const presIndustries=['fintech','saas','enterprise','legal','b2b'];
+  const ind=(industry||'').toLowerCase();
+  if(techIndustries.some(i=>ind.includes(i))){if(hardRatio>0.2)score+=15;else if(softRatio>0.3)score-=8;}
+  else if(warmIndustries.some(i=>ind.includes(i))){if(softRatio>0.25)score+=15;else if(hardRatio>0.35)score-=8;}
+  else if(presIndustries.some(i=>ind.includes(i))){if(lo.match(/[rlvnfm]/g)?.length/total>0.2)score+=10;}
+  if(/^[^aeiou][aeiou]/i.test(n))score+=5;
+  if(/[aeiou]$/i.test(n))score+=5;
+  return{score:clamp(score),detail:`${hardRatio>0.25?'Hard/technical':'Warm/soft'} phonetic profile`};
+}
+
+// 9. SEO & digital discoverability
+function scoreSEO(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=50;
+  if(lo.length<=6)score+=15;else if(lo.length<=9)score+=8;
+  if(!/[0-9-]/.test(n))score+=10;
+  const seoKws=['ai','data','cloud','tech','pay','learn','shop','work','app','api','dev','ops','flow','sync','hub','base','edge'];
+  if(seoKws.some(k=>lo.includes(k)))score+=12;
+  if(isInvented(n))score-=5; // invented words may have lower initial search volume
+  if(/^[bcdfghjklmnpqrstvwxyz][aeiou]/i.test(n))score+=5;
+  return{score:clamp(score),detail:`${lo.length} chars — ${lo.length<=6?'strong':'moderate'} SEO potential`};
+}
+
+// 10. Category expansion flexibility
+function scoreFlex(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=55;
+  // Names with no semantic meaning can flex to any category
+  if(isInvented(n))score+=20;
+  // Names with strong category words are less flexible
+  const categoryWords=['pay','shop','learn','ship','hire','data','sec','health','farm','build','code'];
+  if(categoryWords.some(w=>lo.includes(w)))score-=15;
+  if(lo.length<=7)score+=10;
+  if(hasClassical(n))score+=8; // classical roots age well
+  return{score:clamp(score),detail:isInvented(n)?'High flex — no semantic lock-in':'Moderate flex — category words present'};
+}
+
+// 11. Naming pattern DNA (unicorn match)
+function scorePattern(n){
+  let score=45;
+  const syl=countSyllables(n),len=n.replace(/[^a-z]/gi,'').length;
+  if(syl===2)score+=18;else if(syl===1)score+=14;else if(syl===3)score+=6;
+  if(/^[^aeiou][aeiou][^aeiou][aeiou]/i.test(n))score+=15; // CVCV
+  if(isInvented(n))score+=12;
+  if(len<=6)score+=10;
+  if(/[aeiou]$/i.test(n))score+=5;
+  if(hasClassical(n))score+=8;
+  if(/^[^aeiou][aeiou]/i.test(n))score+=5;
+  return{score:clamp(score),detail:`${syl}-syllable ${isInvented(n)?'invented':'real-word'} pattern`};
+}
+
+// 12. Pitch deck & board-room readiness
+function scorePitchReady(n,stage){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=55;
+  if(lo.length<=7)score+=15;else if(lo.length>10)score-=12;
+  if(!/[0-9-]/.test(n))score+=10;
+  if(countSyllables(n)<=2)score+=10;
+  const enterprise=['enterprise','growth','series-b','series-a'].includes(stage);
+  if(enterprise&&isInvented(n)&&lo.length>=5)score+=8; // enterprise needs a bit more gravitas
+  if(/^(get|try|go|my)/i.test(n))score-=12; // too casual for board room
+  if(hasClassical(n))score+=8;
+  return{score:clamp(score),detail:countSyllables(n)<=2?'Board-room ready cadence':'May need rehearsal for pitch'};
+}
+
+// 13. 2026 trend alignment
+function scoreTrend(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=50;
+  const trendUp=['ai','agent','auto','edge','node','data','cloud','api','core','flux','arc'];
+  const trendOverused=['ify','ware','hub','lab','tech','digital','smart','next','go'];
+  if(trendUp.some(t=>lo.includes(t)))score+=15;
+  if(trendOverused.some(t=>lo.endsWith(t)))score-=10;
+  if(isInvented(n)&&lo.length>=5&&lo.length<=8)score+=12; // invented 5-8 char names are 2026 sweet spot
+  if(/^[kqvxz]/i.test(n))score+=8; // sharp openers trending
+  if(/[aeiou][kxvz]$/i.test(n))score+=6; // sharp vowel+consonant endings trending
+  return{score:clamp(score),detail:trendUp.some(t=>lo.includes(t))?'Strong 2026 keyword signal':'Trend neutral'};
+}
+
+// 14. Domain & social handle viability
+function scoreDomain(n,tld){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  let score=50;
+  if(lo.length<=6)score+=20;else if(lo.length<=8)score+=10;else if(lo.length>10)score-=10;
+  if(!/[0-9-]/.test(n))score+=12;
+  if(isInvented(n))score+=15; // invented words more likely available
+  if(tld==='.com')score+=8;else if(['.ai','.io'].includes(tld))score+=5;
+  if(lo.length===lo.replace(/[aeiouaeiou]/gi,'').length+2)score+=5; // vowel-consonant balance
+  return{score:clamp(score),detail:`${tld||'.com'} — ${lo.length<=6?'excellent':'good'} length for domain`};
+}
+
+function isInvented(n){
+  const lo=n.toLowerCase().replace(/[^a-z]/g,'');
+  const dict=['cloud','data','sync','flow','core','labs','tech','app','web','net','ai','bot','meta',
+    'nova','quantum','spark','hub','base','edge','node','link','pulse','wave','flux','arc','forge',
+    'craft','works','group','team','space','zone','land','mind','grid','peak','reach','shift','scale'];
+  if(dict.some(w=>lo===w||lo===w+'s'))return false;
+  return /[aeiou]/i.test(lo)&&!dict.includes(lo)&&lo.length>=4&&lo.length<=10;
+}
+function hasClassical(n){
+  const roots=['lex','max','ax','ex','ix','ox','ux','neo','nova','apex','vex','flux','crux','lynx',
+    'onyx','plex','vertex','cortex','nexus','opus','focus','terra','luna','sol','aero','hydro','geo',
+    'bio','therm','micro','macro','poly','mono','phon','graph','logy','path','morph','scope','meter'];
+  return roots.some(r=>n.toLowerCase().includes(r));
+}
+function clamp(v,lo=10,hi=100){return Math.max(lo,Math.min(hi,Math.round(v)));}
+
+// ── Full local pre-score ───────────────────────────────────────────────
+function runLocalScore(name,industry,stage,tld){
+  const dims=[
+    {id:'pronounce',  label:'Pronounce',    emoji:'🔊', fn:()=>scorePronounce(name)},
+    {id:'memory',     label:'Memory',       emoji:'🧠', fn:()=>scoreMemory(name)},
+    {id:'spell',      label:'Spellability', emoji:'✏️', fn:()=>scoreSpell(name)},
+    {id:'global',     label:'Global Safety',emoji:'🌍', fn:()=>scoreGlobalSafety(name)},
+    {id:'tm',         label:'TM Safety',    emoji:'⚖️', fn:()=>scoreTMSafety(name)},
+    {id:'credibility',label:'Credibility',  emoji:'💼', fn:()=>scoreCredibility(name)},
+    {id:'vcscale',    label:'VC Scale',     emoji:'🚀', fn:()=>scoreVCScale(name)},
+    {id:'sound',      label:'Sound Fit',    emoji:'🎵', fn:()=>scoreSoundFit(name,industry)},
+    {id:'seo',        label:'SEO',          emoji:'🔍', fn:()=>scoreSEO(name)},
+    {id:'flex',       label:'Flex',         emoji:'🔀', fn:()=>scoreFlex(name)},
+    {id:'pattern',    label:'Pattern DNA',  emoji:'🧬', fn:()=>scorePattern(name)},
+    {id:'pitch',      label:'Pitch Ready',  emoji:'🎤', fn:()=>scorePitchReady(name,stage)},
+    {id:'trend',      label:'2026 Trend',   emoji:'📈', fn:()=>scoreTrend(name)},
+    {id:'domain',     label:'Domain Fit',   emoji:'🌐', fn:()=>scoreDomain(name,tld)},
+  ];
+
+  const results={};
+  dims.forEach(d=>{results[d.id]={...d.fn(),...d};});
+
+  // Weighted composite
+  const weights={
+    credibility:0.12,vcscale:0.12,memory:0.10,pronounce:0.09,spell:0.08,
+    global:0.08,tm:0.08,pitch:0.07,pattern:0.07,sound:0.06,
+    flex:0.05,trend:0.04,seo:0.03,domain:0.01
+  };
+  let total=0;
+  for(const[k,w] of Object.entries(weights)){total+=(results[k]?.score||50)*w;}
+  const overall=clamp(Math.round(total));
+
+  return{overall,dims:results,dimList:dims.map(d=>({...d,...results[d.id]}))};
+}
+
+// ── Competitive benchmark comparison ──────────────────────────────────
+function buildBenchmarkComparison(myScore){
+  return BENCHMARKS.map(b=>({
+    ...b,
+    delta:myScore-b.score,
+    color:myScore>=b.score?'var(--lime)':'var(--rose)'
+  }));
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// AI SYSTEM PROMPT
+// ═══════════════════════════════════════════════════════════════════════
+function buildSystemPrompt(){
+  return `You are the world's premier VC startup brand analyst. You have studied:
+- Y Combinator, a16z, Sequoia, Benchmark, Tiger Global naming patterns
+- NameBio sales data (2015–2026) for domain valuation patterns
+- Cognitive load theory and memorability science
+- Global pronunciation patterns across English, Spanish, Mandarin, Hindi, Arabic, Portuguese
+- Startup pitch psychology and investor perception research
+- Fortune 500 rebranding case studies
+- 2026 AI/SaaS naming trends
+
+You produce conservative, rigorous, investor-focused brand analysis. You flag risks even if uncertain.
+
+Return ONLY valid JSON matching this EXACT schema (no markdown, no code fences, no preamble):
+{
+  "tier": "weak" | "moderate" | "strong" | "elite",
+  "score": 0-100,
+  "summary": "2-3 sentence investor-focused summary — what a GP would think when they first hear this name",
+  "aiDims": {
+    "credibility": {"score":0-100,"insight":"..."},
+    "vcscale": {"score":0-100,"insight":"..."},
+    "pitchReady": {"score":0-100,"insight":"..."},
+    "categoryFlex": {"score":0-100,"insight":"..."},
+    "globalSafety": {"score":0-100,"insight":"..."},
+    "trendAlignment": {"score":0-100,"insight":"..."}
+  },
+  "signals": ["positive investor signal 1","..."],
+  "weaknesses": ["concern or risk 1","..."],
+  "pitchReadiness": {
+    "deckCompatibility": "High/Medium/Low",
+    "boardRoomReady": "Yes/Conditional/No",
+    "investorFirstImpression": "one sentence",
+    "namingRisk": "High/Medium/Low"
+  },
+  "expansion": ["category expansion opportunity 1","..."],
+  "comparables": [
+    {"name":"Linear","similarity":"high","score":94,"reason":"Similar minimalist 2-syllable invented pattern with technical authority"}
+  ],
+  "recommendations": ["actionable recommendation 1","..."],
+  "insights": ["non-obvious strategic insight 1","..."],
+  "risks": [
+    {"category":"Trademark","level":"Low/Medium/High","note":"..."},
+    {"category":"Global","level":"Low/Medium/High","note":"..."},
+    {"category":"SEO","level":"Low/Medium/High","note":"..."},
+    {"category":"Category","level":"Low/Medium/High","note":"..."}
+  ]
+}
+
+Rules:
+- Be conservative — if unsure, lean toward flagging risks
+- Score 0–100 where 90+ is rare elite (only true premium names)
+- Comparables must be real startups with genuine naming similarity rationale
+- Insights must be non-obvious — not generic branding advice
+- Risks must be specific to THIS name, not generic`;
+}
+
+function buildUserPrompt(name,industry,region,stage,audience,context,competitors,localScore){
+  return `Brand name to analyze: "${name}"
+Industry: ${industry||'General Tech'}
+Region: ${region||'Global'}
+Funding stage: ${stage||'seed'}
+Target audience: ${audience||'B2B'}
+Product context: ${context||'Not provided'}
+Known competitors: ${competitors||'Not provided'}
+
+Local pre-score (my signal engine returned ${localScore}/100) — your AI score should reflect similar rigor.
+
+Evaluate with extreme precision for:
+1. Investor perception when heard cold in a pitch meeting
+2. Memorability after a single conference encounter
+3. Global pronunciability across English/Spanish/Mandarin/Hindi
+4. Trademark clearance probability
+5. Venture-scale naming — can this become a $10B brand?
+6. 2026 startup naming trends (avoid: -ify saturation, generic -tech, -hub suffix)
+7. Pitch deck headline compatibility
+8. Sound symbolism alignment with ${industry||'tech'} category
+9. Category expansion — can this brand grow beyond current niche?
+10. Board-room, investor memo, and press release compatibility
+
+Return full JSON analysis per schema. Be rigorous. Flag every real risk.`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// API CALLERS
+// ═══════════════════════════════════════════════════════════════════════
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function fetchRetry(url,opts,retries=3){
+  for(let i=0;i<retries;i++){
+    try{
+      const r=await fetch(url,opts);
+      if(r.status===402)throw new Error('PAYMENT: Add credits to your provider account.');
+      if(r.status===401)throw new Error('AUTH: Invalid or expired API key.');
+      if(r.status===429){await sleep(1500*(i+1));continue;}
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      return r;
+    }catch(e){
+      if(e.message.startsWith('PAYMENT')||e.message.startsWith('AUTH'))throw e;
+      if(i===retries-1)throw e;
+      await sleep(700*(i+1));
+    }
   }
-  
-  console.log('✓ autoDNG ready');
+}
+
+async function callAI(sys,usr){
+  const body={model:mdl,max_tokens:4000,temperature:0.15,
+    messages:[{role:'system',content:sys},{role:'user',content:usr}]};
+  if(prov==='gemini'){
+    const r=await fetchRetry(
+      `https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        system_instruction:{parts:[{text:sys}]},
+        contents:[{role:'user',parts:[{text:usr}]}],
+        generationConfig:{temperature:0.15,maxOutputTokens:4000,responseMimeType:'application/json'}
+      })});
+    const d=await r.json();
+    return(d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  }
+  const urls={openrouter:'https://openrouter.ai/api/v1/chat/completions',openai:'https://api.openai.com/v1/chat/completions',groq:'https://api.groq.com/openai/v1/chat/completions'};
+  const headers={'Content-Type':'application/json','Authorization':'Bearer '+key};
+  if(prov==='openrouter'){headers['HTTP-Referer']=window.location.origin;headers['X-Title']='autoDNG VC Score';}
+  const r=await fetchRetry(urls[prov],{method:'POST',headers,body:JSON.stringify(body)});
+  const d=await r.json();
+  return d.choices?.[0]?.message?.content||'';
+}
+
+function parseAIJSON(raw){
+  if(!raw||typeof raw!=='string')return null;
+  let clean=raw.trim().replace(/```json|```/g,'').trim();
+  try{return JSON.parse(clean);}catch{}
+  const a=clean.indexOf('{'),b=clean.lastIndexOf('}');
+  if(a>=0&&b>a){try{return JSON.parse(clean.slice(a,b+1));}catch{}}
+  // Fix common issues
+  let fixed=clean.replace(/,\s*}/g,'}').replace(/,\s*]/g,']').replace(/'/g,'"');
+  try{return JSON.parse(fixed);}catch{}
+  // Truncation recovery
+  try{
+    const ob=(fixed.match(/\{/g)||[]).length,cb=(fixed.match(/\}/g)||[]).length;
+    const oa=(fixed.match(/\[/g)||[]).length,ca=(fixed.match(/\]/g)||[]).length;
+    if(oa>ca)fixed+=']'.repeat(oa-ca);
+    if(ob>cb)fixed+='}' .repeat(ob-cb);
+    return JSON.parse(fixed);
+  }catch{}
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MAIN RUN
+// ═══════════════════════════════════════════════════════════════════════
+async function run(){
+  if(busy)return;
+  const name=document.getElementById('brand').value.trim();
+  if(!name){showToast('Enter a brand name first');return;}
+  if(!key||!PROVS[prov].val(key)){
+    // Run local only
+    runLocalOnly();return;
+  }
+  await runFull(name,false);
+}
+
+async function runLocalOnly(){
+  const name=document.getElementById('brand').value.trim();
+  if(!name){showToast('Enter a brand name first');return;}
+  await runFull(name,true);
+}
+
+async function runFull(name,localOnly){
+  busy=true;
+  const btn=document.getElementById('runBtn');
+  btn.classList.add('ld');btn.disabled=true;
+  document.getElementById('runLbl').textContent='Analyzing…';
+
+  const industry=document.getElementById('industry').value.trim();
+  const region=document.getElementById('region').value;
+  const stage=document.getElementById('stage').value;
+  const audience=document.getElementById('audience').value;
+  const context=document.getElementById('context').value.trim();
+  const competitors=document.getElementById('competitors').value.trim();
+  const tld=document.getElementById('tld').value;
+
+  const pw=document.getElementById('progWrap');pw.classList.add('on');
+  document.getElementById('resultWrap').classList.remove('on');
+  const steps=['Local scoring','Phonetic analysis','TM check','Benchmark','AI analysis','Synthesis'];
+  document.getElementById('progSteps').innerHTML=steps.map((s,i)=>`<span class="pst" id="pst-${i}">${s}</span>`).join('');
+
+  try{
+    // Step 1: Local score
+    setProgress(10,'Running 14-signal local analysis…',0);
+    const local=runLocalScore(name,industry,stage,tld);
+    stepDone(0);setProgress(28,'Phonetic & TM analysis…',1);
+
+    await sleep(200);
+    stepDone(1);setProgress(42,'Competitive benchmarking…',2);
+    const bench=buildBenchmarkComparison(local.overall);
+    stepDone(2);setProgress(56,'Comparing to unicorn database…',3);
+    await sleep(150);
+    stepDone(3);
+
+    let aiData=null;
+    if(!localOnly&&key&&PROVS[prov].val(key)){
+      setProgress(65,'AI deep analysis (this takes ~10s)…',4);
+      const sys=buildSystemPrompt();
+      const usr=buildUserPrompt(name,industry,region,stage,audience,context,competitors,local.overall);
+      const raw=await callAI(sys,usr);
+      aiData=parseAIJSON(raw);
+      stepDone(4);
+    }else{
+      stepDone(4);
+    }
+
+    setProgress(90,'Synthesizing results…',5);
+    await sleep(200);
+
+    // Merge local + AI
+    const result=buildResult(name,industry,local,aiData,bench,tld,stage);
+    lastResult={...result,brand:name,timestamp:new Date().toISOString(),localOnly};
+    stepDone(5);setProgress(100,'Complete!');
+
+    setTimeout(()=>{
+      pw.classList.remove('on');
+      renderResult(result,name,industry,localOnly);
+      showToast(localOnly?'⚡ Local analysis complete':'✓ Full VC analysis complete');
+    },400);
+
+  }catch(err){
+    pw.classList.remove('on');
+    console.error(err);
+    const msg=err.message?.startsWith('PAYMENT')?'Add credits to your provider account.':
+              err.message?.startsWith('AUTH')?'Invalid API key. Check format.':
+              'Analysis failed: '+err.message;
+    showToast('⚠ '+msg,5000);
+    // Render local fallback
+    try{
+      const local=runLocalScore(name,industry,stage,tld);
+      const bench=buildBenchmarkComparison(local.overall);
+      const result=buildResult(name,industry,local,null,bench,tld,stage);
+      lastResult={...result,brand:name,timestamp:new Date().toISOString(),localOnly:true};
+      renderResult(result,name,industry,true);
+    }catch(e2){console.error(e2);}
+  }finally{
+    busy=false;btn.classList.remove('ld');btn.disabled=false;
+    document.getElementById('runLbl').textContent='Run VC Brand Score →';
+  }
+}
+
+function buildResult(name,industry,local,ai,bench,tld,stage){
+  // Merge scores: local is base, AI refines
+  const aiScore=ai?.score;
+  const overall=aiScore!=null?Math.round(local.overall*0.4+aiScore*0.6):local.overall;
+  const tier=overall>=90?'elite':overall>=75?'strong':overall>=50?'moderate':'weak';
+
+  // Use AI dims where available, local otherwise
+  const dims=local.dimList.map(d=>{
+    const aiDimKey=d.id==='credibility'?'credibility':d.id==='vcscale'?'vcscale':
+      d.id==='pitch'?'pitchReady':d.id==='flex'?'categoryFlex':
+      d.id==='global'?'globalSafety':d.id==='trend'?'trendAlignment':null;
+    if(aiDimKey&&ai?.aiDims?.[aiDimKey]){
+      return{...d,score:Math.round(d.score*0.35+ai.aiDims[aiDimKey].score*0.65),aiInsight:ai.aiDims[aiDimKey].insight};
+    }
+    return d;
+  });
+
+  return{
+    overall,tier,
+    summary:ai?.summary||buildLocalSummary(name,overall,tier,industry),
+    dims,bench,
+    signals:ai?.signals||buildLocalSignals(name,local,industry),
+    weaknesses:ai?.weaknesses||buildLocalWeaknesses(name,local),
+    pitchReadiness:ai?.pitchReadiness||buildLocalPitchReady(name,local,stage),
+    expansion:ai?.expansion||buildLocalExpansion(name,industry),
+    comparables:ai?.comparables||buildLocalComps(local.overall),
+    recommendations:ai?.recommendations||buildLocalRecs(name,local),
+    insights:ai?.insights||buildLocalInsights(name,local,industry),
+    risks:ai?.risks||buildLocalRisks(name,local),
+  };
+}
+
+// ── Local fallback builders ────────────────────────────────────────────
+function buildLocalSummary(n,score,tier,industry){
+  const intros={elite:`"${n}" is an exceptional brand with elite VC appeal.`,strong:`"${n}" presents strong investor signals and solid startup naming fundamentals.`,moderate:`"${n}" has moderate VC appeal with both strengths and areas for improvement.`,weak:`"${n}" faces significant branding challenges for a venture-scale pitch.`};
+  return `${intros[tier]} Score: ${score}/100 across 14 local signals. ${industry?`Industry context: ${industry}.`:''} Add an API key for deeper AI-powered analysis.`;
+}
+function buildLocalSignals(n,local,industry){
+  const s=[];
+  if(local.dims.memory.score>=75)s.push(`Strong memorability (${local.dims.memory.score}/100) — ${local.dims.memory.detail}`);
+  if(local.dims.pronounce.score>=75)s.push(`Excellent pronounceability (${local.dims.pronounce.score}/100)`);
+  if(local.dims.tm.risk==='LOW')s.push(`Low TM proximity risk — clear of major tech brands`);
+  if(local.dims.credibility.score>=75)s.push(`High investor credibility score (${local.dims.credibility.score}/100)`);
+  if(local.dims.vcscale.score>=75)s.push(`Strong venture-scale naming potential`);
+  if(isInvented(n))s.push(`Invented word — maximum trademark clearance potential`);
+  if(countSyllables(n)===2)s.push(`2-syllable sweet spot — optimal cognitive load for recall`);
+  if(n.replace(/[^a-z]/gi,'').length<=6)s.push(`Ultra-short domain-friendly name`);
+  return s.length?s:['Name passes basic VC signal checks'];
+}
+function buildLocalWeaknesses(n,local){
+  const w=[];
+  if(local.dims.tm.risk!=='LOW')w.push(`${local.dims.tm.risk} TM proximity risk — closest match: "${local.dims.tm.closest}" (${local.dims.tm.pct}% phonetic similarity)`);
+  if(local.dims.global.score<70)w.push(`Potential global meaning concerns: ${local.dims.global.detail}`);
+  if(local.dims.spell.score<70)w.push(`Spellability issue: ${local.dims.spell.detail}`);
+  if(local.dims.pronounce.score<60)w.push(`Pronunciation challenges: ${local.dims.pronounce.detail}`);
+  if(local.dims.memory.score<60)w.push(`Memory score below threshold: ${local.dims.memory.detail}`);
+  if(/[0-9-]/.test(n))w.push(`Numbers or hyphens reduce global brandability and investor perception`);
+  if(n.replace(/[^a-z]/gi,'').length>10)w.push(`Long name (${n.replace(/[^a-z]/gi,'').length} chars) — may reduce recall after single pitch meeting`);
+  return w.length?w:['No major concerns detected — add API key for deeper risk analysis'];
+}
+function buildLocalPitchReady(n,local,stage){
+  return{
+    deckCompatibility:local.overall>=75?'High':local.overall>=55?'Medium':'Low',
+    boardRoomReady:countSyllables(n)<=2&&!/[0-9-]/.test(n)?'Yes':'Conditional',
+    investorFirstImpression:local.overall>=80?`"${n}" will land well in a cold pitch`:`"${n}" may need context to resonate with investors`,
+    namingRisk:local.dims.tm.risk
+  };
+}
+function buildLocalExpansion(n,industry){
+  const base=[`"${n}" can expand into adjacent ${industry||'tech'} verticals`,`Domain brand potential if product category evolves`,`Platform naming — API or SDK products carry the brand well`];
+  if(isInvented(n))base.push(`Invented name allows repositioning without legacy semantic baggage`);
+  return base;
+}
+function buildLocalComps(score){
+  return BENCHMARKS.filter(b=>Math.abs(b.score-score)<=12).slice(0,4).map(b=>({name:b.name,similarity:'medium',score:b.score,reason:`Score proximity (${b.score} vs ${score}) — similar naming tier`}));
+}
+function buildLocalRecs(n,local){
+  const r=[];
+  if(local.dims.tm.risk==='HIGH')r.push(`⚠ Conduct a full trademark search before committing — high TM proximity detected`);
+  if(local.dims.tm.risk==='MEDIUM')r.push(`Run USPTO and EUIPO trademark searches for "${n}" before launch`);
+  if(!isInvented(n))r.push(`Consider slight phonetic variation to increase TM clearance`);
+  r.push(`Secure ${n.toLowerCase()}.com, ${n.toLowerCase()}.ai, and ${n.toLowerCase()}.io immediately`);
+  r.push(`Test pronunciation with 5+ people across different language backgrounds`);
+  if(local.overall>=75)r.push(`Name is pitch-ready — focus on securing digital assets and trademark registration`);
+  else r.push(`Consider alternative naming before heavy investment in brand building`);
+  return r;
+}
+function buildLocalInsights(n,local,industry){
+  const insights=[];
+  if(countSyllables(n)===2&&isInvented(n))insights.push(`2-syllable invented names are the statistical sweet spot for VC-backed breakout brands — Figma, Canva, Ramp all share this DNA`);
+  if(local.dims.seo.score<60)insights.push(`Low initial SEO volume for invented names is a short-term pain — but brand search volume compounds over time (see: Figma, Notion)`);
+  if(local.dims.flex.score>=75)insights.push(`High category flexibility means "${n}" can survive a pivot without a rebrand — valuable optionality in early stages`);
+  if(local.dims.trend.score>=75)insights.push(`2026 AI naming trend alignment is strong — but trend-following names can feel dated in 3–5 years`);
+  return insights.length?insights:[`Add an API key to unlock non-obvious strategic insights from AI analysis`];
+}
+function buildLocalRisks(n,local){
+  return[
+    {category:'Trademark',level:local.dims.tm.risk,note:local.dims.tm.detail},
+    {category:'Global',level:local.dims.global.score<70?'Medium':'Low',note:local.dims.global.detail},
+    {category:'SEO',level:local.dims.seo.score<55?'Medium':'Low',note:local.dims.seo.detail},
+    {category:'Phonetics',level:local.dims.pronounce.score<65?'Medium':'Low',note:local.dims.pronounce.detail},
+    {category:'Spellability',level:local.dims.spell.score<65?'Medium':'Low',note:local.dims.spell.detail},
+    {category:'Category',level:local.dims.flex.score<55?'Medium':'Low',note:local.dims.flex.detail},
+  ];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════
+function renderResult(r,name,industry,localOnly){
+  document.getElementById('resultWrap').classList.add('on');
+  document.getElementById('resultWrap').scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Score hero
+  document.getElementById('shBrand').textContent=name;
+  document.getElementById('shIndustry').textContent=(industry||'General Tech')+(localOnly?' · Local analysis':'· AI analysis');
+  const shScore=document.getElementById('shScore');
+  shScore.textContent=r.overall;
+  const colors={elite:'var(--lime)',strong:'var(--teal)',moderate:'var(--amber)',weak:'var(--rose)'};
+  shScore.style.color=colors[r.tier];
+  document.getElementById('scoreHero').style.setProperty('--tier-color',colors[r.tier]);
+
+  // Tier badge
+  const tierCfg={
+    elite:{cls:'tier-elite',icon:'🏆',lbl:'Elite VC Signal'},
+    strong:{cls:'tier-strong',icon:'⭐',lbl:'Strong VC Signal'},
+    moderate:{cls:'tier-moderate',icon:'✨',lbl:'Moderate VC Signal'},
+    weak:{cls:'tier-weak',icon:'⚠️',lbl:'Weak VC Signal'},
+  };
+  const tc=tierCfg[r.tier];
+  const tb=document.getElementById('tierBadge');
+  tb.className='tier-badge '+tc.cls;
+  tb.innerHTML=`${tc.icon} ${tc.lbl}`;
+
+  // Gauge
+  setTimeout(()=>{
+    const gf=document.getElementById('gaugeFill');
+    gf.style.width=r.overall+'%';
+    const gc=r.overall>=90?'var(--lime)':r.overall>=75?'var(--teal)':r.overall>=50?'var(--amber)':'var(--rose)';
+    gf.style.background=`linear-gradient(90deg,${gc},${gc}aa)`;
+  },200);
+
+  // 14 dimensions
+  const dg=document.getElementById('dimsGrid');
+  dg.innerHTML=r.dims.map(d=>{
+    const c=d.score>=80?'var(--lime)':d.score>=65?'var(--teal)':d.score>=50?'var(--amber)':'var(--rose)';
+    return`<div class="dim">
+      <div class="dim-emoji">${d.emoji||'◈'}</div>
+      <div class="dim-lbl">${d.label}</div>
+      <div class="dim-val" style="color:${c}">${d.score}</div>
+      <div class="dim-bar"><div class="dim-fill" style="width:${d.score}%;background:${c}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Radar chart
+  drawRadar(r.dims);
+
+  // Competitive benchmark
+  const br=document.getElementById('benchRows');
+  // Show where "your brand" falls
+  const myRow=`<div class="br-row" style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+    <div class="br-name" style="color:var(--lime);font-weight:600">${name.slice(0,10)}</div>
+    <div class="br-bar-tr"><div class="br-bar-f" style="width:${r.overall}%;background:var(--lime)"></div></div>
+    <div class="br-val" style="color:var(--lime)">${r.overall}</div>
+    <div class="br-label" style="color:var(--lime)">← You</div>
+  </div>`;
+  const benchRows=BENCHMARKS.slice(0,7).map(b=>{
+    const bc=r.overall>=b.score?'var(--lime)':r.overall>=b.score-10?'var(--amber)':'var(--muted2)';
+    return`<div class="br-row">
+      <div class="br-name">${b.name}</div>
+      <div class="br-bar-tr"><div class="br-bar-f" style="width:${b.score}%;background:var(--muted)"></div></div>
+      <div class="br-val" style="color:var(--muted2)">${b.score}</div>
+      <div class="br-label" style="color:${bc};font-size:10px">${r.overall>=b.score?'↑ Above':'↓ Below'}</div>
+    </div>`;
+  }).join('');
+  br.innerHTML=myRow+benchRows;
+
+  // Summary
+  document.getElementById('summaryBox').textContent=r.summary;
+
+  // Risk chips
+  const rm=document.getElementById('riskMeter');
+  rm.innerHTML=(r.risks||[]).map(risk=>{
+    const rc=risk.level==='High'?'var(--rose)':risk.level==='Medium'?'var(--amber)':'var(--lime)';
+    return`<span class="risk-chip" style="color:${rc};border-color:${rc}20">
+      <span style="width:6px;height:6px;border-radius:50%;background:${rc};flex-shrink:0;display:inline-block"></span>
+      ${risk.category}: ${risk.level}
+    </span>`;
+  }).join('');
+  const ri=document.getElementById('riskItems');
+  ri.innerHTML=(r.risks||[]).filter(risk=>risk.level!=='Low').map(risk=>
+    `<div class="li"><span class="li-icon">⚠️</span><div><strong>${risk.category} risk:</strong> ${risk.note}</div></div>`
+  ).join('')||'<div class="li"><span class="li-icon">✓</span>No high-risk signals detected.</div>';
+
+  // Signals, weaknesses, expansion, recs, insights
+  renderList('signalsList',r.signals,'✓','var(--lime)');
+  renderList('weakList',r.weaknesses,'⚠','var(--amber)');
+  renderList('expandList',r.expansion,'→','var(--blue)');
+  renderList('recsList',r.recommendations,'🎯','var(--purple)');
+  renderList('insightsList',r.insights,'💡','var(--teal)');
+
+  // Pitch readiness
+  const pg=document.getElementById('pitchGrid');
+  const pr=r.pitchReadiness||{};
+  pg.innerHTML=[
+    {l:'Deck Compatibility',v:pr.deckCompatibility||'—'},
+    {l:'Board-Room Ready',v:pr.boardRoomReady||'—'},
+    {l:'Naming Risk',v:pr.namingRisk||'—'},
+    {l:'First Impression',v:pr.investorFirstImpression||'—'},
+  ].map(item=>`<div class="pitch-item">
+    <div class="pi-label">${item.l}</div>
+    <div class="pi-val">${item.v}</div>
+  </div>`).join('');
+
+  // Comparables
+  const cg=document.getElementById('compsGrid');
+  const comps=r.comparables||[];
+  cg.innerHTML=comps.slice(0,4).map(c=>{
+    const sc=c.similarity==='high'?'var(--lime)':c.similarity==='medium'?'var(--amber)':'var(--muted2)';
+    return`<div class="comp-card">
+      <div class="comp-name">${c.name||'—'}</div>
+      <div class="comp-sim" style="color:${sc}">Score: ${c.score||'—'} · ${c.similarity||'—'} similarity</div>
+      <div class="comp-reason">${c.reason||''}</div>
+    </div>`;
+  }).join('')||'<div class="li"><span class="li-icon">ℹ️</span>No direct comparables. Add API key for AI-matched comparables.</div>';
+}
+
+function renderList(id,items,icon,color){
+  const el=document.getElementById(id);
+  if(!items?.length){el.innerHTML=`<div class="li"><span class="li-icon">ℹ️</span>No items — add an API key for AI-enhanced analysis.</div>`;return;}
+  el.innerHTML=items.map(item=>`<div class="li"><span class="li-icon" style="color:${color}">${icon}</span><div>${typeof item==='string'?item:item.reason||item.name||'—'}</div></div>`).join('');
+}
+
+// ── Radar chart ────────────────────────────────────────────────────────
+function drawRadar(dims){
+  const svg=document.getElementById('radarSvg');
+  const cx=160,cy=160,r=120;
+  const pts=dims.slice(0,8); // use first 8 dims
+  const n=pts.length;
+  const angle=i=>(Math.PI*2*i/n)-Math.PI/2;
+
+  let html='';
+  // Grid rings
+  [0.25,0.5,0.75,1].forEach(pct=>{
+    const poly=pts.map((_,i)=>{
+      const a=angle(i),rr=r*pct;
+      return`${cx+rr*Math.cos(a)},${cy+rr*Math.sin(a)}`;
+    }).join(' ');
+    html+=`<polygon points="${poly}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+  });
+  // Axis lines
+  pts.forEach((_,i)=>{
+    const a=angle(i);
+    html+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
+  });
+  // Data polygon
+  const dataPts=pts.map((d,i)=>{
+    const a=angle(i),rr=r*(d.score/100);
+    return`${cx+rr*Math.cos(a)},${cy+rr*Math.sin(a)}`;
+  }).join(' ');
+  html+=`<polygon points="${dataPts}" fill="rgba(200,240,74,0.12)" stroke="rgba(200,240,74,0.7)" stroke-width="2"/>`;
+  // Data dots
+  pts.forEach((d,i)=>{
+    const a=angle(i),rr=r*(d.score/100);
+    const x=cx+rr*Math.cos(a),y=cy+rr*Math.sin(a);
+    html+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--lime)" opacity="0.9"/>`;
+  });
+  // Labels
+  pts.forEach((d,i)=>{
+    const a=angle(i),rr=r*1.2;
+    const x=cx+rr*Math.cos(a),y=cy+rr*Math.sin(a);
+    const anchor=Math.cos(a)>0.1?'start':Math.cos(a)<-0.1?'end':'middle';
+    html+=`<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle" fill="rgba(255,255,255,0.45)" font-family="'Geist Mono',monospace" font-size="9">${d.label}</text>`;
+  });
+  svg.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════════════════════════
+function copyReport(){
+  if(!lastResult){showToast('Run analysis first');return;}
+  const r=lastResult;
+  const lines=[
+    `VC BRAND SCORE REPORT — autoDNG`,
+    `${'═'.repeat(50)}`,
+    `Brand: ${r.brand}`,
+    `Overall Score: ${r.overall}/100 · Tier: ${r.tier.toUpperCase()}`,
+    `Generated: ${new Date(r.timestamp).toLocaleString()}`,
+    `Analysis: ${r.localOnly?'Local engine':'AI-enhanced'}`,
+    ``,
+    `SUMMARY`,
+    r.summary,
+    ``,
+    `14-DIMENSION SCORES`,
+    ...(r.dims||[]).map(d=>`  ${d.label.padEnd(16)}: ${d.score}/100 — ${d.detail||''}`),
+    ``,
+    `RISK ASSESSMENT`,
+    ...(r.risks||[]).map(risk=>`  ${risk.category}: ${risk.level} — ${risk.note}`),
+    ``,
+    `INVESTOR SIGNALS`,
+    ...(r.signals||[]).map(s=>`  ✓ ${s}`),
+    ``,
+    `CONCERNS`,
+    ...(r.weaknesses||[]).map(w=>`  ⚠ ${w}`),
+    ``,
+    `PITCH READINESS`,
+    ...(r.pitchReadiness?Object.entries(r.pitchReadiness).map(([k,v])=>`  ${k}: ${v}`):[]),
+    ``,
+    `COMPARABLES`,
+    ...(r.comparables||[]).map(c=>`  ${c.name} (Score: ${c.score}, ${c.similarity} similarity) — ${c.reason}`),
+    ``,
+    `STRATEGIC RECOMMENDATIONS`,
+    ...(r.recommendations||[]).map(rec=>`  → ${rec}`),
+    ``,
+    `NON-OBVIOUS INSIGHTS`,
+    ...(r.insights||[]).map(i=>`  💡 ${i}`),
+    ``,
+    `─────────────────────────────────────────────────`,
+    `Generated by autoDNG VC Brand Score Engine`,
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>showToast('✓ Report copied')).catch(()=>showToast('✗ Copy failed'));
+}
+
+function exportJSON(){
+  if(!lastResult){showToast('Run analysis first');return;}
+  const blob=new Blob([JSON.stringify(lastResult,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'),{href:url,download:`vc-score-${lastResult.brand.toLowerCase().replace(/\W+/g,'-')}.json`}).click();
+  URL.revokeObjectURL(url);
+  showToast('✓ JSON exported');
+}
+
+function exportPDF(){
+  if(!lastResult){showToast('Run analysis first');return;}
+  try{
+    const{jsPDF}=window.jspdf;const doc=new jsPDF();
+    doc.setFontSize(18);doc.setFont('helvetica','bold');
+    doc.text('autoDNG VC Brand Score Report',20,22);
+    doc.setFontSize(13);doc.setFont('helvetica','normal');doc.setTextColor(80);
+    doc.text(`Brand: ${lastResult.brand} · Score: ${lastResult.overall}/100 · ${lastResult.tier.toUpperCase()}`,20,34);
+    doc.setFontSize(10);doc.text(`Generated: ${new Date(lastResult.timestamp).toLocaleString()}`,20,42);
+    let y=54;
+    const section=(title,items,icon='•')=>{
+      if(y>260){doc.addPage();y=20;}
+      doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);
+      doc.text(title,20,y);y+=8;
+      doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(60);
+      (items||[]).forEach(item=>{
+        if(y>270){doc.addPage();y=20;}
+        const txt=`${icon} ${typeof item==='string'?item:item.label?`${item.label}: ${item.score}`:item.name||'—'}`;
+        doc.text(doc.splitTextToSize(txt,170),22,y);y+=6;
+      });
+      y+=4;
+    };
+    section('Summary',[lastResult.summary],'');
+    section('14-Dimension Scores',lastResult.dims,'');
+    section('Risk Assessment',lastResult.risks?.map(r=>`${r.category}: ${r.level} — ${r.note}`),'⚠');
+    section('Investor Signals',lastResult.signals,'✓');
+    section('Concerns',lastResult.weaknesses,'⚠');
+    section('Recommendations',lastResult.recommendations,'→');
+    section('Insights',lastResult.insights,'💡');
+    doc.save(`vc-score-${lastResult.brand.toLowerCase().replace(/\W+/g,'-')}.pdf`);
+    showToast('✓ PDF exported');
+  }catch(e){showToast('PDF export failed — try Copy Report');}
+}
+
+function shareLink(){
+  const name=document.getElementById('brand').value.trim();
+  const url=window.location.href.split('?')[0]+(name?`?brand=${encodeURIComponent(name)}`:'');
+  navigator.clipboard.writeText(url).then(()=>showToast('✓ Link copied')).catch(()=>prompt('Copy this link:',url));
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LIVE PRE-SCORE (as user types)
+// ═══════════════════════════════════════════════════════════════════════
+let preScoreTimer;
+function onBrandInput(){
+  clearTimeout(preScoreTimer);
+  preScoreTimer=setTimeout(()=>{
+    const name=document.getElementById('brand').value.trim().replace(/[^a-zA-Z]/g,'');
+    if(name.length>=3){
+      const local=runLocalScore(name,'','seed','.com');
+      document.getElementById('prescoreBanner').classList.add('on');
+      document.getElementById('prescoreVal').textContent=`${local.overall}/100`;
+      document.getElementById('prescoreVal').style.color=local.overall>=75?'var(--lime)':local.overall>=50?'var(--amber)':'var(--rose)';
+    }else{
+      document.getElementById('prescoreBanner').classList.remove('on');
+    }
+  },350);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// UI CONTROLS
+// ═══════════════════════════════════════════════════════════════════════
+function setProgress(pct,txt,stepIdx){
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+'%';
+  if(txt)document.getElementById('progTxt').textContent=txt;
+}
+function stepDone(i){
+  const el=document.getElementById('pst-'+i);if(el){el.classList.remove('active');el.classList.add('done');}
+  const next=document.getElementById('pst-'+(i+1));if(next)next.classList.add('active');
+}
+function switchProv(p,el){
+  // Save current key
+  localStorage.setItem('vcs_k_'+prov,document.getElementById('akey').value.trim());
+  prov=p;localStorage.setItem('vcs_p',p);
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  key=localStorage.getItem('vcs_k_'+p)||'';
+  mdl=localStorage.getItem('vcs_m_'+p)||PROVS[p].models[0];
+  document.getElementById('akey').value=key;
+  document.getElementById('akey').placeholder=PROVS[p].ph;
+  updateKeyStatus();buildModelSelect();
+}
+function buildModelSelect(){
+  const sel=document.getElementById('mdlSel');
+  sel.innerHTML=PROVS[prov].models.map(m=>`<option value="${m}" ${m===mdl?'selected':''}>${m.split('/').pop().slice(0,20)}</option>`).join('');
+}
+function onMdl(){mdl=document.getElementById('mdlSel').value;localStorage.setItem('vcs_m_'+prov,mdl);}
+function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('vcs_k_'+prov,key);updateKeyStatus();}
+function updateKeyStatus(){
+  const valid=key&&PROVS[prov].val(key);
+  document.getElementById('sdot').className='sdot'+(valid?' ok':'');
+  document.getElementById('stxt').textContent=valid?prov+' ✓':'no key';
+}
+function toggleEye(){const i=document.getElementById('akey');i.type=i.type==='password'?'text':'password';}
+function setIndustry(val,el){
+  document.getElementById('industry').value=val;
+  document.querySelectorAll('.ind-chip').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+function openModal(id){document.getElementById(id).classList.add('on');}
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+function clearAll(){
+  document.getElementById('brand').value='';document.getElementById('industry').value='';
+  document.getElementById('context').value='';document.getElementById('competitors').value='';
+  document.getElementById('prescoreBanner').classList.remove('on');
+  document.getElementById('resultWrap').classList.remove('on');
+  document.getElementById('progWrap').classList.remove('on');
+  document.querySelectorAll('.ind-chip').forEach(b=>b.classList.remove('on'));
+  lastResult=null;
+}
+let toastTimer;
+function showToast(msg,dur=3500){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),dur);
+}
+
+// ── Keyboard shortcuts ─────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run();}
+  if(e.key==='Escape'){document.querySelectorAll('.modal.on').forEach(m=>m.classList.remove('on'));}
 });
 
-// ── Provider/Model Switching ───────────────────────────────────────
-function switchProv(p,el){
-  localStorage.setItem('bl_k_'+prov,key);
-  prov=p;localStorage.setItem('bl_p',p);
-  key=localStorage.getItem('bl_k_'+p)||'';
-  mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
-  if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  const akey = document.getElementById('akey');
-  if (akey) { akey.value = key; akey.placeholder = PROVS[p].ph; }
-  setKeyUI(key);
-  renderModels();
-  
-  // Toggle steering visibility based on key
-  const steeringWrap = document.getElementById('steeringWrap');
-  if (steeringWrap) {
-    steeringWrap.classList.toggle('on', PROVS[p].val(key));
-  }
-}
-function renderModels(){
-  document.getElementById('mrow').innerHTML=PROVS[prov].models.map(m=>
-    `<button class="mchip ${m.id===mdl?'on':''}" data-id="${m.id}" onclick="selMdl('${m.id}',this)">${m.l}</button>`
-  ).join('');
-}
-function selMdl(id,el){
-  mdl=id;localStorage.setItem('bl_m_'+prov,id);
-  document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
-}
-function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
-function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';
-  // Show/hide steering based on key status
-  const steeringWrap = document.getElementById('steeringWrap');
-  if (steeringWrap) steeringWrap.classList.toggle('on', ok);
-}
-function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
-function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
-function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
-function resetFilterState(){filtersChanged=false;const btn=document.getElementById('gbtn');if(btn){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}
+// ── Click outside modal ────────────────────────────────────────────────
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');});
+});
 
-// ── 🧭 AI Steering Functions (Improved & Effective) ─────────────────
-function applySteering() {
-  const input = document.getElementById('steerInput');
-  const feedback = input.value.trim();
-  if (!feedback) { toast('Enter a refinement instruction'); return; }
-  
-  // Save to session (not localStorage — opt-in per generation)
-  sessionStorage.setItem('steer_feedback', feedback);
-  
-  // UI feedback
-  document.getElementById('steerActive').classList.add('on');
-  toast(`🧭 Steering: "${feedback}"`);
-  
-  // Clear input but keep focus for quick edits
-  input.value = '';
-  input.placeholder = `Active: "${feedback}" — type to change`;
-  
-  // Trigger regeneration
-  go(false);
-}
-
-function clearSteering() {
-  sessionStorage.removeItem('steer_feedback');
-  document.getElementById('steerInput').value = '';
-  document.getElementById('steerInput').placeholder = "e.g. 'Shorter names', 'Avoid -gen suffixes', 'More premium feel'";
-  document.getElementById('steerActive').classList.remove('on');
-  toast('🧭 Steering cleared');
-}
-
-function setPreset(text) {
-  document.getElementById('steerInput').value = text;
-  applySteering();
-}
-
-// Build effective steering prompt for LLMs
-function buildSteeringPrompt(basePrompt, steerFeedback) {
-  if (!steerFeedback) return basePrompt;
-  
-  // Chain-of-thought style instructions that LLMs reliably follow
-  return `${basePrompt}
-
-🧭 USER REFINEMENT INSTRUCTIONS:
-"${steerFeedback}"
-
-To follow these instructions:
-1. First, think: "What does '${steerFeedback}' mean for naming?"
-2. Then, generate names that explicitly match that direction
-3. Reject any name that violates the instruction
-4. Prioritize names that strongly align with the request
-
-Return ONLY the final JSON array. No explanations.`;
-}
-
-// Local fallback filtering (works without API key)
-function applyLocalSteering(names, steerFeedback) {
-  if (!steerFeedback) return names;
-  const lower = steerFeedback.toLowerCase();
-  
-  return names.filter(n => {
-    const name = n.name.toLowerCase();
-    const len = name.length;
-    
-    // Length preferences
-    if (lower.includes('short') && len > 7) return Math.random() < 0.2;
-    if (lower.includes('long') && len < 6) return Math.random() < 0.2;
-    
-    // Suffix avoidance
-    if (lower.includes('avoid') && /gen|nex|ify|ly|ware|tech|labs|cloud|data|sync|flow/i.test(name)) return false;
-    
-    // Style preferences
-    if ((lower.includes('premium') || lower.includes('luxury')) && n._rubricScore < 75) return Math.random() < 0.3;
-    if (lower.includes('technical') && !/[xzqvk]/.test(name)) return Math.random() < 0.4;
-    if (lower.includes('softer') && /[^aeiou]{3,}/.test(name)) return Math.random() < 0.3;
-    
-    // TLD focus
-    if (lower.includes('.com') && !isInventedBrandable(name)) return Math.random() < 0.5;
-    
-    return true;
+// ── URL param auto-fill ────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  // Restore provider
+  const savedProv=localStorage.getItem('vcs_p')||'openrouter';
+  document.querySelectorAll('.ptab').forEach(b=>{
+    const txt=b.textContent.toLowerCase();
+    if((savedProv==='openrouter'&&txt.includes('openrouter'))||
+       (savedProv==='openai'&&txt.includes('openai'))||
+       (savedProv==='gemini'&&txt.includes('gemini'))||
+       (savedProv==='groq'&&txt.includes('groq')))b.classList.add('on');
+    else b.classList.remove('on');
   });
-}
+  document.getElementById('akey').value=key;
+  document.getElementById('akey').placeholder=PROVS[prov].ph;
+  buildModelSelect();updateKeyStatus();
 
-// ── Procedural Generation (Phonetic-Valid Only) ─────────────────────
-function proceduralGenerate(grammar, morphology, count = 100, industry = null) {
-  const { phonetic_inventory, structural_patterns, invented_endings, pattern_weights, suffix_probability } = grammar;
-  const { prefixes, suffixes, clusters } = morphology;
-  const availableSuffixes = getIndustryAppropriateSuffixes(industry, suffixes);
-  const candidates = [], seen = new Set(), suffixCounts = {}, prefixCounts = {};
-  
-  while (candidates.length < count) {
-    const weightedPatterns = structural_patterns.map(p => ({ pattern: p, weight: pattern_weights?.[p] || 1 }));
-    const pattern = pickWeighted(weightedPatterns)?.pattern || structural_patterns[0];
-    
-    let name = pattern
-      .replace(/{onset}/, () => pickWeighted(phonetic_inventory.safe_onsets))
-      .replace(/{vowel}/, () => pickWeighted(phonetic_inventory.vowels))
-      .replace(/{coda}/, () => pickWeighted(phonetic_inventory.safe_codas))
-      .replace(/{prefix}/, () => {
-        const usable = prefixes.filter(p => { if(p.trend==='saturating')return false; const used=prefixCounts[p.term]||0; return used<1; });
-        const p = pickWeighted(usable.length?usable:prefixes);
-        if(p?.term) prefixCounts[p.term]=(prefixCounts[p.term]||0)+1;
-        return p?.term||'';
-      })
-      .replace(/{suffix}/, () => {
-        if (Math.random() > (suffix_probability || 0.55)) return '';
-        const s = pickWeighted(availableSuffixes.filter(s => s.trend !== 'saturating'));
-        if (s?.term) suffixCounts[s.term] = (suffixCounts[s.term] || 0) + 1;
-        return s?.term || '';
-      })
-      .replace(/{cluster}/, () => pickWeighted(clusters))
-      .replace(/{semantic_root}/, () => {
-        const roots = Object.keys(rufloIntel?.semantic_taxonomy?.high_value_roots || {});
-        return roots[Math.floor(Math.random() * roots.length)] || '';
-      })
-      .replace(/{invented_ending}/, () => {
-        const endings = [...(invented_endings || []), ""];
-        const weighted = endings.map(e => ({ term: e, weight: e === "" ? 0.45 : 1 }));
-        return pickWeighted(weighted)?.term || "";
-      });
-    
-    name = capitalize(name.replace(/\s+/g, '').slice(0, 10));
-    const key = normalizeBrandName(name);
-    
-    if (!isPhoneticallyValid(name)) continue;
-    const len = name.replace(/\s+/g, '').length;
-    if (len < 3 || len > 10) continue;
-    
-    const suffix = name.match(/(gen|nex|ics|ent|ion|abs|roz|mind|ara|zen|va|lum)$/)?.[0];
-    const diversityPenalty = suffix && suffixCounts[suffix] > 3 ? Math.pow(0.7, suffixCounts[suffix] - 3) : 1;
-    
-    if (!seen.has(key) && passesLocalFilters(name, rufloIntel?.constraints, rufloIntel?.negative_similarity_filters) && Math.random() < diversityPenalty) {
-      seen.add(key);
-      candidates.push({ name, source: 'procedural', _length: len, _invented: isInventedBrandable(name) });
-    }
-  }
-  return candidates;
-}
-
-function isConsumerHealthIndustry(industry) { return ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"].includes(industry); }
-function getIndustryAppropriateSuffixes(industry, suffixes) {
-  if (!rufloIntel?.industry_overrides) return suffixes;
-  const override = rufloIntel.industry_overrides.healthcare_consumer;
-  if (override?.industries?.includes(industry) && override?.suffix_adjustments) {
-    return suffixes.map(s => {
-      const adj = override.suffix_adjustments[s.term];
-      return adj ? { ...s, weight: (s.weight || 1) * (adj.weight_multiplier || 1) } : s;
-    }).filter(s => !(rufloIntel?.semantic_taxonomy?.high_value_roots?.[s.term]?.consumer_health_fit === 'avoid'));
-  }
-  return suffixes;
-}
-function passesLocalFilters(name,constraints,filters){
-  if(!name)return false;
-  if(constraints?.hard_exclusions?.some(e=>name.toLowerCase().includes(e)))return false;
-  if(filters?.overused_prefixes?.some(p=>name.toLowerCase().startsWith(p)))return false;
-  if(filters?.overused_suffixes?.some(s=>name.toLowerCase().endsWith(s)))return false;
-  if(filters?.forbidden_combinations?.some(c=>name.toLowerCase().includes(c)))return false;
-  if(/[^\w]/.test(name))return false;
-  return true;
-}
-
-// ── Scoring Engine (Rubric-Based + Tier Bonus) ─────────────────────
-function computeRubricScore(nameObj,config=rufloIntel){
-  if(!config?.scoring_rubric) return 70 + getTierBonus(nameObj.name);
-  const name = (nameObj.name || '').toLowerCase().replace(/[^a-z]/g, '');
-  const { global_pronounceability, risk_heuristics, semantic_taxonomy } = config;
-  
-  const brandability = {
-    uniqueness: Math.min(1, name.length / 8),
-    phonetic_clarity: validatePronounceability(nameObj.name) / 100,
-    length_fit: (name.length >= 4 && name.length <= 8) ? 1 : 0.5,
-    memorability: hasCVCVPattern(name) ? 1 : 0.7,
-    invented_bonus: isInventedBrandable(nameObj.name) ? 0.15 : 0
-  };
-  const commercial = {
-    trademark_distance: assessTMRisk(name, risk_heuristics?.trademark_risk),
-    domain_availability: (nameObj._availabilityScore || 70) / 100,
-    vertical_alignment: assessVerticalFit(name, semantic_taxonomy),
-    com_availability_boost: isInventedBrandable(nameObj.name) && name.length >= 5 && name.length <= 7 ? 0.1 : 0
-  };
-  const differentiation = {
-    trend_alignment: config.predictive_signals?.trend_weights?.rising_patterns || 1,
-    structural_novelty: recentNamesCache.has(name) ? 0 : 1,
-    semantic_flexibility: countApplicableVerticals(name, semantic_taxonomy)
-  };
-  
-  const brandScore = Object.values(brandability).reduce((a,b) => a+b, 0) / Object.keys(brandability).length;
-  const commScore = Object.values(commercial).reduce((a,b) => a+b, 0) / Object.keys(commercial).length;  
-  const diffScore = Object.values(differentiation).reduce((a,b) => a+b, 0) / Object.keys(differentiation).length;
-  
-  const rawScore = brandScore * 0.40 + commScore * 0.35 + diffScore * 0.25;
-  return Math.round(Math.min(100, (rawScore * 100) + getTierBonus(nameObj.name)));
-}
-
-function validatePronounceability(name) {
-  const lower = name.toLowerCase().replace(/[^a-z]/g, '');
-  const hasCVCV = /^[^aeiou]?[aeiou][^aeiou][aeiou]/i.test(lower);
-  const balancedVowels = (lower.match(/[aeiou]/g)||[]).length >= 2;
-  const hardCluster = /[^aeiou]{4,}/.test(lower);
-  const rareTriple = /[qxz]{3,}/.test(lower);
-  const vowelTrain = /[aeiou]{3,}/.test(lower);
-  let score = 100;
-  if (hasCVCV) score += 8; if (balancedVowels) score += 5;
-  if (hardCluster) score -= 20; if (rareTriple) score -= 15; if (vowelTrain) score -= 10;
-  return Math.max(40, Math.min(100, score));
-}
-function assessTMRisk(name,riskConfig){
-  if(!riskConfig)return 0.7;
-  if(riskConfig.high_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.4;
-  if(riskConfig.low_risk_patterns?.some(p=>new RegExp(p).test(name)))return 0.9;
-  return 0.7;
-}
-function assessVerticalFit(name,taxonomy){
-  if(!taxonomy?.high_value_roots)return 0.5;
-  const roots=Object.keys(taxonomy.high_value_roots);
-  const matches=roots.filter(r=>name.toLowerCase().includes(r)).length;
-  return Math.min(1,0.4+matches*0.3);
-}
-function countApplicableVerticals(name,taxonomy){
-  if(!taxonomy?.high_value_roots)return 1;
-  let count=0;
-  for(const[root,data]of Object.entries(taxonomy.high_value_roots)){
-    if(name.toLowerCase().includes(root)){count+=data.verticals?.length||1;}
-  }
-  return Math.min(3,count);
-}
-function passesGlobalPronounceability(name,config){
-  if(!config?.global_pronounceability)return true;
-  const{risk_patterns,min_threshold}=config.global_pronounceability;
-  let score=1.0;
-  for(const risk of risk_patterns){ if(new RegExp(risk.pattern).test(name.toLowerCase())){score-=0.15;} }
-  return score>=min_threshold;
-}
-function calculateAvailabilityScore(name,tld='.com'){
-  let score=70;
-  const lower=name.toLowerCase().replace(/\s+/g,''),len=lower.length;
-  const commonWords=namingIntel?.oversaturated_terms?.slice(0,40)?.map(x=>x[0])||['cloud','data','sync','flow','core','labs','tech','app','web','net'];
-  if(commonWords.some(w=>lower.includes(w))){score-=40;}
-  if(len<=4&&/^[a-z]+$/.test(lower)){score-=20;}
-  if(/(ify|ly|able|verse|base|flow|cloud|sync|labs)$/i.test(lower)){score-=25;}
-  if(/[-\d]/.test(name))score-=25;
-  if(/[xzqvk]/.test(lower))score+=6;
-  if(/[^aeiou]{3,}/.test(lower))score+=10;
-  if(len>=5&&len<=7)score+=10;
-  if(/^[aeiou][^aeiou][aeiou][^aeiou]/i.test(lower))score+=8;
-  
-  if (tld === '.com' || tld === 'mix') {
-    const clean = name.toLowerCase().replace(/\s+/g, '');
-    if (isInventedBrandable(name) && clean.length >= 5 && clean.length <= 7) score += 18;
-    else if (isInventedBrandable(name) && clean.length >= 3 && clean.length <= 4) score += 12;
-    else if (clean.length >= 5 && clean.length <= 7 && !commonWords.some(w => clean.includes(w))) score += 8;
-  }
-  return Math.max(5, Math.min(99, score));
-}
-
-// ── Prompts ───────────────────────────────────────────────────────
-const SYS=`You are an elite startup naming strategist. Generate structurally distinct startup brand names. Prioritize phonetic diversity and archetype fidelity. Rules: memorable, globally pronounceable, clean phonetics, strong brandability, avoid generic AI buzzwords, avoid trademark-heavy names, avoid hyphens and numbers. Avoid overused startup terms: AI, Nova, Core, Flow, Labs, Nexus, Meta, Quantum, Bot, Sync, Cloud, Data. Each output name must belong to a DIFFERENT phonetic family. Return ONLY raw JSON array. Format: [{"name":"","tagline":"","naming_pattern":"","vc_signal":"","why_it_works":"","score":{"brand_strength":90,"memorability":90,"global_fit":90,"trend_alignment":90}}]`;
-const GEMINI_SYS=`You are an elite VC startup naming strategist. Return ONLY valid raw JSON. RULES: No markdown, No explanations, No code fences, EXACTLY 5 objects, Compact JSON only. FORMAT: [{"name":"Klyro","tagline":"AI workflows simplified","naming_pattern":"Abstract","vc_signal":"VC-ready","why_it_works":"Short memorable modern","score":{"brand_strength":90,"memorability":91,"global_fit":88,"trend_alignment":89}}]`;
-const STYLE_DNA={
-  ultra_short:`Structure: 4-5 characters, single token, hard consonants, minimal vowels, no semantic meaning. Examples: Brex, Ramp, Deel, Arc`,
-  invented:`Structure: invented phonetics, balanced vowels/consonants, globally pronounceable, modern SaaS energy, no direct dictionary roots. Examples: Figma, Vanta, Asana`,
-  real_adjacent:`Structure: inspired by real words, softened semantics, trust-oriented, easy pronunciation, emotionally neutral. Examples: Notion, Mercury, Plaid`,
-  infra:`Structure: technical/devtool feel, hard consonants, compressed syllables, infrastructure energy, slightly mechanical. Examples: Vercel, Datadog, HashiCorp`,
-  luxury:`Structure: elegant phonetics, flowing vowels, premium cadence, soft consonants, fashion/luxury feel. Examples: Velora, Aurelia, Rivian`,
-  enterprise:`Structure: trustworthy, stable, scalable corporate tone, strong endings, conservative phonetics. Examples: Okta, Workday, ServiceNow`,
-  playful:`Structure: softer consonants, memorable rhythm, consumer-friendly, emotionally warm. Examples: Canva, Loom, Duolingo`,
-  future:`Structure: futuristic phonetics, uncommon syllables, AI-native feel, strong distinctiveness. Examples: Anthropic, Replit, OpenAI`,
-  mythic:`Structure: powerful tone, legendary cadence, deep-tech seriousness, strong syllables. Examples: Anduril, Palantir, Oracle`
-};
-function USR(industry,style,aud,kw,tlds,lang,strictTld=false,intelData=null){
-  const langInstructions={'en':'Generate English-only names. Prioritize .com availability.','global':'Generate globally pronounceable names. Avoid culture-specific references.','non-en':'Optimized for non-English markets. Prioritize .ai/.io/.xyz.','multilingual':'Names that work across 3+ languages. Avoid negative homophones.'};
-  let intelPrompt='';
-  if(intelData){
-    const patterns=intelData.patterns?.map(p=>`${p.naming_pattern} (${p.count} startups)`).join(', ')||'';
-    const avoid=intelData.competitors?.join(', ')||'';
-    intelPrompt=`\n🧠 LOCAL INTELLIGENCE DATA:\n• Proven Naming Patterns: ${patterns}\n• AVOID THESE: ${avoid}\n`;
-  }
-  return `Create ${prov==='gemini'?5:10} brand names for a "${industry}" startup.${intelPrompt}
-Language: ${lang} — ${langInstructions[lang]}
-Style: ${style||'mixed'} | Audience: ${aud} | TLDs: ${tlds.join(', ')}
-${kw?'\nKeywords: '+kw:''}
-${promptSummary?`\n\nREAL STARTUP NAMING INTELLIGENCE:\n${promptSummary}\n`:''}
-Rules: Modern VC-backable startup feel, Strong phonetic distinction, Avoid repetitive prefixes/suffixes, Prioritize memorability, Ensure names sound distinct when spoken aloud.
-${prov==='gemini'?'Return compact JSON array of exactly 5 objects.':'Return JSON array of exactly 10 objects.'}
-${style?`Name Shape DNA: ${STYLE_DNA[style]}`:''}
-Raw JSON only.`;}
-
-// ── API Callers with Retry Logic ──────────────────────────────────
-async function fetchWithRetry(url,options,retries=3){
-  for(let i=0;i<retries;i++){
-    try{ const res=await fetch(url,options); if(res.ok)return res; if(res.status===503&&i<retries-1){await new Promise(r=>setTimeout(r,1000*(i+1)));continue;} throw new Error(`HTTP ${res.status}`); }
-    catch(e){if(i===retries-1)throw e;await new Promise(r=>setTimeout(r,1000*(i+1)));}
-  }
-}
-async function callOpenRouter(sys,usr,cb){
-  const strict=document.getElementById('strictTld')?.checked;
-  const baseTemp=strict?0.62:0.78;
-  const r=await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:mdl,temperature:baseTemp+(Math.random()*0.08),top_p:0.9+(Math.random()*0.1),max_tokens:4000,stream:false,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
-  });
-  const data=await r.json();
-  if (!r.ok) { const err=data?.error?.message||'Unknown error'; if(r.status===402)throw new Error('API_CREDIT_LIMIT'); throw new Error(`API ${r.status}: ${err}`); }
-  const text=data.choices?.[0]?.message?.content||''; cb(text);return text;
-}
-async function callOpenAI(sys,usr,cb){
-  const r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:mdl,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
-  });
-  if (!r.ok) { const data=await r.json(); const err=data?.error?.message||'Unknown error'; if(r.status===402)throw new Error('API_CREDIT_LIMIT'); throw new Error(`API ${r.status}: ${err}`); }
-  return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
-}
-async function callGemini(sys,usr,cb){
-  const strict=document.getElementById('strictTld')?.checked;
-  const r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:usr}]}],generationConfig:{temperature:0.7+(Math.random()*0.1),topP:0.85+(Math.random()*0.15),maxOutputTokens:8192,responseMimeType:"application/json"}})
-  });
-  const data=await r.json();
-  if (!r.ok) { const err=data?.error?.message||'Unknown error'; if(r.status===402)throw new Error('API_CREDIT_LIMIT'); throw new Error(`API ${r.status}: ${err}`); }
-  const parts=data.candidates?.[0]?.content?.parts||[]; const text=parts.map(p=>p.text||'').join(''); cb(text);return text;
-}
-async function callGroq(sys,usr,cb){
-  const strict=document.getElementById('strictTld')?.checked;
-  const r=await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:mdl,temperature:0.7+(Math.random()*0.08),top_p:0.92,max_tokens:4000,stream:true,messages:[{role:'system',content:sys},{role:'user',content:usr}]})
-  });
-  if (!r.ok) { const data=await r.json(); const err=data?.error?.message||'Unknown error'; if(r.status===402)throw new Error('API_CREDIT_LIMIT'); throw new Error(`API ${r.status}: ${err}`); }
-  return readSSE(r,ev=>{const t=ev.choices?.[0]?.delta?.content;if(t)cb(t);return t||'';});
-}
-async function readSSE(resp,extract){
-  const reader=resp.body.getReader(),dec=new TextDecoder(); let buf='',full='';
-  while(true){ const{done,value}=await reader.read(); if(done)break; buf+=dec.decode(value,{stream:true}); const lines=buf.split('\n'); buf=lines.pop();
-    for(const l of lines){ if(!l.startsWith('data: '))continue; const raw=l.slice(6).trim(); if(raw==='[DONE]')continue; try{const ev=JSON.parse(raw);const t=extract(ev);full+=t;}catch{}} }
-  return full;
-}
-
-// ── Local Fallback Generator (Phonetic Templates) ──────────────────
-function generateSimplePhoneticFallback(count) {
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  const patterns = [
-    () => pick(['K','V','Z','P','M','T','R','S','C']) + pick(['a','e','i','o','u']) + pick(['x','l','r','v','n']) + pick(['a','o','e','i']),
-    () => pick(['St','Pr','Tr','Cl','Fl','Br','Dr','Kr','Vr','Zl']) + pick(['a','e','i','o','u']) + pick(['x','l','r','n','t']),
-    () => pick(['K','V','Z','P','M']) + pick(['a','e','i','o','u']) + pick(['v','l','r','n']) + pick(['a','o','e']) + pick(['s','x','n'])
-  ];
-  const res = [];
-  for (let i = 0; i < count * 2; i++) {
-    const name = patterns[Math.floor(Math.random() * patterns.length)]();
-    if (name.length >= 4 && name.length <= 7 && isPhoneticallyValid(name)) {
-      res.push({ name, source: 'local_fallback', _length: name.length });
-    }
-    if (res.length >= count) break;
-  }
-  return res;
-}
-
-// ── Generate (TWO-PHASE PIPELINE) ──────────────────────────────────
-async function go(skipAI = false) {
-  if (busy) return;
-  const industryEl = document.getElementById('industry');
-  if (!industryEl) { toast('⚠️ Form not ready — please wait'); return; }
-  const ind = industryEl.value;
-  if (!ind) { toast('Please select an industry'); return; }
-  if (!skipAI && !PROVS[prov].val(key)) { document.getElementById('apiKeyModal')?.classList.add('on'); return; }
-  
-  const languageEl = document.getElementById('language');
-  language = languageEl?.value || 'global';
-  localStorage.setItem('bl_lang', language);
-  
-  busy=true; domC={};
-  const btn=document.getElementById('gbtn'); btn.disabled=true;btn.classList.add('ld');btn.querySelector('.blbl').textContent='Generating…';
-  const pw=document.getElementById('pw'),pf=document.getElementById('pfill'),pt=document.getElementById('ptxt'),pp=document.getElementById('ppct'),ps=document.getElementById('pstream');
-  pw.classList.add('on');pf.style.width='0%';ps.textContent='';
-  document.getElementById('results').innerHTML=''; document.getElementById('exportRow').style.display='none';
-  
-  let intelData = industryIntel?.[ind] || null;
-  const phases=[[12,'Querying VC naming patterns…'],[28,'Analysing NameBio domain trends…'],[48,'Generating candidates…'],[68,'Scoring memorability…'],[84,'Finalising…']];
-  let pi=0;
-  const tick=setInterval(()=>{if(pi<phases.length){pf.style.width=phases[pi][0]+'%';pp.textContent=phases[pi][0]+'%';pt.textContent=phases[pi][1];pi++;}},950);
-  
-  const tlds=TLDS[document.getElementById('tld')?.value||'mix']||TLDS.mix,strictTld=document.getElementById('strictTld')?.checked;
-  
-  try{
-    pt.textContent = 'Generating candidate names…'; pp.textContent = '48%';
-    const targetCount = rufloIntel?.pipeline_config?.stage_1_local_generation?.target_count || 100;
-    let candidates = [];
-    try { if (rufloIntel?.generation_grammar && rufloIntel?.morphology) { candidates = proceduralGenerate(rufloIntel.generation_grammar, rufloIntel.morphology, targetCount, ind); } } 
-    catch (e) { console.warn('Procedural gen failed', e); }
-    
-    if (candidates.length < 15) {
-      const fallback = generateSimplePhoneticFallback(20);
-      candidates = [...candidates, ...fallback];
-      if (skipAI) toast('Injecting local fallback names for diversity...');
-    } else {
-      let rawCandidates = [];
-      for(const agent of NAMING_AGENTS){
-        const count = Math.ceil(40 * agent.weight);
-        const generated = await generateRawCandidates(ind, agent.id, document.getElementById('kw')?.value||'', count, agent);
-        rawCandidates.push(...generated);
-      }
-      candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
-    }
-    
-    pt.textContent='Scoring for availability…';pp.textContent='72%';
-    let scored=candidates.map(c=>{
-      const availScore=calculateAvailabilityScore(c.name,tlds[0]);
-      const rubricScore=computeRubricScore(c);
-      return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_combinedScore:(availScore*0.6)+(rubricScore*0.4)};
-    });
-    
-    // 🧭 Apply local steering fallback (works without API key)
-    const steerFeedback = sessionStorage.getItem('steer_feedback');
-    if (steerFeedback && !skipAI) {
-      scored = applyLocalSteering(scored, steerFeedback);
-    }
-    
-    const filteredByGlobal=scored.filter(n=>passesGlobalPronounceability(n.name,rufloIntel));
-    let finalNames,minResults=prov==='gemini'?3:5;
-    if(filteredByGlobal.length>=minResults){finalNames=filteredByGlobal;}
-    else{finalNames=[...scored].sort((a,b)=>(b._rubricScore||0)-(a._rubricScore||0)).slice(0,prov==='gemini'?5:10);toast('Limited results — try different style or industry');}
-    
-    const uniqueNames=[];
-    for(const item of finalNames){
-      let similarityHits=0;
-      for(const existing of uniqueNames){if(isNearDuplicate(item.name,existing.name)){similarityHits++;}}
-      for(const oldName of recentNamesCache){if(isNearDuplicate(item.name,oldName)){similarityHits++;}}
-      if(similarityHits<=1){
-        item.diversityPenalty=similarityHits*8;
-        item.finalScore=(item._combinedScore||70)-item.diversityPenalty;
-        uniqueNames.push(item);
-        recentNamesCache.add(item.name);
-      }
-    }
-    if(uniqueNames.length<(prov==='gemini'?3:5)&&candidates.length>finalNames.length){
-      const extras=candidates.filter(c=>{
-        const norm=normalizeBrandName(c.name);
-        return ![...recentNamesCache].some(s=>norm===s||(Math.abs(norm.length-s.length)<=1&&[...norm].filter((c,i)=>c===s[i]).length/Math.max(norm.length,s.length)>0.8));
-      }).slice(0,(prov==='gemini'?3:5)-uniqueNames.length);
-      uniqueNames.push(...extras);
-    }
-    
-    // 🎯 Sort: Score (60%) + Tier Bonus (30%) + Pronounceability (10%)
-    let names = uniqueNames.sort((a, b) => {
-      const scoreA = a.finalScore || a._combinedScore || 70;
-      const scoreB = b.finalScore || b._combinedScore || 70;
-      const tierA = getTierBonus(a.name);
-      const tierB = getTierBonus(b.name);
-      const pronA = validatePronounceability(a.name);
-      const pronB = validatePronounceability(b.name);
-      const weightedA = (scoreA * 0.60) + (tierA * 30) + (pronA * 0.10);
-      const weightedB = (scoreB * 0.60) + (tierB * 30) + (pronB * 0.10);
-      return weightedB - weightedA;
-    }).slice(0, prov === 'gemini' ? 5 : 10);
-    
-    if (names.length === 0 && scored.length > 0) { names = scored.slice(0, 10); names.forEach(n => n.finalScore = 70); }
-    if (names.length === 0) { names = candidates.slice(0, 10).map(n => ({...n, finalScore: 65, _rubricScore: 65, _availabilityScore: 70})); }
-    
-    // 🧭 AI Validation with Steering (only if API key present)
-    if(!skipAI && PROVS[prov].val(key) && steerFeedback){
-      pt.textContent='AI Refinement…'; pp.textContent='88%';
-      
-      // Build effective steering prompt
-      const basePrompt = `You are an elite VC naming strategist. Validate these names for a "${ind}" startup. Return ONLY valid JSON with: tagline, naming_pattern, vc_signal, why_it_works, global_safe, tm_risk. Names: ${names.map(n => n.name).join(', ')}.`;
-      const steeringPrompt = buildSteeringPrompt(basePrompt, steerFeedback);
-      
-      const sys = prov==='gemini' ? GEMINI_SYS : SYS;
-      const refined = await (prov === 'gemini' ? callGemini : prov === 'openai' ? callOpenAI : prov === 'groq' ? callGroq : callOpenRouter)(sys, steeringPrompt, () => {});
-      try {
-        const clean = String(refined || '').replace(/```json|```/g, '').trim();
-        const llmData = JSON.parse(clean || '[]');
-        names = names.map((n, i) => ({ ...n, ...(llmData[i] || {}) }));
-      } catch (e) {
-        if (e.message === 'API_CREDIT_LIMIT') toast('⚠️ API credit limit reached. Using local results.');
-        // Fallback: enrich with basic metadata
-        names = names.map(n => ({
-          ...n, tagline: n.tagline || `${n.name} — Engineered for ${ind || 'innovation'}`,
-          naming_pattern: n.naming_pattern || 'Phonetic-First', vc_signal: n.vc_signal || 'Clean, ownable, globally pronounceable',
-          why_it_works: n.why_it_works || 'Optimized for CVCV structure, zero semantic baggage, high .com availability.', global_safe: true, tm_risk: 'unknown'
-        }));
-      }
-      // Post-filter banned suffixes
-      const bannedSuffixes = /-(gen|nex|ify|ly|ware|tech|proz|tra|mez)$/i;
-      names = names.filter(n => !bannedSuffixes.test(n.name));
-      if (names.length < 5 && scored.length > 0) {
-        const localBackup = scored.filter(n => !bannedSuffixes.test(n.name)).slice(0, 10 - names.length);
-        names = [...names, ...localBackup];
-      }
-    } else if(!skipAI && PROVS[prov].val(key)){
-      // Standard AI validation without steering
-      pt.textContent='AI Validation…'; pp.textContent='88%';
-      const refinementPrompt = `You are an elite VC naming strategist. Validate these names for a "${ind}" startup. Return ONLY valid JSON with: tagline, naming_pattern, vc_signal, why_it_works, global_safe, tm_risk. Names: ${names.map(n => n.name).join(', ')}. Raw JSON only.`;
-      const sys = prov==='gemini' ? GEMINI_SYS : SYS;
-      const refined = await (prov === 'gemini' ? callGemini : prov === 'openai' ? callOpenAI : prov === 'groq' ? callGroq : callOpenRouter)(sys, refinementPrompt, () => {});
-      try {
-        const clean = String(refined || '').replace(/```json|```/g, '').trim();
-        const llmData = JSON.parse(clean || '[]');
-        names = names.map((n, i) => ({ ...n, ...(llmData[i] || {}) }));
-      } catch (e) {
-        if (e.message === 'API_CREDIT_LIMIT') toast('⚠️ API credit limit reached. Using local results.');
-        names = names.map(n => ({
-          ...n, tagline: n.tagline || `${n.name} — Engineered for ${ind || 'innovation'}`,
-          naming_pattern: n.naming_pattern || 'Phonetic-First', vc_signal: n.vc_signal || 'Clean, ownable, globally pronounceable',
-          why_it_works: n.why_it_works || 'Optimized for CVCV structure, zero semantic baggage, high .com availability.', global_safe: true, tm_risk: 'unknown'
-        }));
-      }
-    } else {
-      pt.textContent = 'Finalizing locally…'; pp.textContent = '88%';
-      names = names.map(n => ({
-        ...n, tagline: n.source === 'procedural' ? 'Locally generated brandable' : (n.tagline || ''),
-        naming_pattern: n.source === 'procedural' ? 'Phonetic-First' : (n.naming_pattern || ''),
-        vc_signal: n.source === 'procedural' ? 'VC-ready structure' : (n.vc_signal || ''),
-        why_it_works: n.source === 'procedural' ? 'Optimized for global pronunciation & domain availability.' : (n.why_it_works || '')
-      }));
-      await new Promise(r => setTimeout(r, 300));
-    }
-    
-    pt.textContent='Validating domains…';pp.textContent='96%';
-    lastGeneratedNames=names.map(n=>({
-      ...n, _d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t), _id:n.name.replace(/\s+/g,'-'),
-      _generated:new Date().toISOString(), _provider:prov, score:computeScores(n), _model:mdl
-    }));
-    clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;
-    renderCards(lastGeneratedNames,tlds);
-    document.getElementById('exportRow').style.display='flex';
-    const avgAvail=Math.round(names.reduce((sum,n)=>sum+(n._availabilityScore||70),0)/names.length);
-    if(avgAvail<60)toast(`Tip: Try "invented" style for more available .com options`);
-    resetFilterState();
-  }catch(e){
-    clearInterval(tick);pw.classList.remove('on');
-    document.getElementById('results').innerHTML=`<div class="empty"><div class="eicon">⚠</div><div class="etitle">Generation Error</div><div class="esub">${e.message}</div><div style="margin-top:12px;font-size:12px;color:var(--muted2)">Try: different provider, broader style, or check API key</div></div>`;
-    toast('Error: '+e.message); console.error('Generation failed:',e);
-  }finally{
-    busy=false;btn.disabled=false;btn.classList.remove('ld');
-    if(!filtersChanged){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}
-  }
-}
-
-// Fallback LLM generation
-async function generateRawCandidates(industry,style,kw,targetCount=25,agent=null){
-  const heuristicExamples=generateHeuristicExamples(industry,6);
-  const exampleList=heuristicExamples.map(e=>`- ${e}`).join('\n');
-  const randomSeed=Math.random().toString(36).slice(2,10);
-  const batchId=`${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*999)}`;
-  const exclusionList=recentNamesCache.size>0?`\n🚫 AVOID THESE RECENTLY GENERATED NAMES (do not repeat):\n${Array.from(recentNamesCache).slice(-15).map(n=>`- ${n}`).join('\n')}`:'';
-  const intel=industryIntel[industry]||{};
-  const topClusters=(intel.top_clusters||[]).slice(0,8).join(', ');
-  const topSuffixes=(intel.top_suffixes||[]).slice(0,8).join(', ');
-  const topPrefixes=(intel.top_prefixes||[]).slice(0,8).join(', ');
-  const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
-REAL INDUSTRY DATA: Top consonant clusters: ${topClusters}, Top startup suffixes: ${topSuffixes}, Top startup prefixes: ${topPrefixes}
-🎯 STYLE EXAMPLES: ${exampleList}
-🔄 BATCH ${batchId} VARIATION 🎲 SEED: ${randomSeed} ${exclusionList}
-AGENT PERSONALITY: ${agent ? `Agent: ${agent.id}\nStyle: ${agent.style}\nRules: ${agent.rules.join(', ')}` : ''}
-Rules: 4-8 characters, globally pronounceable, Each generated name must sound DISTINCT, Use varied consonant structures, Avoid repeating prefixes/suffixes, Avoid: cloud, data, sync, flow, nexus, meta, quantum, AI, bot, labs. Prefer: uncommon consonants (x,z,q,v,k), vowel-consonant alternation.
-Style DNA: ${style?STYLE_DNA[style]:`Mix: 30% invented, 30% compound, 20% atomic, 20% hybrid.`}
-Brand Style: Mixed varied structures — atomic, compound, and invented phonetics welcome.
-${kw?`Incorporate creatively: ${kw}`:''}
-Return ONLY a JSON array: [{"name":"Zylox","reason":"invented, short, tech-phonetics"}, ...] No markdown.`;
-  const sys=`You are a startup naming expert. Return ONLY valid JSON array.`;
-  try{
-    let response;
-    if(prov==='gemini')response=await callGemini(sys,prompt,()=>{});
-    else if(prov==='openai')response=await callOpenAI(sys,prompt,()=>{});
-    else if(prov==='groq')response=await callGroq(sys,prompt,()=>{});
-    else response=await callOpenRouter(sys,prompt,()=>{});
-    const clean=String(response||'').replace(/```json|```/g,'').trim();
-    let names=null;
-    try{names=JSON.parse(clean||'[]');}catch(e){const start=clean.indexOf('['),end=clean.lastIndexOf(']');if(start!==-1&&end!==-1)names=JSON.parse(clean.slice(start,end+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));}
-    if(!Array.isArray(names)){return [];}
-    const unique=[];const usedPrefixes={};
-    for(const n of names){
-      if(recentNamesCache.has(n.name.toLowerCase())){continue;} if(!n?.name)continue;
-      const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
-      if(!dup){ const prefix=n.name.toLowerCase().slice(0,3); usedPrefixes[prefix]=(usedPrefixes[prefix]||0)+1; if(usedPrefixes[prefix]<=2){unique.push(n);} }
-    }
-    return unique;
-  }catch(e){console.error('Phase 1 generation error:',e);return [];}
-}
-function generateHeuristicExamples(industry,count=8){
-  const roots={'AI Agents & Automation':['auto','agent','flow','sync','mind'],'Fintech & Neobanking':['pay','coin','vault','flux','mint'],'Developer Tools':['code','dev','stack','build','deploy'],'Healthcare AI':['med','care','health','vital','pulse']};
-  const industryRoots=roots[industry]||['tech','labs','sys','net'];
-  const prefixes=['z','k','v','x','q','kr','vy','zyl','vex'],suffixes=['ox','ra','on','ix','or','ex','al','en'],examples=[];
-  for(let p of prefixes.slice(0,4)){for(let s of suffixes.slice(0,3)){if(examples.length>=count)break;examples.push((p+s).charAt(0).toUpperCase()+(p+s).slice(1));}}
-  for(let r of industryRoots.slice(0,3)){if(examples.length>=count)break;examples.push((r+'ix').charAt(0).toUpperCase()+(r+'ix').slice(1));}
-  return examples;
-}
-
-// ── Legacy Scoring (Fallback) ─────────────────────────────────────
-function computeScores(nameObj){
-  const name=nameObj.name||'';const lower=name.toLowerCase();const clean=lower.replace(/[^a-z]/g,'');const len=clean.length;
-  const vowels=(clean.match(/[aeiou]/g)||[]).length;const consonants=len-vowels;const vowelRatio=vowels/Math.max(1,len);
-  const repeated=/(.)\1{1,}/.test(clean);const rareLetters=(clean.match(/[zxqkv]/g)||[]).length;
-  let brand=70;if(len>=4&&len<=8)brand+=12;if(rareLetters>=1)brand+=6;if(!repeated)brand+=4;if(vowelRatio>=0.3&&vowelRatio<=0.6)brand+=6;
-  let memory=65;if(len<=6)memory+=12;if(rareLetters>=1)memory+=8;if(clean.length!==new Set(clean).size)memory-=4;if(/^[bcdfghjklmnpqrstvwxz]/.test(clean))memory+=5;
-  let global=75;if(!/[^\w]/.test(clean))global+=5;if(vowelRatio>=0.28&&vowelRatio<=0.58)global+=10;if(!/[qzx]{2,}/.test(clean))global+=6;
-  let trend=60;const modernSuffixes=['ly','io','ra','ex','iq','or','on','ix','al','os'];const modernPrefixes=['ka','zy','ve','qy','xa','vo','kr'];
-  if(modernSuffixes.some(s=>clean.endsWith(s)))trend+=12;if(modernPrefixes.some(s=>clean.startsWith(s)))trend+=10;if(rareLetters>=1)trend+=8;if(len>=5&&len<=7)trend+=8;
-  return{brand_strength:Math.round(Math.min(98,Math.max(45,brand))),memorability:Math.round(Math.min(98,Math.max(45,memory))),global_fit:Math.round(Math.min(98,Math.max(45,global))),trend_alignment:Math.round(Math.min(98,Math.max(45,trend)))};
-}
-
-// ── Render Results ─────────────────────────────────────────────────
-function renderCards(names,tlds){
-  const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));
-  const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
-  
-  let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;
-  
-  sorted.forEach((n,i)=>{
-    const c=n.colors?.[0]||'#c8f04a';
-    const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
-    const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';
-    const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;
-    const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
-    const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');
-    
-    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;
-  });
-  h+='</div>';
-  document.getElementById('results').innerHTML=h;
-  names.forEach(n=>n._d.forEach(d=>chkDom(d)));
-}
-
-// ── Filtering ──────────────────────────────────────────────────────
-function filt(k,btn){
-  pill=k;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.card').forEach(c=>{
-    let s = true;
-    if(k==='all') s=true;
-    else if(k==='available') s = c.querySelectorAll('.dchip.av').length>0;
-    else s = c.dataset.pat===k;
-    c.style.display = s ? '' : 'none';
-  });
-}
-function filtLang(lang,btn){
-  document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.card').forEach(c=>{c.style.display='';});
-}
-
-// ── Domain Check ───────────────────────────────────────────────────
-async function chkDom(d){
-  if(domC[d]){applyDom(d,domC[d]);return;}
-  if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}
-  let r='unknown';
-  try{const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});if(res.status===404)r='available';else if(res.status===200)r='taken';}catch(e){}
-  if(r==='unknown')try{const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}}catch(e){}
-  domC[d]=r;applyDom(d,r);return r;
-}
-function applyDom(d,r){
-  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
-  if(!el)return;
-  const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;
-  if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
-  else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}
-  else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}
-  if(pill==='available'){
-    const card=el.closest('.card');
-    if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}
-  }
-}
-
-// ── API Key Modal Controls ─────────────────────────────────────────────
-function closeApiKeyModal() { document.getElementById('apiKeyModal')?.classList.remove('on'); const akey=document.getElementById('akey'); if(akey)akey.focus(); if (!helpOn) toggleHelp(); }
-function continueWithoutAI() { document.getElementById('apiKeyModal')?.classList.remove('on'); go(true); }
-
-// ── Export ─────────────────────────────────────────────────────────
-let exportFormat='csv',exportOpts={all:true,avail:false,top3:false,scores:true};
-function openExportModal(format){
-  exportFormat=format;
-  document.getElementById('expAll').checked=true;
-  document.getElementById('expAvail').checked=false;
-  document.getElementById('expTop').checked=false;
-  document.getElementById('expScores').checked=true;
-  document.getElementById('exportModal').classList.add('on');
-}
-function closeExportModal(){document.getElementById('exportModal').classList.remove('on');}
-function confirmExport(){
-  exportOpts={all:document.getElementById('expAll').checked,avail:document.getElementById('expAvail').checked,top3:document.getElementById('expTop').checked,scores:document.getElementById('expScores').checked};
-  closeExportModal();
-  let names=lastGeneratedNames;
-  if(exportOpts.avail){names=names.filter(n=>n._d?.some(d=>domC[d]==='available'));}
-  if(exportOpts.top3){names=names.slice(0,3);}
-  if(exportFormat==='csv')downloadCSV(names);
-  else if(exportFormat==='pdf')downloadPDF(names);
-  else if(exportFormat==='json')downloadJSON(names);
-  toast(`Exported ${names.length} names as ${exportFormat.toUpperCase()}`);
-}
-function exportCSV(){openExportModal('csv');} function exportPDF(){openExportModal('pdf');} function exportJSON(){openExportModal('json');}
-function copyAll(){ const names=lastGeneratedNames.map(n=>n.name).join('\n'); navigator.clipboard.writeText(names).then(()=>toast('Copied all names to clipboard!')); }
-function downloadCSV(names){
-  const headers=['Name','Tagline','Pattern','VC Signal','TLD Availability','Score Avg','Why It Works'];
-  const rows=names.map(n=>{
-    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified';
-    const scoreAvg=n.score?Math.round(Object.values(n.score).reduce((a,b)=>a+b,0)/Object.values(n.score).length):'—';
-    return[n.name,n.tagline||'',n.naming_pattern||'',n.vc_signal||'',avail,scoreAvg,(n.why_it_works||'').replace(/,/g,';')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
-  });
-  const csv=[headers.join(','),...rows].join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
-}
-function downloadJSON(names){
-  const exportData={ exportedAt:new Date().toISOString(), provider:prov, model:mdl, config:{industry:document.getElementById('industry')?.value||'',language}, names:names.map(n=>{const base={...n};if(!exportOpts.scores)delete base.score;return base;}) };
-  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download=`autodng-export-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
-}
-function downloadPDF(names){
-  const{jsPDF}=window.jspdf; const doc=new jsPDF(); doc.setFont('helvetica','bold');doc.setFontSize(18);
-  doc.text('autoDNG — Brand Name Report',14,20); doc.setFontSize(10);doc.setFont('helvetica','normal');
-  doc.text(`Generated: ${new Date().toLocaleString()} | Provider: ${prov} | Model: ${mdl}`,14,28);
-  doc.text(`Industry: ${document.getElementById('industry')?.value||''} | Language: ${language}`,14,34);
-  let y=45;
-  names.forEach((n,i)=>{
-    if(y>270){doc.addPage();y=20;}
-    doc.setFont('helvetica','bold');doc.setFontSize(14); doc.text(`${i+1}. ${n.name}`,14,y);y+=6;
-    doc.setFont('helvetica','italic');doc.setFontSize(10); doc.text(n.tagline||'',14,y);y+=5;
-    doc.setFont('helvetica','normal'); doc.text(`Pattern: ${n.naming_pattern||'—'} | VC Signal: ${n.vc_signal||'—'}`,14,y);y+=5;
-    if(exportOpts.scores&&n.score){ const scores=Object.entries(n.score).map(([k,v])=>`${k}:${v}`).join('  '); doc.text(scores,14,y);y+=5; }
-    const avail=n._d?.filter(d=>domC[d]==='available').join(', ')||'None verified'; doc.text(`Available: ${avail}`,14,y);y+=5;
-    doc.text(`Why: ${n.why_it_works||'—'}`,14,y);y+=12; doc.setDrawColor(200,240,74);doc.line(14,y-3,196,y-3);y+=5;
-  });
-  doc.setFontSize(8);doc.setTextColor(100); doc.text('autoDNG — AI Brand Name Generator • autodng.example.com',14,285);
-  doc.save(`autodng-export-${new Date().toISOString().slice(0,10)}.pdf`);
-}
-
-// ── Utilities ──────────────────────────────────────────────────────
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200);}
-document.getElementById('exportModal').addEventListener('click',(e)=>{if(e.target.id==='exportModal')closeExportModal();});
-document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeExportModal();if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();if(lastGeneratedNames.length)openExportModal('csv');}});
+  // URL param
+  const params=new URLSearchParams(window.location.search);
+  const brandParam=params.get('brand');
+  if(brandParam){document.getElementById('brand').value=brandParam;onBrandInput();}
+});
 </script>
 </body>
 </html>

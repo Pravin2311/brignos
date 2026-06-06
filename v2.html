@@ -6,6 +6,10 @@
 <title>autoDNG — World's Best Brand Name Generator</title>
 <meta name="description" content="AI brand name generator with 18-signal quality gate, VC DNA, sound symbolism, TM proximity, and live RDAP domain checks.">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
 <style>
 *,::before,::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -468,8 +472,45 @@ align-items: center;
 justify-content: center;
 }
 }
+/* ── Fix: Allow Watchlist to scroll on very small screens ── */
+@media (max-width: 420px) {
+  .wl-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px; /* Space for scrollbar */
+  }
+  .wl-head, .wl-row {
+    min-width: 340px; /* Force minimum width so columns don't squash */
+  }
+  /* Make the table visually clear it's scrollable */
+  .wl-table::-webkit-scrollbar { height: 4px; }
+  .wl-table::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+}
+.pf {
+  /* ... existing styles ... */
+  padding: 8px 14px; /* Increased vertical padding for better tap target */
+  min-height: 36px;  /* Ensures clickability */
+}
+@media (max-width: 640px) {
+  /* Reduce padding in premium cards to show more content */
+  .pd-card { padding: 16px; }
+  
+  /* Adjust font sizes for domain checker results */
+  .dc-tld-name { font-size: 18px; }
+  .dc-tld-price { font-size: 11px; }
+  
+  /* Ensure Premium filters wrap neatly */
+  .premium-filters { gap: 8px; }
+}
 </style>
 </head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PVV83DRSFT');
+</script>
 <body>
 <div class="app">
 <!-- ══ HEADER ══ -->
@@ -1280,26 +1321,62 @@ async function checkRdap(domain) {
 
 async function checkDomains(names, tlds) {
   const checks = [];
+  // Prepare all checks: 10 names × 5 TLDs = 50 checks
   for (const n of names) {
     for (const tld of tlds) {
       const domain = n.name.toLowerCase() + tld;
       checks.push({ n, tld, domain });
     }
   }
-  // Batch in groups of 5 to respect RDAP rate limits
-  for (let i = 0; i < checks.length; i += 5) {
-    const batch = checks.slice(i, i + 5);
+  
+  // Process in small batches to respect RDAP rate limits
+  for (let i = 0; i < checks.length; i += 3) {
+    const batch = checks.slice(i, i + 3);
     await Promise.all(batch.map(async ({ n, tld, domain }) => {
-      const status = await checkRdap(domain);
-      n.domains[tld] = status;
-      // Update chip in DOM
+      try {
+        // 1️⃣ Primary: RDAP Lookup (RFC 9083)
+        const r = await fetch(`https://rdap.org/domain/${domain}`, {
+          signal: AbortSignal.timeout(5000),
+          headers: { 'Accept': 'application/rdap+json, application/json' }
+        });
+        if (r.status === 404) n.domains[tld] = 'available';
+        else if (r.status === 200) {
+          const data = await r.json();
+          // If handle exists or status is active, it's taken
+          n.domains[tld] = (data.status?.includes('active') || data.handle) ? 'taken' : 'available';
+        } else n.domains[tld] = 'unknown';
+      } catch (err) {
+        // 2️⃣ Fallback: DNS Resolver (if RDAP blocks/times out)
+        try {
+          const dnsRes = await fetch(`https://dns.google/resolve?name=${domain}&type=A`, { signal: AbortSignal.timeout(3000) });
+          const dnsData = await dnsRes.json();
+          n.domains[tld] = (dnsData.Answer && dnsData.Answer.length > 0) ? 'taken' : 'available';
+        } catch {
+          n.domains[tld] = 'unknown';
+        }
+      }
+      
+      // 3️⃣ Update DOM Chip with Namecheap Link
       const el = document.getElementById(`dc-${n.name}-${tld.replace('.', '')}`);
       if (el) {
-        el.className = `dc ${status === 'available' ? 'av' : status === 'taken' ? 'tk' : 'un'}`;
-        el.innerHTML = `${tld} ${status === 'available' ? '✓' : status === 'taken' ? '✗' : '?'}`;
+        const status = n.domains[tld];
+        const link = `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain)}`;
+        if (status === 'available') {
+          el.className = 'dc av';
+          el.innerHTML = `<a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${tld} ✓</a>`;
+          el.title = 'Available — register on Namecheap';
+        } else if (status === 'taken') {
+          el.className = 'dc tk';
+          el.innerHTML = `${tld} ✗`;
+          el.title = 'Already registered';
+        } else {
+          el.className = 'dc un';
+          el.innerHTML = `<a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${tld} ?</a>`;
+          el.title = 'Status unknown — verify on Namecheap';
+        }
       }
     }));
-    await sleep(200); // Polite delay
+    await sleep(300); // 300ms delay prevents RDAP rate-limit bans
   }
 }
 // ═══════════════════════════════════════════════════════════════════════
@@ -1516,28 +1593,29 @@ const diverse=diversityFilter(scored,2);
 // Sort by overall score
 const final=diverse.sort((a,b)=>b.scores.overall-a.scores.overall).slice(0,10);
 if(!final.length){throw new Error('No names passed quality gate. Try different parameters or industry.');}
-stepDone(2);setProgress(80,'Checking domain availability (RDAP)…');
-// Domain checks
-lastNames=final;
-for(const name of final){
-name.domains={};
-for(const tld of tlds.slice(0,3)){
-name.domains[tld]='checking';
-}
+stepDone(2); setProgress(80, 'Checking domain availability (RDAP)…');
+// Domain checks: Now checks ALL TLDs, not just 3
+lastNames = final;
+for (const name of final) {
+  name.domains = {};
+  for (const tld of tlds) { // REMOVED .slice(0,3) to validate all TLDs
+    name.domains[tld] = 'checking';
+  }
 }
 // Render initial cards (with checking state)
-renderResults(final,industry);
+renderResults(final, industry);
 document.getElementById('steerWrap').classList.add('on');
-document.getElementById('expRow').style.display='flex';
+document.getElementById('expRow').style.display = 'flex';
 stepDone(3);
-// Background domain checks
-setProgress(90,'Finalizing RDAP availability…');
-await checkDomains(final,tlds.slice(0,3));
-setProgress(100,'Done!');
-setTimeout(()=>{
-document.getElementById('pw').classList.remove('on');
-renderResults(final,industry);
-},400);
+
+// Background domain checks: Passes ALL TLDs
+setProgress(90, 'Finalizing RDAP availability…');
+await checkDomains(final, tlds); // REMOVED .slice(0,3) here too
+setProgress(100, 'Done!');
+
+setTimeout(() => {
+  document.getElementById('pw').classList.remove('on');
+}, 400);
 }catch(err){
 console.error(err);
 document.getElementById('pw').classList.remove('on');
@@ -1572,12 +1650,17 @@ const tld=n.tld||'.com';
 const domainStr=n.name.toLowerCase()+tld;
 const patterns=n.patterns||[];
 const snd=gate?.snd||{score:55,profile:'neutral'};
-const domainChips=Object.entries(n.domains||{}).map(([t,status])=>`
-<span class="dc ${status==='available'?'av':status==='taken'?'tk':status==='checking'?'ck':'un'}"
-id="dc-${n.name}-${t.replace('.','')}"
-onclick="this.classList.contains('av')&&window.open('https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(n.name.toLowerCase()+t)}','_blank')">
-${t} ${status==='available'?'✓':status==='taken'?'✗':status==='checking'?'…':'?'}
-</span>`).join('');
+const domainChips = Object.entries(n.domains || {}).map(([t, status]) => {
+  const domain = n.name.toLowerCase() + t;
+  const namecheapUrl = `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain)}`;
+  const label = status === 'available' ? '✓' : status === 'taken' ? '✗' : '…';
+  return `<span class="dc ${status === 'available' ? 'av' : status === 'taken' ? 'tk' : 'ck'}" 
+    id="dc-${n.name}-${t.replace('.', '')}" 
+    onclick="window.open('${namecheapUrl}', '_blank')" 
+    title="${status === 'checking' ? 'Checking availability…' : 'Check on Namecheap'}">
+    ${t} ${label}
+  </span>`;
+}).join('');
 const scores1=[
 {l:'Overall',v:sc.overall,c:color},{l:'Brand',v:sc.brand,c:'var(--lime)'},
 {l:'Memory',v:sc.memorability,c:'var(--teal)'},{l:'Spell',v:sc.spellability,c:'var(--purple)'}
