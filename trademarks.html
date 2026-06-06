@@ -28,8 +28,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(255,255,255,.007) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.007) 1px,transparent 1px);
   background-size:48px 48px}
 .app{position:relative;z-index:1}
-
-/* ── Header ── */
 .hd{position:sticky;top:0;z-index:200;background:rgba(6,6,10,.96);backdrop-filter:blur(32px);border-bottom:1px solid var(--border)}
 .hd-in{max-width:1280px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .logo{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-1px;text-decoration:none;color:var(--text);white-space:nowrap}
@@ -53,8 +51,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .sdot.ok{background:var(--green);box-shadow:0 0 8px var(--green-glow)}
 .hdbtn{font-family:var(--mono);font-size:11px;padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
 .hdbtn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-
-/* ── Hero ── */
 .hero{max-width:1280px;margin:0 auto;padding:52px 24px 40px}
 .hero-grid{display:grid;grid-template-columns:1fr 380px;gap:52px;align-items:center;margin-bottom:40px}
 .hero-eyebrow{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
@@ -65,23 +61,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .hero-badges{display:flex;flex-wrap:wrap;gap:5px}
 .hbadge{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border2);color:var(--muted2);cursor:default;transition:all .2s}
 .hbadge:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-/* Right panel stats */
 .stat-panel{display:flex;flex-direction:column;gap:8px}
 .sp-item{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--muted3);transition:border-color .2s}
 .sp-item:hover{border-color:var(--border2)}
 .sp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .sp-val{margin-left:auto;font-weight:600;font-size:10px}
-
-/* ── Stats strip ── */
 .stats-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:0}
 .stat-c{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:16px;text-align:center}
 .stat-v{font-family:var(--serif);font-size:28px;color:var(--red);line-height:1;margin-bottom:3px}
 .stat-l{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em}
-
-/* ── Layout ── */
 .main{max-width:1280px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
-
-/* ── Input card ── */
 .icard{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:26px}
 .ic-title{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;display:flex;align-items:center;gap:8px}
 .ic-title::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -95,12 +84,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .fgroup{margin-top:12px}
-/* Live preview badge */
 .live-badge{display:none;align-items:center;gap:8px;padding:9px 13px;background:var(--red-dim);border:1px solid rgba(240,56,74,.2);border-radius:8px;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--red)}
 .live-badge.on{display:flex}
 .lb-score{font-size:18px;font-weight:600;margin-left:auto}
-
-/* Run button */
 .runbtn{width:100%;margin-top:18px;padding:16px;background:var(--red);color:#fff;font-family:var(--font);font-size:15px;font-weight:600;border:none;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s,box-shadow .2s;position:relative;overflow:hidden;letter-spacing:-.1px}
 .runbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transform:translateX(-100%);transition:transform .7s}
 .runbtn:hover::after{transform:translateX(100%)}
@@ -113,8 +99,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .sec-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
 .sec-btn{font-family:var(--mono);font-size:11px;padding:9px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
 .sec-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-
-/* ── Info panel ── */
 .rpanel{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:22px;position:sticky;top:76px}
 .rp-title{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .rp-title::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -122,18 +106,14 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .fl-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted3);padding:5px 0;border-bottom:1px solid var(--border)}
 .fl-item:last-child{border-bottom:none}
 .fl-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
-/* USPTO link box */
 .uspto-box{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:14px}
 .ub-title{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
 .ub-link{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg4);border:1px solid var(--border);border-radius:7px;text-decoration:none;margin-bottom:6px;font-size:12px;color:var(--muted3);transition:border-color .15s}
 .ub-link:hover{border-color:var(--red);color:var(--red)}
 .ub-link:last-child{margin-bottom:0}
-/* Risk tiers */
 .risk-tiers{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .rt{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted3)}
 .rt-badge{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;font-weight:600;flex-shrink:0;white-space:nowrap}
-
-/* ── Progress ── */
 .prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:18px;margin-top:14px;display:none}
 .prog-wrap.on{display:block}
 .prog-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted3);margin-bottom:10px}
@@ -144,13 +124,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .pst{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;background:var(--bg3);color:var(--muted2);border:1px solid var(--border);transition:all .3s}
 .pst.done{color:var(--green);border-color:rgba(34,212,110,.3);background:var(--green-dim)}
 .pst.active{color:var(--text);border-color:var(--border2);background:var(--bg4)}
-
-/* ── Result ── */
 .result-wrap{display:none;margin-top:18px;animation:fadeUp .4s ease}
 .result-wrap.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-/* Risk hero */
 .risk-hero{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:14px;position:relative;overflow:hidden}
 .rh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .rh-brand{font-family:var(--serif);font-size:44px;font-weight:400;letter-spacing:-1px;line-height:1}
@@ -163,7 +139,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .risk-medium {background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);color:var(--amber)}
 .risk-high   {background:rgba(240,56,74,.15);border:1px solid rgba(240,56,74,.35);color:var(--red)}
 .risk-critical{background:rgba(240,56,74,.25);border:1px solid rgba(240,56,74,.6);color:#ff6b7a}
-/* Gradient meter */
 .meter-wrap{background:var(--bg4);border-radius:10px;padding:14px}
 .meter-bar{position:relative;height:10px;border-radius:99px;background:linear-gradient(90deg,var(--green) 0%,var(--amber) 45%,var(--red) 75%,#c0192a 100%);overflow:visible;margin-bottom:10px}
 .meter-dot{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--bg);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5);transition:left 1s cubic-bezier(.22,1,.36,1)}
@@ -171,8 +146,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .meter-zones{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .mz{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;color:var(--muted3)}
 .mz-dot{width:5px;height:5px;border-radius:50%}
-
-/* LOC factors */
 .loc-section{margin-bottom:14px}
 .loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .loc-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px}
@@ -180,8 +153,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .loc-lbl{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
 .loc-val{font-size:12px;color:var(--muted3);line-height:1.4}
 .loc-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;margin-left:auto;flex-shrink:0;align-self:flex-start}
-
-/* 25-signal grid */
 .sig-section{margin-bottom:14px}
 .sig-hdr{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sig-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -193,8 +164,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .sg-val{font-family:var(--mono);font-size:16px;font-weight:500;margin-bottom:4px}
 .sg-bar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden}
 .sg-fill{height:100%;border-radius:99px;transition:width .8s ease}
-
-/* Analysis sections */
 .asec{background:var(--bg3);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:10px}
 .asec-title{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .asec-title::before{content:'';width:3px;height:10px;border-radius:2px;flex-shrink:0;background:currentColor}
@@ -203,41 +172,27 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .list-items{display:flex;flex-direction:column;gap:6px}
 .li{background:var(--bg4);border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;color:var(--muted3);line-height:1.6;display:flex;align-items:flex-start;gap:9px}
 .li-icon{flex-shrink:0;font-size:12px;margin-top:1px}
-/* Phonetic grid */
 .phonetic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ph-card{background:var(--bg4);border:1px solid var(--border);border-radius:9px;padding:12px}
 .ph-lbl{font-family:var(--mono);font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
 .ph-val{font-size:12px;color:var(--muted3);line-height:1.5}
-/* Conflicts table */
-.conflict-table{width:100%;border-collapse:collapse}
-.ct-head th{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg4)}
-.ct td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted3)}
-.ct tr:last-child td{border-bottom:none}
-.ct tr:hover td{background:rgba(255,255,255,.02)}
-.risk-chip{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);display:inline-flex;align-items:center;gap:4px}
-/* Alternatives */
 .alt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .alt-card{background:var(--bg4);border:1px solid var(--border);border-radius:9px;padding:11px 12px}
 .alt-name{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--green);margin-bottom:3px}
 .alt-why{font-size:12px;color:var(--muted3);line-height:1.4}
 .alt-score{font-family:var(--mono);font-size:10px;margin-top:5px}
-/* Metrics row */
 .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .metric-c{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
 .metric-lbl{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
 .metric-val{font-family:var(--serif);font-size:28px;font-weight:400;line-height:1}
 .metric-sub{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:3px}
-/* Live USPTO fetch status */
 .uspto-status{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .us-chip{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;gap:4px}
-/* Action row */
 .action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .act-btn{font-family:var(--mono);font-size:11px;padding:9px 14px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
 .act-btn:hover{border-color:var(--red);background:var(--red-dim);color:var(--red)}
-/* Toast */
 .toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:12px 18px;font-family:var(--mono);font-size:12px;color:var(--text);transform:translateY(70px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;max-width:340px;line-height:1.5}
 .toast.on{transform:translateY(0);opacity:1}
-/* Modal */
 .modal{position:fixed;inset:0;z-index:1000;background:rgba(6,6,10,.92);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:24px}
 .modal.on{display:flex}
 .mc{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;max-width:500px;width:100%;padding:26px;animation:fadeUp .3s ease;max-height:85vh;overflow-y:auto}
@@ -250,10 +205,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .mlink code{font-family:var(--mono);font-size:11px;color:var(--red)}
 .mclose{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:20px;padding:0;float:right;line-height:1;margin-left:10px}
 .mclose:hover{color:var(--red)}
-
-/* ══════════════════════════════════════════════════
-SEO FOOTER
-══════════════════════════════════════════════════ */
 .site-footer { background: var(--bg2); border-top: 1px solid var(--border); margin-top: 80px; padding: 60px 24px 20px; font-family: var(--font); }
 .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
 .footer-brand h3 { font-family: var(--serif); font-size: 28px; font-weight: 400; color: var(--text); margin-bottom: 12px; letter-spacing: -0.5px; }
@@ -273,8 +224,6 @@ SEO FOOTER
 .footer-bottom-links { display: flex; gap: 16px; }
 .footer-bottom-links a { font-family: var(--mono); font-size: 11px; color: var(--muted2); text-decoration: none; transition: color 0.2s; }
 .footer-bottom-links a:hover { color: var(--text); }
-
-/* Responsive */
 @media(max-width:1024px){
   .hero-grid{grid-template-columns:1fr}.stat-panel{display:grid;grid-template-columns:repeat(3,1fr)}.stats-strip{grid-template-columns:repeat(3,1fr)}.main{grid-template-columns:1fr}.rpanel{position:static}.loc-grid,.phonetic-grid,.alt-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}
   .footer-inner { grid-template-columns: 1fr 1fr; } .footer-brand { grid-column: 1 / -1; }
@@ -287,8 +236,6 @@ SEO FOOTER
 </head>
 <body>
 <div class="app">
-
-<!-- ══ HEADER ══ -->
 <header class="hd">
   <div class="hd-in">
     <a href="index.html" class="logo">auto<em>DNG</em><sub>.com</sub></a>
@@ -299,18 +246,18 @@ SEO FOOTER
         <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
         <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
       </div>
-      <div class="kwrap">
-        <input type="password" id="akey" placeholder="API key…" autocomplete="off" oninput="onKey()">
-        <button class="eyebtn" onclick="toggleEye()">👁</button>
-      </div>
+      <form style="display:inline" onsubmit="return false">
+        <div class="kwrap">
+          <input type="password" id="akey" placeholder="API key…" autocomplete="off" oninput="onKey()">
+          <button type="button" class="eyebtn" onclick="toggleEye()">👁</button>
+        </div>
+      </form>
       <select class="mdl-sel" id="mdlSel" onchange="onMdl()"></select>
       <div class="kstat"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
       <button class="hdbtn" onclick="openModal('keyModal')">get key?</button>
     </div>
   </div>
 </header>
-
-<!-- ══ HERO ══ -->
 <section class="hero">
   <div class="hero-grid">
     <div>
@@ -342,15 +289,10 @@ SEO FOOTER
     <div class="stat-c"><div class="stat-v">∞</div><div class="stat-l">Free Local Checks</div></div>
   </div>
 </section>
-
-<!-- ══ MAIN ══ -->
 <div class="main">
-
-  <!-- Input -->
   <div>
     <div class="icard">
       <div class="ic-title">Configure trademark analysis</div>
-
       <div>
         <label class="flbl" for="brand">Brand / Mark Name *</label>
         <input class="finput" id="brand" placeholder="e.g. Linear, Figma, Synara…" oninput="onBrandInput()" onkeydown="if(event.key==='Enter')run()">
@@ -359,7 +301,6 @@ SEO FOOTER
           <span class="lb-score" id="lbScore">—</span>
         </div>
       </div>
-
       <div class="fg3">
         <div>
           <label class="flbl" for="industry">Industry / Goods & Services</label>
@@ -393,7 +334,6 @@ SEO FOOTER
           </select>
         </div>
       </div>
-
       <div class="fg2">
         <div>
           <label class="flbl" for="stage">Startup Stage</label>
@@ -413,40 +353,30 @@ SEO FOOTER
           </select>
         </div>
       </div>
-
       <div class="fgroup">
         <label class="flbl" for="context">Additional Context (improves analysis)</label>
         <textarea class="ftextarea" id="context" rows="2" placeholder="Product description, target audience, known competitors, existing TM filings, prior use dates…"></textarea>
       </div>
-
       <div class="fgroup">
         <label class="flbl" for="competitors">Known Competitors / Similar Brands (comma-separated)</label>
         <input class="finput" id="competitors" placeholder="e.g. Linear, Notion, Figma…">
       </div>
-
       <button class="runbtn" id="runBtn" onclick="run()">
         <div class="btn-spin"></div>
         <span id="runLbl">Run Trademark Risk Analysis →</span>
       </button>
-
       <div class="sec-row">
         <button class="sec-btn" onclick="runLocalOnly()">⚡ Local Score Only (no API)</button>
         <button class="sec-btn" onclick="openUSPTO()">🔍 Search USPTO TESS</button>
         <button class="sec-btn" onclick="clearAll()">✕ Clear</button>
       </div>
     </div>
-
-    <!-- Progress -->
     <div class="prog-wrap" id="progWrap">
       <div class="prog-top"><span id="progTxt">Initializing…</span><span class="prog-pct" id="progPct">0%</span></div>
       <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
       <div class="prog-steps" id="progSteps"></div>
     </div>
-
-    <!-- Result -->
     <div class="result-wrap" id="resultWrap">
-
-      <!-- Risk hero -->
       <div class="risk-hero">
         <div class="rh-top">
           <div>
@@ -459,7 +389,6 @@ SEO FOOTER
             <div class="risk-score-lbl">Danger Score / 100</div>
           </div>
         </div>
-        <!-- Gradient meter -->
         <div class="meter-wrap">
           <div class="meter-bar">
             <div class="meter-dot" id="meterDot" style="left:0%"></div>
@@ -473,72 +402,48 @@ SEO FOOTER
           </div>
         </div>
       </div>
-
-      <!-- Metrics -->
       <div class="metrics-row" id="metricsRow"></div>
-
-      <!-- USPTO live status -->
       <div class="asec">
         <div class="asec-title blue">Live Database Status</div>
         <div class="uspto-status" id="usptoStatus"></div>
         <div class="list-items" id="usptoFindings"></div>
       </div>
-
-      <!-- LOC Factors (Likelihood of Confusion) -->
       <div class="asec">
         <div class="asec-title red">8 Likelihood of Confusion Factors (Du Pont)</div>
         <div class="loc-grid" id="locGrid"></div>
       </div>
-
-      <!-- 25-signal breakdown -->
       <div class="sig-section">
         <div class="sig-hdr">25-Signal Risk Breakdown</div>
         <div class="sig-grid" id="sigGrid"></div>
       </div>
-
-      <!-- Summary -->
       <div class="asec">
         <div class="asec-title red">Risk Assessment Summary</div>
         <div class="summary-box" id="summaryBox">—</div>
       </div>
-
-      <!-- Phonetic analysis -->
       <div class="asec">
         <div class="asec-title purple">Phonetic & Similarity Analysis</div>
         <div class="phonetic-grid" id="phoneticGrid"></div>
       </div>
-
-      <!-- Conflict signals -->
       <div class="asec">
         <div class="asec-title amber">Conflict Signals Detected</div>
         <div class="list-items" id="conflictList"></div>
       </div>
-
-      <!-- Clearance factors -->
       <div class="asec">
         <div class="asec-title green">Clearance Strengths</div>
         <div class="list-items" id="clearanceList"></div>
       </div>
-
-      <!-- Action plan -->
       <div class="asec">
         <div class="asec-title blue">Action Plan & Next Steps</div>
         <div class="list-items" id="actionList"></div>
       </div>
-
-      <!-- Safer alternatives -->
       <div class="asec">
         <div class="asec-title teal">Safer Brand Alternatives</div>
         <div class="alt-grid" id="altGrid"></div>
       </div>
-
-      <!-- Registration strategy -->
       <div class="asec">
         <div class="asec-title purple">Registration Strategy</div>
         <div class="list-items" id="regList"></div>
       </div>
-
-      <!-- Export -->
       <div class="action-row">
         <button class="act-btn" onclick="copyReport()">📋 Copy Report</button>
         <button class="act-btn" onclick="exportJSON()">⚙️ JSON</button>
@@ -547,15 +452,11 @@ SEO FOOTER
         <button class="act-btn" onclick="openEUIPO()">🇪🇺 Check EUIPO</button>
         <button class="act-btn" onclick="shareLink()">🔗 Share</button>
       </div>
-
       <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);line-height:1.6;background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:12px">
         ⚠️ This is an AI-assisted preliminary risk assessment, not legal advice. Always consult a qualified trademark attorney before filing or committing to a brand. Conduct full searches on USPTO TESS, EUIPO eSearch, and national databases.
       </div>
-
-    </div><!-- /result -->
-  </div><!-- /input col -->
-
-  <!-- Right panel -->
+    </div>
+  </div>
   <div class="rpanel">
     <div class="rp-title">25 Risk Signals</div>
     <div class="factor-list">
@@ -585,7 +486,6 @@ SEO FOOTER
       <div class="fl-item"><div class="fl-dot" style="background:var(--teal)"></div>International registration ease</div>
       <div class="fl-item"><div class="fl-dot" style="background:var(--teal)"></div>Brand defense moat strength</div>
     </div>
-
     <div class="rp-title">Risk Tiers</div>
     <div class="risk-tiers">
       <div class="rt"><span class="rt-badge" style="background:rgba(240,56,74,.2);color:var(--red);border:1px solid rgba(240,56,74,.3)">CRITICAL 81–100</span>Active TM conflict, do not use</div>
@@ -593,7 +493,6 @@ SEO FOOTER
       <div class="rt"><span class="rt-badge" style="background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.3)">MEDIUM 26–60</span>Moderate risk, proceed with caution</div>
       <div class="rt"><span class="rt-badge" style="background:rgba(34,212,110,.1);color:var(--green);border:1px solid rgba(34,212,110,.3)">LOW 0–25</span>Clear signal, register immediately</div>
     </div>
-
     <div class="rp-title">Search Databases</div>
     <div class="uspto-box">
       <div class="ub-title">Official Trademark Databases</div>
@@ -603,15 +502,11 @@ SEO FOOTER
       <a class="ub-link" href="https://trademarks.ipo.gov.uk/" target="_blank" rel="noopener">IPO (UK) →</a>
       <a class="ub-link" href="https://trademark.ssip.go.jp/" target="_blank" rel="noopener">J-PlatPat (Japan) →</a>
     </div>
-
     <div style="font-family:var(--mono);font-size:10px;color:var(--muted2);line-height:1.6;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
       ⚠ Not legal advice. Always consult a trademark attorney before filing.
     </div>
   </div>
-
-</div><!-- /main -->
-
-<!-- ══ SEO FOOTER ══ -->
+</div>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -642,29 +537,14 @@ SEO FOOTER
         <li><a href="index.html?page=tools">Bulk Name Analyzer</a></li>
       </ul>
     </nav>
-    <nav class="footer-col" aria-label="Company Info">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="about.html">About Us</a></li>
-        <li><a href="privacy.html">Privacy Policy</a></li>
-        <li><a href="terms.html">Terms of Service</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </nav>
+    
   </div>
   <div class="footer-bottom">
     <p>© 2026 autoDNG. All rights reserved. Built for founders, domainers, and brand strategists.</p>
-    <div class="footer-bottom-links">
-      <a href="sitemap.xml">Sitemap</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-    </div>
+    
   </div>
 </footer>
-
 <div class="toast" id="toast"></div>
-
-<!-- Key Modal -->
 <div class="modal" id="keyModal">
   <div class="mc">
     <button class="mclose" onclick="closeModal('keyModal')">×</button>
@@ -684,14 +564,8 @@ SEO FOOTER
     </a>
   </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-// autoDNG TRADEMARK RISK INTELLIGENCE ENGINE — COMPLETE PRODUCTION BUILD
-// 25 local signals + USPTO live query + AI deep analysis
-// ═══════════════════════════════════════════════════════════════════════
-
 const PROVS={
   openrouter:{ph:'sk-or-…',val:k=>k.startsWith('sk-or-'),
     models:['deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','google/gemini-2.0-flash-001','openai/gpt-4o-mini']},
@@ -699,8 +573,6 @@ const PROVS={
   gemini:{ph:'AIzaSy…',val:k=>k.startsWith('AIza'),models:['gemini-2.5-flash','gemini-2.5-pro']},
   groq:{ph:'gsk…',val:k=>k.startsWith('gsk'),models:['llama-3.3-70b-versatile','qwen-qwq-32b','llama-3.1-8b-instant']}
 };
-
-// ── Major tech brand TM pool (for proximity scoring) ──────────────────
 const TMBRANDS=[
   'apple','google','amazon','microsoft','meta','stripe','figma','notion','linear',
   'vercel','anthropic','openai','slack','zoom','dropbox','github','shopify','salesforce',
@@ -713,36 +585,23 @@ const TMBRANDS=[
   'midjourney','stability','jasper','copy','writesonic','notion','coda','airtable',
   'retool','bubble','webflow','framer','linear','height','plane','jira','confluence'
 ];
-
-// ── Global negative meaning roots ─────────────────────────────────────
 const NEGROOTS=[
-  // German
   'mord','tot','krank','gift','faul','dreck','übel','böse','dumm','hass',
-  // French
   'mal','mort','laid','triste','vide','peur','honte','con','merde',
-  // Spanish
   'mal','feo','loco','raro','muerto','culo','puta','mierda','odio','muerte','caca',
-  // Japanese
   'shi','ku','aku','baka','dame','yami','kasu','hage',
-  // Hindi/Urdu
   'mara','bura','ganda','ullu','bakwas',
-  // Portuguese
   'mau','feio','triste','lixo','merda','foda','idiota',
-  // Mandarin phonetic
   'si','sha','gui','hun',
-  // Universal
   'kill','die','dead','sick','evil','hate','hell','damn','fart','shit',
   'ass','crap','turd','cock','dick','cunt','slut','rape','gore','puke',
   'wank','twat','slag','knob','piss','anus','scum','nazi','bomb','terror'
 ];
-
-// ── Inherently distinctive spectrum ────────────────────────────────────
 const DESCRIPTIVE_WORDS=['fast','smart','easy','quick','pro','plus','max','ultra','super',
   'good','best','top','first','prime','premium','direct','simple','clear','bright',
   'safe','secure','core','base','hub','link','sync','flow','data','cloud','tech',
   'digital','global','national','online','mobile','micro','nano','auto','total'];
 
-// ── Soundex algorithm ─────────────────────────────────────────────────
 function soundex(s){
   s=s.toUpperCase().replace(/[^A-Z]/g,'');if(!s)return'';
   const map={B:1,F:1,P:1,V:1,C:2,G:2,J:2,K:2,Q:2,S:2,X:2,Z:2,D:3,T:3,L:4,M:5,N:5,R:6};
@@ -754,8 +613,6 @@ function soundex(s){
   }
   return code.padEnd(4,'0');
 }
-
-// ── Double Metaphone approximation ────────────────────────────────────
 function metaphone(s){
   s=s.toLowerCase().replace(/[^a-z]/g,'');
   s=s.replace(/^(ae|gn|kn|pn|wr)/,'');
@@ -769,7 +626,6 @@ function metaphone(s){
   }
   return out.replace(/(.)\1+/g,'$1').slice(0,6);
 }
-
 function normName(n){return n.toLowerCase().replace(/[^a-z]/g,'').replace(/ph/g,'f').replace(/x/g,'ks').replace(/z/g,'s').replace(/q/g,'k').replace(/[aeiou]+/g,'a').replace(/(.)\1+/g,'$1');}
 function bigrams(s){const n=normName(s),o=[];for(let i=0;i<n.length-1;i++)o.push(n.slice(i,i+2));return o;}
 function diceScore(a,b){const ba=bigrams(a),bb=bigrams(b);if(!ba.length&&!bb.length)return 0;let m=0;const u=new Set();for(let i=0;i<ba.length;i++)for(let j=0;j<bb.length;j++)if(!u.has(j)&&ba[i]===bb[j]){m++;u.add(j);break;}return(2*m)/(ba.length+bb.length);}
@@ -777,17 +633,11 @@ function levenshtein(a,b){const m=a.length,n=b.length;const d=Array.from({length
 function clamp(v,lo=0,hi=100){return Math.max(lo,Math.min(hi,Math.round(v)));}
 function countSyl(w){w=w.toLowerCase().replace(/[^a-z]/g,'');if(!w)return 0;w=w.replace(/(?:[^laeiouy]es|[^laeiouy]ed|[^laeiouy]e)$/,'').replace(/^y/,'');const m=w.match(/[aeiouy]{1,2}/g);return m?m.length:1;}
 
-// ── State ──────────────────────────────────────────────────────────────
 let prov=localStorage.getItem('tm2_p')||'openrouter';
 let key=localStorage.getItem('tm2_k_'+prov)||'';
 let mdl=localStorage.getItem('tm2_m_'+prov)||PROVS[prov].models[0];
 let busy=false, lastResult=null;
 
-// ═══════════════════════════════════════════════════════════════════════
-// LOCAL 25-SIGNAL SCORING ENGINE
-// ═══════════════════════════════════════════════════════════════════════
-
-// SIGNAL 1: Phonetic similarity to major brands (Soundex)
 function sigSoundex(n){
   const sx=soundex(n);
   let maxSim=0,closest='';
@@ -797,8 +647,6 @@ function sigSoundex(n){
   }
   return{score:clamp(maxSim),label:'Soundex Match',emoji:'🔊',detail:closest?`Soundex match: ${closest}`:'No Soundex collision'};
 }
-
-// SIGNAL 2: Metaphone phonetic similarity
 function sigMetaphone(n){
   const mp=metaphone(n);
   let maxSim=0,closest='';
@@ -809,16 +657,12 @@ function sigMetaphone(n){
   }
   return{score:clamp(maxSim),label:'Metaphone',emoji:'🎵',detail:closest?`Phonetic proximity: ${closest}`:'Clean phonetic space'};
 }
-
-// SIGNAL 3: Visual/Dice similarity
 function sigVisual(n){
   let maxS=0,closest='';
   for(const b of TMBRANDS){const s=diceScore(n.toLowerCase(),b);if(s>maxS){maxS=s;closest=b;}}
   const pct=Math.round(maxS*100);
   return{score:clamp(pct),label:'Visual Sim.',emoji:'👁',detail:pct>=60?`Visual proximity to ${closest} (${pct}%)`:`Highest: ${closest} (${pct}%)`};
 }
-
-// SIGNAL 4: Levenshtein (spelling) distance
 function sigLevenshtein(n){
   let minDist=999,closest='';
   const lo=n.toLowerCase();
@@ -826,36 +670,26 @@ function sigLevenshtein(n){
   const score=Math.max(0,100-minDist*22);
   return{score:clamp(score),label:'Spelling Dist.',emoji:'✏️',detail:`Edit dist. to "${closest}": ${minDist}`};
 }
-
-// SIGNAL 5: Meaning proximity (common word descriptors)
 function sigMeaning(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   let score=10;
-  // Descriptive words have no protection and no conflict
   const isDesc=DESCRIPTIVE_WORDS.some(w=>lo===w||lo===w+'s'||lo.startsWith(w)&&lo.length<=w.length+3);
-  if(isDesc)score=15; // Low risk but also low protection
-  // Generic tech terms
+  if(isDesc)score=15;
   const generic=['app','tech','digital','online','cloud','data','ai','smart','pro','plus','hub'];
   if(generic.some(g=>lo===g))score=20;
   return{score:clamp(score),label:'Meaning Risk',emoji:'💭',detail:isDesc?'Descriptive — low TM risk but low protection':'Meaning analysis clear'};
 }
-
-// SIGNAL 6: Inherent distinctiveness
 function sigDistinctiveness(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
-  let score=80; // default: moderately distinctive
-  // Fanciful (invented) = safest = lowest danger
+  let score=80;
   const common=['cloud','data','tech','ai','app','web','net','pro','max','smart','fast','hub','core','base','flow','sync','edge','node'];
-  if(common.some(w=>lo===w))score=35; // generic
-  else if(DESCRIPTIVE_WORDS.some(w=>lo===w||lo.includes(w)))score=45; // descriptive
-  else if(/^[a-z]{3,8}$/.test(lo)&&!/[aeiou]{3,}/.test(lo))score=15; // invented/fanciful = very safe
+  if(common.some(w=>lo===w))score=35;
+  else if(DESCRIPTIVE_WORDS.some(w=>lo===w||lo.includes(w)))score=45;
+  else if(/^[a-z]{3,8}$/.test(lo)&&!/[aeiou]{3,}/.test(lo))score=15;
   return{score:clamp(100-score),label:'Distinctiveness',emoji:'⭐',detail:score<=25?'Fanciful — highest TM strength':score<=45?'Suggestive — good TM strength':'Descriptive — weaker TM'};
 }
-
-// SIGNAL 7: Industry/class overlap
 function sigClassOverlap(n,industry){
   const ind=(industry||'').toLowerCase();
-  // High-density TM classes
   const hotClasses={'software':9,'saas':42,'fintech':36,'health':44,'retail':35,'education':41};
   let score=20;
   let matchedClass = 42;
@@ -864,15 +698,11 @@ function sigClassOverlap(n,industry){
   }
   return{score,label:'Class Density',emoji:'📋',detail:`Industry TM density — Class ${matchedClass}`};
 }
-
-// SIGNAL 8: Consumer confusion probability
 function sigConfusion(n){
   const sd=sigSoundex(n).score;const vis=sigVisual(n).score;
   const score=Math.round((sd*0.4+vis*0.6));
   return{score:clamp(score),label:'Confusion Risk',emoji:'🤔',detail:score>=60?'High confusion probability':'Low confusion probability'};
 }
-
-// SIGNAL 9: Dilution risk (famous mark similarity)
 function sigDilution(n){
   const famousBrands=['apple','google','amazon','microsoft','meta','netflix','coca','nike','disney','mcdonalds'];
   let maxS=0,closest='';
@@ -880,16 +710,12 @@ function sigDilution(n){
   const pct=Math.round(maxS*100);
   return{score:clamp(pct>=50?pct+20:pct),label:'Dilution Risk',emoji:'⚡',detail:pct>=40?`Dilution risk near famous mark: ${closest}`:'No famous mark dilution risk'};
 }
-
-// SIGNAL 10: Global negative meaning
 function sigGlobalSafety(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const hits=NEGROOTS.filter(r=>lo.includes(r));
   const score=hits.length>0?65+hits.length*15:5;
   return{score:clamp(score),label:'Global Safety',emoji:'🌍',detail:hits.length?`⚠ Negative meaning: "${hits[0]}"`:'Safe in 12 languages checked'};
 }
-
-// SIGNAL 11: Descriptiveness/genericness
 function sigDescriptive(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const isDesc=DESCRIPTIVE_WORDS.some(w=>lo===w||lo.startsWith(w));
@@ -897,73 +723,53 @@ function sigDescriptive(n){
   const score=isGeneric?55:isDesc?35:10;
   return{score,label:'Descriptiveness',emoji:'📝',detail:isGeneric?'Generic term — unregistrable':isDesc?'Descriptive — weak TM':'Non-descriptive — strong TM'};
 }
-
-// SIGNAL 12: Mark strength
 function sigMarkStrength(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const len=lo.length;
-  let score=20; // base: moderately strong
-  if(len>=3&&len<=6&&/[aeiou]/.test(lo))score=10; // short invented = strong
-  if(DESCRIPTIVE_WORDS.some(w=>lo===w))score=60; // descriptive = risky
+  let score=20;
+  if(len>=3&&len<=6&&/[aeiou]/.test(lo))score=10;
+  if(DESCRIPTIVE_WORDS.some(w=>lo===w))score=60;
   return{score,label:'Mark Strength',emoji:'💪',detail:score<=20?'Fanciful/arbitrary — maximum TM strength':'Descriptive — needs secondary meaning'};
 }
-
-// SIGNAL 13: Common law use risk
 function sigCommonLaw(n){
   const vis=sigVisual(n).score;
   const score=Math.round(vis*0.6);
   return{score:clamp(score),label:'Common Law',emoji:'⚖️',detail:'Unregistered prior use signals from phonetic analysis'};
 }
-
-// SIGNAL 14: Social handle conflicts
 function sigSocial(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const score=lo.length<=6&&/[aeiou]/.test(lo)?35:18;
   return{score,label:'Social Handles',emoji:'📱',detail:`@${lo} — short names face more handle conflicts`};
 }
-
-// SIGNAL 15: Domain squatter proximity
 function sigDomain(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const score=lo.length<=5?40:lo.length<=7?25:12;
   return{score,label:'Domain Squatting',emoji:'🌐',detail:lo.length<=5?'Short domains face typosquatting':'Standard domain risk'};
 }
-
-// SIGNAL 16: Prior use evidence
 function sigPriorUse(n){
   const vis=sigVisual(n).score;
   const score=Math.round(vis*0.7);
   return{score:clamp(score),label:'Prior Use',emoji:'📅',detail:'Based on phonetic/visual proximity to known brands'};
 }
-
-// SIGNAL 17: Opposition probability
 function sigOpposition(n){
   const sd=sigSoundex(n).score,vis=sigVisual(n).score;
   const score=Math.round((sd+vis)/2*0.9);
   return{score:clamp(score),label:'Opposition Risk',emoji:'🚫',detail:score>=50?'High opposition probability from existing marks':'Low opposition probability'};
 }
-
-// SIGNAL 18: Geographic scope risk
 function sigGeo(n,region){
   const score=region==='global'?35:region==='us'?25:20;
   return{score,label:'Geo Scope',emoji:'🗺️',detail:`${region} registration scope conflicts`};
 }
-
-// SIGNAL 19: Channel of trade
 function sigChannel(n,industry){
   const ind=(industry||'').toLowerCase();
   const onlineHeavy=ind.includes('saas')||ind.includes('software')||ind.includes('ai')||ind.includes('app');
   return{score:onlineHeavy?40:22,label:'Trade Channel',emoji:'🛒',detail:onlineHeavy?'Online SaaS — broad channel overlap':'Niche channel — lower overlap'};
 }
-
-// SIGNAL 20: Purchaser sophistication
 function sigSophistication(n,industry,stage){
   const ind=(industry||'').toLowerCase();
   const isB2B=ind.includes('enterprise')||ind.includes('saas')||stage==='enterprise';
   return{score:isB2B?15:35,label:'Buyer Savvy',emoji:'🎓',detail:isB2B?'Sophisticated B2B buyers — lower confusion':'Consumer market — higher confusion risk'};
 }
-
-// SIGNAL 21: Inherent registrability
 function sigRegistrability(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   let score=15;
@@ -972,35 +778,26 @@ function sigRegistrability(n){
   if(/^[a-z]{4,8}$/.test(lo)&&!DESCRIPTIVE_WORDS.includes(lo))score=10;
   return{score,label:'Registrability',emoji:'📜',detail:score<=15?'Highly registrable — fanciful/arbitrary':'Descriptive — harder to register'};
 }
-
-// SIGNAL 22: Coexistence probability
 function sigCoexist(n){
   const vis=sigVisual(n).score;
   const score=Math.max(0,vis-10);
   return{score:clamp(score),label:'Coexistence',emoji:'🤝',detail:score>=50?'Low coexistence probability':'Reasonable coexistence chance'};
 }
-
-// SIGNAL 23: Brand moat strength
 function sigMoat(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const inv=lo.length<=7&&/[aeiou]/.test(lo)&&!DESCRIPTIVE_WORDS.includes(lo);
   return{score:inv?15:35,label:'Brand Moat',emoji:'🏰',detail:inv?'Strong moat — invented unique name':'Descriptive names have weak moat'};
 }
-
-// SIGNAL 24: International registration ease
 function sigIntlEase(n){
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
   const score=/[^aeiou]{4,}/.test(lo)?40:20;
   return{score,label:'Intl. Ease',emoji:'✈️',detail:score<=20?'Globally pronounceable — easy international filing':'Some pronunciation barriers'};
 }
-
-// SIGNAL 25: ITU vs use-based viability
 function sigITU(n,region){
   const score=region==='us'?15:region==='global'?25:20;
   return{score,label:'ITU Viable',emoji:'📬',detail:'Intent-to-use filing viability based on jurisdiction'};
 }
 
-// ── Full local risk score ──────────────────────────────────────────────
 function runLocalRisk(name,industry,region,stage){
   const signals=[
     sigSoundex(name),sigMetaphone(name),sigVisual(name),sigLevenshtein(name),
@@ -1011,8 +808,6 @@ function runLocalRisk(name,industry,region,stage){
     sigGeo(name,region),sigChannel(name,industry),sigSophistication(name,industry,stage),
     sigRegistrability(name),sigCoexist(name),sigMoat(name),sigIntlEase(name),sigITU(name,region)
   ];
-
-  // Weighted composite danger score
   const weights={
     0:0.12,1:0.10,2:0.10,3:0.08,4:0.04,5:0.02,6:0.05,7:0.08,
     8:0.06,9:0.06,10:0.04,11:0.02,12:0.04,13:0.02,14:0.02,15:0.04,
@@ -1021,8 +816,6 @@ function runLocalRisk(name,industry,region,stage){
   let danger=0;
   signals.forEach((s,i)=>danger+=s.score*(weights[i]||0.02));
   danger=clamp(Math.round(danger));
-
-  // LOC factors
   const loc=[
     {factor:'Similarity of marks',weight:'High',score:Math.round((signals[0].score+signals[1].score+signals[2].score)/3),icon:'🔍'},
     {factor:'Similarity of goods/services',weight:'High',score:Math.round(signals[6].score*1.2),icon:'📦'},
@@ -1033,18 +826,13 @@ function runLocalRisk(name,industry,region,stage){
     {factor:'Defendant intent',weight:'Low',score:Math.round(signals[12].score),icon:'🎯'},
     {factor:'Likelihood of expansion',weight:'Low',score:Math.round(signals[6].score),icon:'📈'},
   ];
-
   const tier=danger>=81?'critical':danger>=61?'high':danger>=26?'medium':'low';
-
-  // Key metrics
   const tmProx=signals[2];
   const distinctScore=clamp(100-signals[10].score-signals[11].score/2);
   const registrability=clamp(100-signals[20].score);
-
   return{danger,tier,signals,loc,tmProx,distinctScore,registrability};
 }
 
-// ── Soundex phonetic match scan ────────────────────────────────────────
 function getTMProximityBrands(name){
   const sx=soundex(name.toLowerCase()),mp=metaphone(name.toLowerCase());
   const close=[];
@@ -1058,14 +846,10 @@ function getTMProximityBrands(name){
   return close.sort((a,b)=>b.dice-a.dice).slice(0,5);
 }
 
-// ── Live USPTO TESS query ──────────────────────────────────────────────
 async function queryUSPTO(name){
-  // USPTO TSDR API does not support CORS for direct browser requests.
-  // Returning false immediately to rely on local phonetic matching and manual TESS links.
   return {found:false, data:null, note:'CORS restricted'};
 }
 
-// ── API callers ────────────────────────────────────────────────────────
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function fetchRetry(url,opts,retries=3){
   for(let i=0;i<retries;i++){
@@ -1194,9 +978,6 @@ function parseAI(raw){
   return null;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// MAIN RUN
-// ═══════════════════════════════════════════════════════════════════════
 async function run(){
   if(busy)return;
   const name=document.getElementById('brand').value.trim();
@@ -1299,7 +1080,7 @@ function mergeResult(name,industry,region,stage,local,ai,proxBrands,usptoData,lo
       phonetic_risk:local.signals[0].score>=60?'High':local.signals[0].score>=30?'Medium':'Low',
       global_pronunciation:`${countSyl(name)} syllables — ${/^[^aeiou][aeiou]/i.test(name)?'CV opening (good)':'check cross-language'}`
     },
-    summary:ai?.summary||buildLocalSummary(name,local,proxBrands),
+    summary:ai?.summary||buildLocalSummary(name,local,proxBrands,localOnly), // FIXED: Passed localOnly
     conflicts:ai?.conflicts||buildLocalConflicts(name,local,proxBrands),
     clearanceStrengths:ai?.clearance_strengths||buildLocalClearance(name,local),
     alternatives:ai?.alternatives||buildLocalAlts(name,local),
@@ -1312,7 +1093,8 @@ function mergeResult(name,industry,region,stage,local,ai,proxBrands,usptoData,lo
   };
 }
 
-function buildLocalSummary(n,local,prox){
+// FIXED: Added localOnly=false parameter
+function buildLocalSummary(n,local,prox,localOnly=false){
   const tier=local.tier;
   const closest=prox[0]?.brand||'no direct conflicts';
   const intros={critical:`"${n}" poses CRITICAL trademark risk — active conflicts detected. Do not use without full legal clearance.`,high:`"${n}" carries HIGH trademark risk. Phonetic/visual proximity to existing brands requires immediate legal review.`,medium:`"${n}" presents MEDIUM trademark risk. Some conflicts detected — proceed with professional trademark search and attorney guidance.`,low:`"${n}" appears to carry LOW trademark risk. Preliminary analysis suggests reasonable clearance potential.`};
@@ -1342,7 +1124,6 @@ function buildLocalClearance(n,local){
 function buildLocalAlts(n,local){
   const alts=[];
   const lo=n.toLowerCase().replace(/[^a-z]/g,'');
-  // Phonetic variations
   const vowelSwap={'a':'e','e':'a','i':'y','o':'u','u':'o'};
   let v1=lo;
   for(const[from,to] of Object.entries(vowelSwap)){if(lo.includes(from)){v1=lo.replace(from,to);break;}}
@@ -1385,31 +1166,20 @@ function buildLocalInsights(n,local,prox){
   return ins;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════════════════════
 function renderResult(r){
   document.getElementById('resultWrap').classList.add('on');
   document.getElementById('resultWrap').scrollIntoView({behavior:'smooth',block:'start'});
-
-  // Hero
   document.getElementById('rhBrand').textContent=r.name;
   document.getElementById('rhMeta').textContent=`${r.industry||'Tech'} · ${r.region} · ${r.localOnly?'Local analysis':'AI analysis'}`;
   const sc=document.getElementById('riskScore');
   sc.textContent=r.danger;
   const color=r.danger>=81?'#ff4060':r.danger>=61?'var(--red)':r.danger>=26?'var(--amber)':'var(--green)';
   sc.style.color=color;
-
-  // Badge
   const badgeCfg={critical:{cls:'risk-critical',icon:'🚨',lbl:'CRITICAL — Do Not Use'},high:{cls:'risk-high',icon:'⚠️',lbl:'High Risk — Legal Review Required'},medium:{cls:'risk-medium',icon:'⚠',lbl:'Medium Risk — Proceed with Caution'},low:{cls:'risk-low',icon:'✓',lbl:'Low Risk — Clear Signal'}};
   const bc=badgeCfg[r.tier]||badgeCfg.medium;
   const tb=document.getElementById('riskBadge');
   tb.className='risk-badge '+bc.cls;tb.innerHTML=`${bc.icon} ${bc.lbl}`;
-
-  // Meter
   setTimeout(()=>{document.getElementById('meterDot').style.left=r.danger+'%';},200);
-
-  // Metrics row
   const mr=document.getElementById('metricsRow');
   const ms=[
     {lbl:'Danger Score',val:r.danger,sub:`${r.tier.toUpperCase()}`,c:color},
@@ -1422,8 +1192,6 @@ function renderResult(r){
     <div class="metric-val" style="color:${m.c}">${m.val}</div>
     <div class="metric-sub">${m.sub}</div>
   </div>`).join('');
-
-  // USPTO live status
   const us=document.getElementById('usptoStatus');
   const proxBrands=r.proxBrands||[];
   const ph=r.phoneticAnalysis||{};
@@ -1445,8 +1213,6 @@ function renderResult(r){
   if(proxBrands.length){
     uf.innerHTML=proxBrands.map(b=>`<div class="li"><span class="li-icon">${b.dice>=70?'🚨':b.dice>=50?'⚠️':'ℹ️'}</span><div><strong>${b.brand}</strong> — Dice similarity: ${b.dice}%${b.soundexMatch?' · Soundex match':''}${b.metaphoneMatch?' · Metaphone match':''} · Edit distance: ${b.levDist}</div></div>`).join('');
   }else{uf.innerHTML='<div class="li"><span class="li-icon">✓</span>No high-similarity marks detected in local database scan. Verify on USPTO TESS for complete results.</div>';}
-
-  // LOC factors
   const lg=document.getElementById('locGrid');
   const locData=r.loc||[];
   lg.innerHTML=locData.slice(0,8).map(l=>{
@@ -1462,8 +1228,6 @@ function renderResult(r){
       <span class="loc-badge" style="background:${s>=60?'var(--red-dim)':s>=35?'var(--amber-dim)':'var(--green-dim)'};color:${lc};border:1px solid ${lc}33">${riskLbl}</span>
     </div>`;
   }).join('');
-
-  // 25-signal grid
   const sg=document.getElementById('sigGrid');
   sg.innerHTML=r.signals.slice(0,25).map(s=>{
     const c=s.score>=70?'var(--red)':s.score>=40?'var(--amber)':'var(--green)';
@@ -1474,11 +1238,7 @@ function renderResult(r){
       <div class="sg-bar"><div class="sg-fill" style="width:${s.score}%;background:${c}"></div></div>
     </div>`;
   }).join('');
-
-  // Summary
   document.getElementById('summaryBox').textContent=r.summary;
-
-  // Phonetic analysis
   const pa=r.phoneticAnalysis||{};
   document.getElementById('phoneticGrid').innerHTML=[
     {lbl:'Soundex Code',val:pa.soundex||soundex(r.name.toLowerCase())},
@@ -1488,14 +1248,10 @@ function renderResult(r){
     {lbl:'Global Pronunciation',val:pa.global_pronunciation||`${countSyl(r.name)} syllables`},
     {lbl:'Soundex Risk',val:r.proxBrands?.some(b=>b.soundexMatch)?'⚠ Match detected':'✓ No collision'},
   ].map(p=>`<div class="ph-card"><div class="ph-lbl">${p.lbl}</div><div class="ph-val">${p.val}</div></div>`).join('');
-
-  // Lists
   renderList('conflictList',r.conflicts,'⚠','var(--amber)');
   renderList('clearanceList',r.clearanceStrengths,'✓','var(--green)');
   renderList('actionList',r.actionPlan,'→','var(--blue)');
   renderList('regList',r.regStrategy,'📋','var(--purple)');
-
-  // Alternatives
   const ag=document.getElementById('altGrid');
   const alts=r.alternatives||[];
   ag.innerHTML=alts.slice(0,4).map(a=>`<div class="alt-card">
@@ -1511,9 +1267,6 @@ function renderList(id,items,icon,color){
   el.innerHTML=items.map(item=>`<div class="li"><span class="li-icon" style="color:${color}">${icon}</span><div>${typeof item==='string'?item:item.note||item.assessment||JSON.stringify(item)}</div></div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// EXPORT
-// ═══════════════════════════════════════════════════════════════════════
 function copyReport(){
   if(!lastResult){showToast('Run analysis first');return;}
   const r=lastResult;
@@ -1588,9 +1341,6 @@ function shareLink(){
   navigator.clipboard.writeText(url).then(()=>showToast('✓ Link copied')).catch(()=>prompt('Copy:',url));
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// LIVE PRE-SCORE
-// ═══════════════════════════════════════════════════════════════════════
 let preTimer;
 function onBrandInput(){
   clearTimeout(preTimer);
@@ -1608,9 +1358,6 @@ function onBrandInput(){
   },350);
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// UI CONTROLS
-// ═══════════════════════════════════════════════════════════════════════
 function setProgress(pct,txt){
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('progPct').textContent=pct+'%';
