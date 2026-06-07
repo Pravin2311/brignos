@@ -232,6 +232,193 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   .hd-in{height:auto;padding:12px 20px;flex-wrap:wrap}.hright{width:100%;flex-wrap:wrap}.kwrap{flex:1;max-width:none}.fg3,.fg2{grid-template-columns:1fr}.sig-grid{grid-template-columns:repeat(2,1fr)}.stats-strip{grid-template-columns:repeat(2,1fr)}.hero{padding:36px 20px 28px}.main{padding:0 20px 50px}.risk-score{font-size:52px}.rh-brand{font-size:32px}
   .site-footer { padding: 40px 20px 20px; margin-top: 40px; } .footer-inner { grid-template-columns: 1fr; gap: 30px; } .footer-bottom { flex-direction: column; text-align: center; }
 }
+/* =====================================================
+   AUTODNG UNIVERSAL MOBILE FIX
+   PASTE AT VERY END OF CSS
+===================================================== */
+
+@media (max-width: 768px){
+
+  html,
+  body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden !important;
+  }
+
+  *{
+    min-width:0;
+    max-width:100%;
+  }
+
+  /* Header */
+  .hd-in{
+    height:auto !important;
+    padding:12px !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+  }
+
+  .hright{
+    width:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:10px !important;
+  }
+
+  .kwrap,
+  .mdl-sel,
+  .kstat,
+  .hdbtn{
+    width:100% !important;
+    max-width:none !important;
+  }
+
+  .ptabs{
+    width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Main layouts */
+  .hero-grid,
+  .main,
+  .fg2,
+  .fg3,
+  .loc-grid,
+  .phonetic-grid,
+  .alt-grid,
+  .metrics-row{
+    grid-template-columns:1fr !important;
+  }
+
+  /* Stats */
+  .stats-strip{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  .stat-c{
+    min-width:0;
+  }
+
+  /* Result header */
+  .rh-top{
+    flex-direction:column !important;
+  }
+
+  .rh-right{
+    text-align:left !important;
+  }
+
+  .rh-brand{
+    font-size:30px !important;
+    word-break:break-word;
+  }
+
+  .risk-score{
+    font-size:48px !important;
+  }
+
+  /* Signal cards */
+  .sig-grid{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  /* Buttons */
+  .sec-row,
+  .action-row{
+    flex-direction:column;
+  }
+
+  .sec-btn,
+  .act-btn{
+    width:100%;
+    justify-content:center;
+  }
+
+  /* Footer */
+  .site-footer{
+    padding:40px 16px 20px !important;
+  }
+
+  .footer-inner{
+    grid-template-columns:1fr !important;
+    gap:24px !important;
+  }
+
+  .footer-bottom{
+    flex-direction:column !important;
+    text-align:center;
+  }
+
+  .footer-bottom-links{
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  /* Forms */
+  .finput,
+  .fselect,
+  .ftextarea,
+  .runbtn{
+    width:100%;
+    font-size:16px;
+  }
+
+  /* Long text */
+  .flbl,
+  .rh-brand,
+  .summary-box,
+  .li,
+  .alt-name{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+
+  /* Containers */
+  .hero,
+  .main,
+  .icard,
+  .rpanel,
+  .risk-hero,
+  .asec{
+    width:100%;
+    max-width:100%;
+  }
+
+}
+
+/* Tiny phones */
+@media (max-width: 480px){
+
+  .hero{
+    padding:24px 12px !important;
+  }
+
+  .main{
+    padding:0 12px 40px !important;
+  }
+
+  .hero h1{
+    font-size:34px !important;
+    line-height:1.1;
+  }
+
+  .risk-score{
+    font-size:40px !important;
+  }
+
+  .sig-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .stats-strip{
+    grid-template-columns:1fr !important;
+  }
+
+}
 </style>
 </head>
 <body>

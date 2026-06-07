@@ -1671,7 +1671,9 @@ ${steerText?`- Steering instruction from user: ${steerText}`:''}
 11. Sound symbolism must match industry emotional profile
 12. 1-4 syllables only
 13. Letters only, no special characters
-Return a JSON array of EXACTLY 16 candidate names with reasoning:
+Return a JSON array of EXACTLY ${
+  steerText ? 40 : 16
+} candidate names with reasoning:
 [{"name":"Synara","reasoning":"Invented CVCV pattern, 3 syllables, warm phonetics for healthcare","industry_fit":"high","pattern":"invented-CVCV"}]
 Be extremely diverse — vary starting letters, syllable counts, patterns, and phoneme families. Never cluster more than 2 names from the same phonetic family.`;
 const t1raw=await callAI(t1sys,t1usr);
@@ -1722,8 +1724,8 @@ source:'ai'
 }
 }
 // Fallback / supplement with local
-if(candidates.length<8){
-const local=localGenerate(14-candidates.length,industry);
+if(candidates.length<20){
+const local=localGenerate(30-candidates.length,industry);
 candidates=[...candidates,...local];
 }
 setProgress(70,'Running 18-signal quality gate…');
@@ -1733,7 +1735,7 @@ const gated=candidates.filter(c=>{
 const lo=c.name.toLowerCase();
 if(seen.has(lo))return false;
 // Phonetic dedup against already-passed
-for(const s of seen){if(diceScore(lo,s)>=0.72)return false;}
+for(const s of seen){if(diceScore(lo,s)>=0.82)return false;}
 const gate=qualityGate(c.name,industry);
 c.gate=gate;
 if(gate.gateScore<50)return false;
