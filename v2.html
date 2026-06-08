@@ -619,6 +619,20 @@ justify-content: center;
   }
 
 }
+@media (max-width:640px){
+
+  .drow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .dc{
+    flex:0 0 auto;
+    min-width:80px;
+  }
+
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -1099,10 +1113,7 @@ PAGE: TOOLS
 <button class="mb p" onclick="closeModal('nokeyModal');go(true)">Generate Locally</button>
 </div>
 </div></div>
-<footer>
-<span>autoDNG — Agentic brand intelligence engine · 18-signal quality gate · 2026</span>
-<span>Intelligence: a16z · YC · Sequoia · NameBio · Crunchbase · USPTO patterns</span>
-</footer>
+
 </div><!-- /.app -->
 <!-- ══ SEO FOOTER ══ -->
 <footer class="site-footer">
@@ -1144,7 +1155,10 @@ PAGE: TOOLS
 
     
   </div>
-
+<footer>
+<span>autoDNG — Agentic brand intelligence engine · 18-signal quality gate · 2026</span>
+<span>Intelligence: a16z · YC · Sequoia · NameBio · Crunchbase · USPTO patterns</span>
+</footer>
   
   </div>
 </footer>
@@ -1519,23 +1533,47 @@ async function checkDomains(names, tlds) {
       
       // 3️⃣ Update DOM Chip with Namecheap Link
       const el = document.getElementById(`dc-${n.name}-${tld.replace('.', '')}`);
-      if (el) {
-        const status = n.domains[tld];
-        const link = `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain)}`;
-        if (status === 'available') {
-          el.className = 'dc av';
-          el.innerHTML = `<a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${tld} ✓</a>`;
-          el.title = 'Available — register on Namecheap';
-        } else if (status === 'taken') {
-          el.className = 'dc tk';
-          el.innerHTML = `${tld} ✗`;
-          el.title = 'Already registered';
-        } else {
-          el.className = 'dc un';
-          el.innerHTML = `<a href="${link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${tld} ?</a>`;
-          el.title = 'Status unknown — verify on Namecheap';
-        }
-      }
+
+if (el) {
+
+  const status = n.domains[tld];
+  const link =
+    `https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(domain)}`;
+
+  el.onclick = null;
+
+  if (status === 'available') {
+
+    el.className = 'dc av';
+    el.textContent = `${tld} ✓`;
+    el.title = 'Available — register on Namecheap';
+
+    el.style.cursor = 'pointer';
+
+    el.onclick = () => {
+      window.open(link, '_blank', 'noopener');
+    };
+
+  } else if (status === 'taken') {
+
+    el.className = 'dc tk';
+    el.textContent = `${tld} ✗`;
+    el.title = 'Already registered';
+    el.style.cursor = 'default';
+
+  } else {
+
+    el.className = 'dc un';
+    el.textContent = `${tld} ?`;
+    el.title = 'Status unknown — verify on Namecheap';
+
+    el.style.cursor = 'pointer';
+
+    el.onclick = () => {
+      window.open(link, '_blank', 'noopener');
+    };
+  }
+}
     }));
     await sleep(300); // 300ms delay prevents RDAP rate-limit bans
   }
@@ -1913,6 +1951,13 @@ Copy
 const PREMIUM_DOMAINS=[
 
 // ── NEW: 31 Additional Premium Domains ───────────────────────────────
+  {name:'Vequos',tld:'.com',desc:'Strong, authoritative 6-letter brandable with a modern tech edge. The veq onset feels innovative, while the os suffix provides a solid, established corporate foundation. Ideal for FinTech, B2B SaaS, enterprise software, or data analytics platforms.',tags:['FinTech','SaaS','Invented'],price:'Make Offer',orig:null,cat:'tech',brand:88,seo:75,global:85,badge:'premium'},
+
+  {name:'Vofira',tld:'.com',desc:'Beautiful, fluid 6-letter name with a premium, global feel. The syllables flow effortlessly, giving it an elegant, pharmaceutical, or lifestyle vibe. Perfect for a biotech startup, digital health app, or premium consumer brand with high trademark defensibility.',tags:['BioTech','Health','Invented'],price:'Make Offer',orig:null,cat:'health',brand:94,seo:70,global:95,badge:'hot'},
+
+  {name:'Bytezeo',tld:'.com',desc:'Combines the classic tech prefix Byte with the futuristic, energetic suffix zeo. Instantly communicates a technology focus with a modern, edgy twist. Ideal for Web3 infrastructure, AI development tools, cybersecurity firms, or next-gen software.',tags:['Web3','Tech','Compound'],price:'Make Offer',orig:null,cat:'tech',brand:85,seo:88,global:82,badge:'new'},
+
+  {name:'Braincia',tld:'.com',desc:'Blends the highly sought-after keyword Brain with the elegant, expansive suffix cia (reminiscent of encyclopedia or academia). Highly brandable and instantly descriptive. Perfect for AI cognitive platforms, neurotech startups, brain-training apps, or EdTech.',tags:['AI','EdTech','Compound'],price:'Make Offer',orig:null,cat:'ai',brand:91,seo:90,global:92,badge:'premium'},
 {name:'Opensano',tld:'.com',desc:'Combines the trust of "Open" with the wellness-oriented "Sano". Clean, memorable, and globally recognizable. Ideal for AI healthcare, biotech, wellness platforms, or digital health startups.',tags:['AI','Healthcare','Compound'],price:'Make Offer',orig:null,cat:'health',brand:92,seo:85,global:93,badge:'new'},
 {name:'Openzure',tld:'.com',desc:'Modern and enterprise-ready. "Zure" evokes clarity, cloud infrastructure, and next-generation technology. A strong fit for AI platforms, cloud services, developer tools, or enterprise SaaS.',tags:['AI','Cloud','Compound'],price:'Make Offer',orig:null,cat:'saas',brand:91,seo:84,global:90,badge:''},
 {name:'Openelix',tld:'.com',desc:'Premium startup-grade brand blending the openness of innovation with a futuristic "elix" sound. Suggests intelligence, transformation, and advanced technology. Excellent for AI, biotech, SaaS, or deep-tech ventures.',tags:['AI','Biotech','Invented'],price:'Make Offer+',orig:null,cat:'health',brand:94,seo:87,global:91,badge:'hot'},
