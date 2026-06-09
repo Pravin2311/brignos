@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Fix the Gemini API Key Format Issue in AutoDNG (AQ. vs AIza) | AutoDNG</title>
+    <meta name="description" content="Is your Gemini API key starting with 'AQ.' instead of 'AIza'? Here is the exact, step-by-step workaround to get AutoDNG working with Google's new API key format in 2026.">
+    <link rel="canonical" href="https://autodng.com/blog/guides/gemini-api-key-format-autodng-fix">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "How to Fix the Gemini API Key Format Issue in AutoDNG (AQ. vs AIza)",
+      "description": "Is your Gemini API key starting with 'AQ.' instead of 'AIza'? Here is the exact workaround to get AutoDNG working with Google's new API key format.",
+      "author": { "@type": "Organization", "name": "AutoDNG Team" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AutoDNG",
+        "logo": { "@type": "ImageObject", "url": "https://autodng.com/logo.png" }
+      },
+      "datePublished": "2026-06-09",
+      "dateModified": "2026-06-09",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://autodng.com/blog/guides/gemini-api-key-format-autodng-fix" }
+    }
+    </script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.7; color: #2d3748; max-width: 800px; margin: 0 auto; padding: 20px; background: #fff; }
+        h1 { font-size: 2.4rem; line-height: 1.2; margin-bottom: 10px; color: #1a202c; }
+        h2 { font-size: 1.8rem; margin-top: 45px; color: #1a202c; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h3 { font-size: 1.3rem; margin-top: 30px; color: #2d3748; }
+        p { margin-bottom: 20px; font-size: 1.125rem; color: #4a5568; }
+        .meta { color: #718096; font-size: 0.9rem; margin-bottom: 30px; display: flex; gap: 15px; }
+        .takeaways { background: #fffaf0; border-left: 5px solid #dd6b20; padding: 25px; border-radius: 8px; margin: 30px 0; }
+        .takeaways h3 { margin-top: 0; color: #9c4221; font-size: 1.2rem; }
+        .takeaways ul { margin-bottom: 0; padding-left: 20px; }
+        .takeaways li { margin-bottom: 10px; color: #c05621; font-size: 1.05rem; }
+        .code-block { background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; font-family: "Courier New", Courier, monospace; font-size: 0.95rem; overflow-x: auto; margin: 20px 0; border-left: 4px solid #ed8936; }
+        .cta-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 12px; text-align: center; margin: 50px 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .cta-box h3 { color: white; margin-top: 0; font-size: 1.5rem; }
+        .cta-box p { color: #e2e8f0; font-size: 1.1rem; }
+        .cta-btn { display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 15px; transition: transform 0.2s; }
+        .cta-btn:hover { transform: translateY(-2px); }
+        ul, ol { margin-bottom: 20px; padding-left: 20px; }
+        li { margin-bottom: 12px; font-size: 1.1rem; color: #4a5568; }
+        strong { color: #1a202c; }
+        a { color: #3182ce; text-decoration: none; font-weight: 500; }
+        a:hover { text-decoration: underline; }
+        
+        /* Related Posts Widget */
+        .related-posts { margin-top: 60px; padding-top: 40px; border-top: 2px solid #e2e8f0; }
+        .related-posts h2 { font-size: 1.6rem; margin-top: 0; margin-bottom: 25px; border-bottom: none; padding-bottom: 0; color: #1a202c; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+        .related-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; }
+        .related-card:hover { transform: translateY(-6px); box-shadow: 0 14px 28px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.05); border-color: #cbd5e0; }
+        .related-thumb { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: rgba(255, 255, 255, 0.9); }
+        .thumb-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .thumb-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .thumb-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .related-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .related-tag { display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #3182ce; background: #ebf8ff; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; width: fit-content; }
+        .related-title { font-size: 1.1rem; line-height: 1.4; color: #1a202c; margin: 0 0 15px 0; font-weight: 700; flex-grow: 1; }
+        .related-card:hover .related-title { color: #3182ce; }
+        .related-meta { font-size: 0.85rem; color: #718096; margin-top: auto; display: flex; align-items: center; gap: 5px; }
+    </style>
+</head>
+<body>
+
+<article>
+    <header>
+        <h1>How to Fix the Gemini API Key Format Issue in AutoDNG (AQ. vs AIza)</h1>
+        <div class="meta">
+            <span>By <strong>AutoDNG Team</strong></span>
+            <span>June 9, 2026</span>
+            <span>6 min read</span>
+        </div>
+    </header>
+
+    <p>If you’ve recently tried to connect your Google Gemini API key to AutoDNG and received an authentication or validation error, you aren't alone. This is currently the most common support ticket we receive, and the root cause lies in a recent, silent change made by Google.</p>
+
+    <p>In mid-2026, Google began changing the format of new API keys generated via the Google AI Studio interface. Instead of the traditional <code>AIza</code> prefix that developers have relied on for years, new keys are now being issued with an <strong><code>AQ.</code></strong> prefix. Because AutoDNG’s backend validation system (like many third-party integrations and older SDKs) explicitly expects the standard <code>AIza</code> format, it automatically rejects the new <code>AQ.</code> tokens as invalid.</p>
+
+    <p>Fortunately, there are several proven workarounds to bypass this restriction and get a compatible key up and running in minutes. Here is the exact step-by-step guide to fixing the Gemini API key format issue in AutoDNG.</p>
+
+    <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+            <li>Google AI Studio is now issuing API keys with an <code>AQ.</code> prefix, which AutoDNG currently rejects.</li>
+            <li>The fastest fix is to generate your API key directly through the <strong>Google Cloud Console</strong>, which still issues standard <code>AIza</code> keys.</li>
+            <li>Clearing your browser cache and deleting old keys in AI Studio can sometimes force the system to revert to the legacy format.</li>
+            <li>Using a secondary, fresh Google account is a guaranteed fallback if your primary account is permanently flagged for the new format.</li>
+        </ul>
+    </div>
+
+    <h2>Workaround 1: Generate the Key via Google Cloud Console (Recommended)</h2>
+    <p>The <code>AQ.</code> restriction currently appears to be isolated to the simplified Google AI Studio interface. You can completely bypass this by generating the key through the robust Google Cloud Console, which continues to issue the legacy <code>AIza</code> format.</p>
+
+    <ol>
+        <li>Go to the <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a> and log in.</li>
+        <li>Select your existing project or create a new one at the top of the page.</li>
+        <li>Navigate to <strong>APIs & Services</strong> > <strong>Credentials</strong> in the left-hand sidebar.</li>
+        <li>Click the <strong>+ Create Credentials</strong> button at the top, then select <strong>API key</strong>.</li>
+        <li>A modal will pop up with your new key. It should look like this:
+            <div class="code-block">AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
+        </li>
+        <li>Click <strong>Restrict Key</strong> to secure it (highly recommended), ensuring the "Generative Language API" is enabled under API restrictions.</li>
+        <li>Copy this <code>AIza</code> key and paste it directly into your AutoDNG settings.</li>
+    </ol>
+
+    <h2>Workaround 2: Purge and Regenerate in AI Studio</h2>
+    <p>Google developers have noted on community forums that the system sometimes defaults to the <code>AQ.</code> format based on browser caching, cookies, or account history. You can sometimes "reset" this behavior.</p>
+
+    <ol>
+        <li>Go to the <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio API Key page</a>.</li>
+        <li><strong>Delete</strong> all of your existing <code>AQ.</code> API keys. Do not just leave them there; remove them entirely.</li>
+        <li>Open a completely new Incognito or Private browsing window (this ensures no legacy cookies interfere).</li>
+        <li>Navigate back to the API key page and click <strong>Create API Key</strong>.</li>
+        <li>Many users report that this "clean slate" approach forces the system to generate a standard <code>AIza</code> key that works perfectly with AutoDNG.</li>
+    </ol>
+
+    <h2>Workaround 3: Use a Fresh Google Account</h2>
+    <p>If your primary Google Workspace or Gmail account has been permanently flagged by Google's system to only generate <code>AQ.</code> tokens, the path of least resistance is to use a secondary account.</p>
+
+    <p>Simply create a new, unused Gmail address. Log into Google AI Studio with this fresh account and generate your key. Because the account has no history, it is currently still receiving standard <code>AIza</code> tokens. You can then use this key in AutoDNG without any validation errors. This is a highly reliable, permanent fix while we wait for broader platform updates.</p>
+
+    <h2>Troubleshooting: "I have an AIza key, but AutoDNG still says 'Invalid'"</h2>
+    <p>If you successfully generated an <code>AIza</code> key but AutoDNG is still throwing an error, the issue is likely not the format, but the key's permissions or billing status. Check the following:</p>
+    <ul>
+        <li><strong>Billing is Enabled:</strong> Google requires a valid billing account to be linked to your project to use the Gemini API, even for free-tier usage. Check the "Billing" section in the Cloud Console.</li>
+        <li><strong>API is Enabled:</strong> Ensure the "Generative Language API" is explicitly enabled for your project. Go to "APIs & Services" > "Library" and search for it.</li>
+        <li><strong>No IP Restrictions:</strong> If you restricted the key in the Cloud Console, ensure that AutoDNG's server IP addresses are whitelisted, or set the restriction to "None" temporarily to test if that is the blocking factor.</li>
+    </ul>
+
+    <h2>When Will AutoDNG Support the "AQ." Format Natively?</h2>
+    <p>Our engineering team is actively aware of this upstream change from Google. We are currently updating AutoDNG’s backend authentication handlers to natively accept and process the new <code>AQ.</code> prefix without throwing validation errors. </p>
+    
+    <p>We expect to roll out this compatibility patch in our next scheduled platform update. However, until that update is live, using an <code>AIza</code> key generated via the Google Cloud Console remains the most stable, secure, and immediate way to keep your AutoDNG workflows running smoothly.</p>
+
+    <div class="cta-box">
+        <h3>Still Experiencing API Issues?</h3>
+        <p>Our support team is standing by to help you get connected. Check out our full API documentation or open a direct support ticket.</p>
+        <a href="https://autodng.com" class="cta-btn">Contact AutoDNG Support</a>
+    </div>
+
+    <!-- RELATED POSTS WIDGET -->
+    <section class="related-posts">
+        <h2>Keep Reading</h2>
+        <div class="related-grid">
+            <a href="/blog/startup-branding/psychology-of-naming-ai-startup" class="related-card">
+                <div class="related-thumb thumb-gradient-1">🧠</div>
+                <div class="related-content">
+                    <span class="related-tag">Startup Branding</span>
+                    <h3 class="related-title">The Psychology of Naming Your AI Startup: Why Brandable .coms Beat Exact-Match</h3>
+                    <div class="related-meta">⏱️ 8 min read</div>
+                </div>
+            </a>
+            <a href="/blog/domain-investing/valuating-invented-brandable-domains.html" class="related-card">
+                <div class="related-thumb thumb-gradient-2">💰</div>
+                <div class="related-content">
+                    <span class="related-tag">Domain Investing</span>
+                    <h3 class="related-title">The 2026 Guide to Valuing 5 and 6-Letter Invented Brandable Domains</h3>
+                    <div class="related-meta">⏱️ 8 min read</div>
+                </div>
+            </a>
+            <a href="/blog/domain-investing/ultimate-domain-branding-checklist.html" class="related-card">
+                <div class="related-thumb thumb-gradient-3">✅</div>
+                <div class="related-content">
+                    <span class="related-tag">Startup Branding</span>
+                    <h3 class="related-title">The Ultimate Domain & Branding Checklist for Tech Founders in 2026</h3>
+                    <div class="related-meta">⏱️ 9 min read</div>
+                </div>
+            </a>
+        </div>
+    </section>
+</article>
+
+</body>
+</html>
