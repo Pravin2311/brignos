@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AutoDNG Blog | Startup Branding, Domain Investing & AI Naming Insights</title>
+    <meta name="description" content="Explore the AutoDNG blog for expert insights on startup naming strategies, domain name valuation, AI branding psychology, and technical guides.">
+    <link rel="canonical" href="https://autodng.com/blog">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "The AutoDNG Blog",
+      "description": "Expert insights on startup naming strategies, domain name valuation, AI branding psychology, and technical guides.",
+      "url": "https://autodng.com/blog",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AutoDNG",
+        "logo": { "@type": "ImageObject", "url": "https://autodng.com/logo.png" }
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary: #3182ce;
+            --primary-dark: #2b6cb0;
+            --text-dark: #1a202c;
+            --text-body: #4a5568;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            color: var(--text-body); 
+            background: #ffffff; 
+        }
+
+        a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        a:hover { color: var(--primary-dark); }
+
+        /* --- HEADER --- */
+        .site-header { border-bottom: 1px solid var(--border); padding: 20px 0; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--text-body); font-weight: 500; font-size: 0.95rem; }
+        .nav-links a:hover { color: var(--primary); }
+        .btn-primary { background: var(--primary); color: white !important; padding: 10px 20px; border-radius: 8px; font-weight: 600; transition: background 0.2s; }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        /* --- HERO SECTION --- */
+        .blog-hero { 
+            background: linear-gradient(135deg, #f6f8fb 0%, #ebf4ff 100%); 
+            padding: 80px 20px; 
+            text-align: center; 
+            border-bottom: 1px solid var(--border);
+        }
+        .blog-hero h1 { font-size: 3rem; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; letter-spacing: -1px; }
+        .blog-hero p { font-size: 1.25rem; color: var(--text-body); max-width: 600px; margin: 0 auto 30px; }
+        
+        .search-bar { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            display: flex; 
+            background: white; 
+            border: 1px solid var(--border); 
+            border-radius: 50px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .search-bar input { flex: 1; border: none; padding: 16px 24px; font-size: 1rem; outline: none; }
+        .search-bar button { background: var(--primary); color: white; border: none; padding: 0 24px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .search-bar button:hover { background: var(--primary-dark); }
+
+        /* --- CATEGORIES --- */
+        .categories-section { max-width: 1200px; margin: 60px auto 40px; padding: 0 20px; }
+        .section-title { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 24px; font-weight: 700; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .category-card { 
+            background: white; border: 1px solid var(--border); border-radius: 12px; padding: 24px; 
+            text-align: center; transition: all 0.3s ease; cursor: pointer; text-decoration: none; color: inherit;
+        }
+        .category-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); border-color: var(--primary); }
+        .category-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+        .category-name { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+        .category-count { font-size: 0.85rem; color: var(--text-light); }
+
+        /* --- FEATURED POST --- */
+        .featured-section { max-width: 1200px; margin: 0 auto 60px; padding: 0 20px; }
+        .featured-card { 
+            display: grid; grid-template-columns: 1fr 1fr; background: white; border: 1px solid var(--border); 
+            border-radius: 16px; overflow: hidden; transition: all 0.3s ease; text-decoration: none; color: inherit;
+        }
+        .featured-card:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .featured-image { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            display: flex; align-items: center; justify-content: center; font-size: 5rem; color: rgba(255,255,255,0.9); min-height: 300px;
+        }
+        .featured-content { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .featured-tag { display: inline-block; background: #ebf8ff; color: var(--primary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 12px; border-radius: 20px; width: fit-content; margin-bottom: 16px; }
+        .featured-title { font-size: 2rem; color: var(--text-dark); margin-bottom: 16px; line-height: 1.3; font-weight: 800; }
+        .featured-title:hover { color: var(--primary); }
+        .featured-excerpt { font-size: 1.1rem; color: var(--text-body); margin-bottom: 24px; line-height: 1.6; }
+        .read-more { font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        /* --- RECENT POSTS GRID --- */
+        .recent-section { max-width: 1200px; margin: 0 auto 80px; padding: 0 20px; }
+        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px; }
+        .post-card { 
+            background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; 
+            text-decoration: none; color: inherit; transition: all 0.3s ease; display: flex; flex-direction: column;
+        }
+        .post-card:hover { transform: translateY(-6px); box-shadow: 0 14px 28px rgba(0,0,0,0.08); border-color: #cbd5e0; }
+        .post-thumb { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: rgba(255,255,255,0.9); }
+        .thumb-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .thumb-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .thumb-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .thumb-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        
+        .post-content { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+        .post-tag { display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); background: #ebf8ff; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; width: fit-content; }
+        .post-title { font-size: 1.25rem; line-height: 1.4; color: var(--text-dark); margin-bottom: 12px; font-weight: 700; }
+        .post-card:hover .post-title { color: var(--primary); }
+        .post-meta { font-size: 0.85rem; color: var(--text-light); margin-top: auto; display: flex; align-items: center; gap: 5px; }
+
+        /* --- NEWSLETTER --- */
+        .newsletter-section { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 80px 20px; text-align: center; color: white; }
+        .newsletter-inner { max-width: 600px; margin: 0 auto; }
+        .newsletter-section h2 { font-size: 2rem; margin-bottom: 16px; color: white; }
+        .newsletter-section p { font-size: 1.1rem; color: #a0aec0; margin-bottom: 32px; }
+        .newsletter-form { display: flex; gap: 12px; }
+        .newsletter-form input { flex: 1; padding: 16px 20px; border-radius: 8px; border: 1px solid #4a5568; background: #2d3748; color: white; font-size: 1rem; outline: none; }
+        .newsletter-form input:focus { border-color: var(--primary); }
+        .newsletter-form button { background: var(--primary); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .newsletter-form button:hover { background: var(--primary-dark); }
+
+        /* --- FOOTER --- */
+        .site-footer { background: #f7fafc; border-top: 1px solid var(--border); padding: 40px 20px; text-align: center; color: var(--text-light); font-size: 0.9rem; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; }
+        .footer-links a { color: var(--text-body); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .blog-hero h1 { font-size: 2.2rem; }
+            .featured-card { grid-template-columns: 1fr; }
+            .featured-image { min-height: 200px; }
+            .featured-content { padding: 24px; }
+            .featured-title { font-size: 1.5rem; }
+            .newsletter-form { flex-direction: column; }
+            .nav-links { display: none; } /* Simplified for demo, would use hamburger in prod */
+        }
+    </style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PVV83DRSFT');
+</script>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">Auto<span>DNG</span></a>
+            <nav class="nav-links">
+                <a href="../index.html">Name Generator</a>
+                <a href="../valuation.html">Appraisal</a>
+                <a href="/blog" style="color: var(--primary); font-weight: 700;">Blog</a>
+                <a href="../v2.html">Support</a>
+                <a href="../index.html" class="btn-primary">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="blog-hero">
+        <h1>The AutoDNG Blog</h1>
+        <p>Expert insights on startup naming strategies, domain name valuation, AI branding psychology, and technical guides.</p>
+        <div class="search-bar">
+            <input type="text" placeholder="Search articles (e.g., 'AI naming', 'valuation')...">
+            <button type="button">Search</button>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="categories-section">
+        <h2 class="section-title">Explore by Category</h2>
+        <div class="category-grid">
+            <a href="/blog/startup-branding" class="category-card">
+                <span class="category-icon">🚀</span>
+                <div class="category-name">Startup Branding</div>
+                <div class="category-count">12 Articles</div>
+            </a>
+            <a href="/blog/domain-investing" class="category-card">
+                <span class="category-icon">📈</span>
+                <div class="category-name">Domain Investing</div>
+                <div class="category-count">8 Articles</div>
+            </a>
+            <a href="/blog/ai-naming-tech" class="category-card">
+                <span class="category-icon">🤖</span>
+                <div class="category-name">AI & Naming Tech</div>
+                <div class="category-count">5 Articles</div>
+            </a>
+            <a href="/blog/autodng-guides" class="category-card">
+                <span class="category-icon">🛠️</span>
+                <div class="category-name">AutoDNG Guides</div>
+                <div class="category-count">4 Articles</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- FEATURED POST -->
+    <section class="featured-section">
+        <h2 class="section-title">Featured Article</h2>
+        <a href="/blog/startup-branding/psychology-of-naming-ai-startup" class="featured-card">
+            <div class="featured-image">🧠</div>
+            <div class="featured-content">
+                <span class="featured-tag">Startup Branding</span>
+                <h3 class="featured-title">The Psychology of Naming Your AI Startup: Why Brandable .coms Beat Exact-Match</h3>
+                <p class="featured-excerpt">Discover the cognitive psychology behind high-valuation brandable domains and why invented "empty vessel" names are the preferred choice for VC funding in 2026.</p>
+                <span class="read-more">Read Full Article →</span>
+            </div>
+        </a>
+    </section>
+
+    <!-- RECENT POSTS -->
+    <section class="recent-section">
+        <h2 class="section-title">Latest Articles</h2>
+        <div class="posts-grid">
+            
+            <!-- Post 1 -->
+            <a href="/blog/startup-branding/ultimate-domain-branding-checklist.html" class="post-card">
+                <div class="post-thumb thumb-1">✅</div>
+                <div class="post-content">
+                    <span class="post-tag">Startup Branding</span>
+                    <h3 class="post-title">The Ultimate Domain & Branding Checklist for Tech Founders in 2026</h3>
+                    <div class="post-meta">⏱️ 9 min read • June 9, 2026</div>
+                </div>
+            </a>
+
+            <!-- Post 2 -->
+            <a href="/blog/domain-investing/valuating-invented-brandable-domains" class="post-card">
+                <div class="post-thumb thumb-2">💰</div>
+                <div class="post-content">
+                    <span class="post-tag">Domain Investing</span>
+                    <h3 class="post-title">The 2026 Guide to Valuing 5 and 6-Letter Invented Brandable Domains</h3>
+                    <div class="post-meta">⏱️ 8 min read • June 9, 2026</div>
+                </div>
+            </a>
+
+            <!-- Post 3 -->
+            <a href="/blog/startup-branding/dot-ai-vs-dot-com.html" class="post-card">
+                <div class="post-thumb thumb-3">🌐</div>
+                <div class="post-content">
+                    <span class="post-tag">Startup Strategy</span>
+                    <h3 class="post-title">The .ai vs .com Dilemma: Which Domain Extension Should Your Startup Choose?</h3>
+                    <div class="post-meta">⏱️ 8 min read • June 9, 2026</div>
+                </div>
+            </a>
+
+            <!-- Post 4 -->
+            <a href="/blog/autodng-guides/gemini-api-key-format-autodng-fix.html" class="post-card">
+                <div class="post-thumb thumb-4">🔧</div>
+                <div class="post-content">
+                    <span class="post-tag">AutoDNG Guides</span>
+                    <h3 class="post-title">How to Fix the Gemini API Key Format Issue in AutoDNG (AQ. vs AIza)</h3>
+                    <div class="post-meta">⏱️ 6 min read • June 9, 2026</div>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- NEWSLETTER SIGNUP -->
+    <section class="newsletter-section">
+        <div class="newsletter-inner">
+            <h2>Stay Ahead of the Naming Curve</h2>
+            <p>Get our weekly digest of the top 5 newly registered brandable domains, valuation trends, and startup naming strategies delivered straight to your inbox.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thanks for subscribing!');">
+                <input type="email" placeholder="Enter your work email" required>
+                <button type="submit">Subscribe Free</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="../index.html">Generator</a>
+            <a href="../valuation.html">Appraisal</a>
+            <a href="../blog/index.html">Blog</a>
+            <a href="../index.html">Privacy Policy</a>
+            <a href="../index.html">Terms of Service</a>
+        </div>
+        <p>&copy; 2026 AutoDNG. All rights reserved. Built for founders, by domain experts.</p>
+    </footer>
+
+</body>
+</html>
