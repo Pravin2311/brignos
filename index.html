@@ -776,7 +776,7 @@ SEO FOOTER
 const PROVS = {
   openrouter:{ph:'sk-or-…',val:k=>k.startsWith('sk-or-'),models:[{id:'deepseek/deepseek-chat',l:'DeepSeek Chat'},{id:'meta-llama/llama-3.3-70b-instruct',l:'Llama 3.3'},{id:'google/gemini-2.0-flash-001',l:'Gemini Flash'}]},
   openai:{ph:'sk-proj-…',val:k=>k.startsWith('sk-'),models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'}]},
-  gemini:{ph:'AIzaSy…',val:k=>k.startsWith('AIza'),models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
+  gemini:{ph:'AIzaSy…',val:k=>k.trim().length>20,models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
   groq:{ph:'gsk_…',val:k=>k.startsWith('gsk_'),models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',l:'Llama 3.1 Instant'},{id:'qwen-qwq-32b',l:'Qwen QwQ 32B'}]}
 };
 
