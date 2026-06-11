@@ -633,6 +633,39 @@ justify-content: center;
   }
 
 }
+
+.naming-consult-highlight{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+
+    margin:20px auto 30px;
+    padding:12px 22px;
+
+    border:1px solid rgba(153, 232, 44, 0.25);
+    background:rgba(245,189,73,.06);
+
+    border-radius:999px;
+
+    color:var(--text);
+    font-size:14px;
+    font-weight:500;
+}
+
+.consult-icon{
+    font-size:16px;
+}
+
+.naming-consult-highlight a{
+    color:var(--gold);
+    font-weight:700;
+    text-decoration:none;
+}
+
+.naming-consult-highlight:hover{
+    background:rgba(245,189,73,.10);
+    border-color:rgba(188, 245, 73, 0.4);
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -654,6 +687,7 @@ justify-content: center;
 <button class="ntab on" onclick="switchPage('generator',this)">⚡ Generator</button>
 <button class="ntab" onclick="switchPage('premium',this)">💎 Premium Domains</button>
 <button class="ntab" onclick="switchPage('tools',this)">🛠 Tools</button>
+<a href="/brand-naming-consulting.html" class="ntab">🎯 Naming Advisory</a>
 </div>
 <!-- Provider -->
 <div class="ptabs" id="ptabs">
@@ -697,6 +731,7 @@ PAGE: GENERATOR
 <div>
 <h1>Names that get<br><em>funded.</em><br>Domains that close.</h1>
 <p>The most intelligence-dense brand name generator on the planet. A 12-strategy combinatorial engine with billions of unique name permutations — brandables, real-word compounds, classical roots, portmanteaus, and aftermarket-grade acquisitions. Every name passes an adaptive 19-signal quality gate with zero repeats across sessions.</p>
+
 <div class="badges">
 <span class="badge">12 generation strategies</span><span class="badge">Billions of permutations</span>
 <span class="badge">19-signal adaptive gate</span><span class="badge">Aftermarket score</span>
@@ -705,7 +740,28 @@ PAGE: GENERATOR
 <span class="badge">VC portfolio DNA</span><span class="badge">Zero-repeat cache</span>
 <span class="badge">Live RDAP domain check</span>
 </div>
+<div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+    <a href="/brand-naming-consulting.html"
+       style="background:var(--lime);
+              color:#09090b;
+              padding:14px 24px;
+              border-radius:8px;
+              text-decoration:none;
+              font-weight:700;">
+       Book Naming Consultation
+    </a>
+
+    <a href="domains.html"
+       style="border:1px solid var(--border2);
+              color:var(--text);
+              padding:14px 24px;
+              border-radius:8px;
+              text-decoration:none;">
+       Explore Premium Domains
+    </a>
 </div>
+</div>
+
 <div class="chips">
 <div class="chip"><span class="cdot" style="background:var(--lime)"></span>12-strategy combinatorial engine<span class="cval">~10¹⁴ combos</span></div>
 <div class="chip"><span class="cdot" style="background:var(--teal)"></span>Aftermarket acquisition scoring<span class="cval">NameBio DNA</span></div>
@@ -922,7 +978,17 @@ PAGE: PREMIUM DOMAINS
 <div class="premium-hero">
 <h2>Premium Domain<br><em>Marketplace</em></h2>
 <p>Curated high-value domains scored by brandability, investor appeal, and market trend fit. Every domain pre-analyzed with our 18-signal engine.</p>
+<div class="naming-consult-highlight">
+    <span class="consult-icon">🎯</span>
+    <span>
+        Need help selecting the perfect startup name?
+        <a href="/brand-naming-consulting.html">
+            Book a Naming Consultation →
+        </a>
+    </span>
 </div>
+</div>
+
 <!-- Flash sale banner -->
 <div class="sale-banner">
 <div class="sb-left">
@@ -995,6 +1061,21 @@ PAGE: TOOLS
 </div>
 <!-- Tool cards -->
 <div class="tools-grid">
+  <div class="tc active-tool">
+    <span class="tc-icon">🎯</span>
+    <div class="tc-title">Brand Naming Advisory</div>
+    <div class="tc-desc">
+        Founder-focused naming consultation combining AI intelligence,
+        domain expertise, investor positioning, trademark awareness,
+        and premium domain acquisition.
+    </div>
+
+    <a href="/brand-naming-consulting.html" class="tc-cta">
+        Book Consultation →
+    </a>
+
+    <div class="tc-badge">NEW</div>
+</div>
 <div class="tc" id="tc-checker" onclick="openTool('checker')">
 <span class="tc-icon">🌐</span>
 <div class="tc-title">Domain Availability Checker</div>
@@ -1183,8 +1264,13 @@ PAGE: TOOLS
         <li><a href="index.html?page=tools">Bulk Name Analyzer</a></li>
       </ul>
     </nav>
-
-    
+    <div class="footer-col">
+    <h4>Services</h4>
+    <li>
+<a href="/brand-naming-consulting.html">
+Brand Naming Advisory
+</a>
+</li>
   </div>
 <footer>
 <span>autoDNG — Agentic brand intelligence engine · 12-strategy combinatorial generator · 19-signal adaptive gate · 2026</span>

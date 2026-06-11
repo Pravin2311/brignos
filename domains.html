@@ -206,6 +206,69 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   }
 
 }
+/* Brand Consultation CTA */
+
+.consulting-cta{
+  max-width:1140px;
+  margin:0 auto 28px;
+  padding:0 24px;
+}
+
+.consulting-box{
+  background:linear-gradient(
+    135deg,
+    rgba(200,240,74,.08),
+    rgba(200,240,74,.02)
+  );
+  border:1px solid rgba(200,240,74,.25);
+  border-radius:16px;
+  padding:28px;
+  text-align:center;
+}
+
+.consulting-badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(200,240,74,.12);
+  border:1px solid rgba(200,240,74,.25);
+  color:var(--lime);
+  font-size:11px;
+  font-family:var(--mono);
+  margin-bottom:14px;
+}
+
+.consulting-box h2{
+  font-family:var(--serif);
+  font-size:34px;
+  margin-bottom:10px;
+}
+
+.consulting-box p{
+  max-width:700px;
+  margin:auto;
+  color:var(--muted2);
+  line-height:1.8;
+  margin-bottom:20px;
+}
+
+.consulting-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 22px;
+  background:var(--lime);
+  color:#09090b;
+  text-decoration:none;
+  border-radius:10px;
+  font-weight:600;
+  transition:.2s;
+}
+
+.consulting-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(200,240,74,.25);
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -233,7 +296,29 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   <h1>Own a <em>venture-scale</em> brand</h1>
   <p>35 phonetic-first, globally pronounceable, investor-ready domains. Short. Memorable. Available now.</p>
 </section>
+<!-- Brand Naming Consultation CTA -->
+<section class="consulting-cta">
+  <div class="consulting-box">
+    <div class="consulting-content">
+      <span class="consulting-badge">NEW SERVICE</span>
 
+      <h2>Need Help Naming Your Startup?</h2>
+
+      <p>
+        Get founder-focused brand naming consultation.
+        We help startups discover investor-ready names,
+        secure premium domains, validate trademarks,
+        and build brands designed for growth.
+      </p>
+
+      <div class="consulting-actions">
+        <a href="brand-naming-consulting.html" class="consulting-btn">
+          Book Brand Consultation →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 <!-- Filters -->
 <div class="filters">
   <button class="filter-btn on" onclick="filter('all',this)">All (35)</button>
