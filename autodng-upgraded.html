@@ -666,6 +666,305 @@ justify-content: center;
     background:rgba(245,189,73,.10);
     border-color:rgba(188, 245, 73, 0.4);
 }
+/* ==========================================
+   MOBILE FIX PACK
+   Add at very end of stylesheet
+========================================== */
+
+@media (max-width:768px){
+
+  /* Header */
+  .hd-in{
+    padding:12px 14px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
+
+  .logo{
+    text-align:center;
+    font-size:30px;
+  }
+
+  .hright{
+    width:100%;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+
+  .nav,
+  .ptabs{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    justify-content:flex-start;
+  }
+
+  .nav::-webkit-scrollbar,
+  .ptabs::-webkit-scrollbar{
+    display:none;
+  }
+
+  .kwrap,
+  .kstat,
+  .helpbtn{
+    width:100%;
+  }
+
+  .helpbtn{
+    min-height:44px;
+  }
+
+  /* Hero */
+
+  .hero{
+    padding:24px 16px;
+    gap:24px;
+  }
+
+  .hero h1{
+    font-size:42px;
+    line-height:1.05;
+  }
+
+  .hero p{
+    font-size:14px;
+    max-width:100%;
+  }
+
+  /* Hero buttons */
+
+  .hero div[style*="display:flex"]{
+    flex-direction:column !important;
+  }
+
+  .hero a{
+    width:100%;
+    text-align:center;
+  }
+
+  /* Form */
+
+  .fc{
+    padding:16px;
+  }
+
+  .mrow,
+  .vcrow,
+  .strow{
+    gap:8px;
+  }
+
+  .mchip,
+  .vcchip,
+  .stchip{
+    flex:1 1 calc(50% - 8px);
+    text-align:center;
+  }
+
+  /* Steering */
+
+  .steer-inp{
+    flex-direction:column;
+  }
+
+  .steer-apply{
+    width:100%;
+  }
+
+  /* Results Cards */
+
+  .card{
+    padding:18px;
+  }
+
+  .cname{
+    font-size:30px;
+    word-break:break-word;
+  }
+
+  .scores-row{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .sound-l{
+    width:70px;
+  }
+
+  /* Premium domains */
+
+  .pd-grid{
+    grid-template-columns:1fr;
+  }
+
+  .pd-card{
+    padding:16px;
+  }
+
+  .pd-bottom{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .pd-actions{
+    width:100%;
+  }
+
+  .pd-btn{
+    flex:1;
+  }
+
+  /* Sale banner */
+
+  .sale-banner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .sb-right{
+    width:100%;
+    justify-content:space-between;
+  }
+
+  /* Tool panels */
+
+  .dc-input-row,
+  .ns-input-row,
+  .alt-input-row,
+  .tm-input-row,
+  .ph-input-row{
+    flex-direction:column;
+  }
+
+  .dc-check-btn,
+  .ns-btn,
+  .alt-btn,
+  .tm-btn,
+  .ph-btn{
+    width:100%;
+  }
+
+  .dc-tlds{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .tools-grid{
+    grid-template-columns:1fr;
+  }
+
+  /* Footer */
+
+  .footer-inner{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  .footer-socials{
+    justify-content:center;
+  }
+
+  .footer-bottom-links{
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+}
+
+
+/* ==========================================
+   EXTRA SMALL PHONES
+   iPhone SE / 320px devices
+========================================== */
+
+@media (max-width:480px){
+
+  .hero h1{
+    font-size:34px;
+  }
+
+  .logo{
+    font-size:26px;
+  }
+
+  .rtitle{
+    font-size:24px;
+  }
+
+  .cname{
+    font-size:26px;
+  }
+
+  .pd-name{
+    font-size:24px;
+  }
+
+  .dc-tlds{
+    grid-template-columns:1fr;
+  }
+
+  .alt-grid{
+    grid-template-columns:1fr;
+  }
+
+  .scores-row{
+    grid-template-columns:1fr;
+  }
+
+  .si{
+    padding:12px;
+  }
+
+  .expbtn{
+    width:100%;
+  }
+
+}
+
+
+/* ==========================================
+   TABLE FIXES
+========================================== */
+
+@media (max-width:768px){
+
+  .wl-table,
+  .bulk-results{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .wl-head,
+  .wl-row{
+    min-width:500px;
+  }
+
+  .bulk-table{
+    min-width:700px;
+  }
+
+}
+
+
+/* ==========================================
+   TOUCH FRIENDLY
+========================================== */
+
+@media (hover:none){
+
+  button,
+  .pd-btn,
+  .ntab,
+  .ptab,
+  .fpill,
+  .pf,
+  .mchip,
+  .vcchip,
+  .stchip{
+    min-height:44px;
+  }
+
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
