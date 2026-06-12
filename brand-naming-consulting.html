@@ -6,7 +6,10 @@
     <title>Expert Brand Naming & Domain Consulting Services | AutoDNG</title>
     <meta name="description" content="Secure your startup's future with AutoDNG's premium brand consulting. We combine AI-powered linguistics with expert human strategy to deliver trademark-defensible, high-value brand names.">
     <link rel="canonical" href="https://autodng.com/consulting">
-    
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -183,7 +186,89 @@
         .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; }
         .footer-links a { color: #cbd5e1; }
         .footer-links a:hover { color: white; }
+/* --- PRICING --- */
+.pricing-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:32px;
+}
 
+.pricing-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:40px 32px;
+    position:relative;
+    transition:.3s;
+}
+
+.pricing-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px rgba(0,0,0,.08);
+}
+
+.pricing-card.featured{
+    border:2px solid var(--primary);
+}
+
+.pricing-badge{
+    position:absolute;
+    top:-12px;
+    left:24px;
+    background:var(--primary);
+    color:#fff;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:.8rem;
+    font-weight:700;
+}
+
+.price{
+    font-size:3rem;
+    font-weight:800;
+    color:var(--text-dark);
+    margin:20px 0;
+}
+
+.price small{
+    font-size:1rem;
+    color:var(--text-light);
+}
+
+.pricing-features{
+    list-style:none;
+    margin:24px 0;
+}
+
+.pricing-features li{
+    margin-bottom:14px;
+    padding-left:24px;
+    position:relative;
+}
+
+.pricing-features li:before{
+    content:"✓";
+    position:absolute;
+    left:0;
+    color:#16a34a;
+    font-weight:bold;
+}
+
+.pricing-btn{
+    display:block;
+    text-align:center;
+    width:100%;
+    background:var(--primary);
+    color:#fff!important;
+    padding:14px;
+    border-radius:10px;
+    font-weight:700;
+    margin-top:20px;
+}
+
+.pricing-btn:hover{
+    background:var(--primary-dark);
+}
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2rem; }
             .deliverables, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -334,6 +419,66 @@
         </div>
     </section>
 
+    <section class="section" id="pricing">
+    <div class="section-header">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>Choose the package that best fits your startup, business, or brand launch goals.</p>
+    </div>
+
+    <div class="pricing-grid">
+        <!-- STARTER -->
+        <div class="pricing-card">
+            <h3>Starter Naming</h3>
+            <div class="price">$99 <small>/ project</small></div>
+            <ul class="pricing-features">
+                <li>25 curated brand names</li>
+                <li>Domain availability check</li>
+                <li>Domain ownership process</li>
+                <li>Top 5 recommendations</li>
+                <li>Email consultation</li>
+                <li>3 business day delivery</li>
+            </ul>
+            <!-- UPDATED LINK -->
+            <a href="pricing-checkout.html?pkg=starter" class="pricing-btn">Buy Now</a>
+        </div>
+
+        <!-- PROFESSIONAL -->
+        <div class="pricing-card featured">
+            <div class="pricing-badge">Most Popular</div>
+            <h3>Professional Branding</h3>
+            <div class="price">$299 <small>/ project</small></div>
+            <ul class="pricing-features">
+                <li>100+ curated brand names</li>
+                <li>Domain strategy report</li>
+                <li>Competitor analysis</li>
+                <li>Social handle checks</li>
+                <li>Top 10 recommendations</li>
+                <li>Brand positioning notes</li>
+                <li>Domain ownership process</li>
+            </ul>
+            <!-- UPDATED LINK -->
+            <a href="pricing-checkout.html?pkg=pro" class="pricing-btn">Buy Now</a>
+        </div>
+
+        <!-- LAUNCH -->
+        <div class="pricing-card">
+            <h3>Brand + Website Launch</h3>
+            <div class="price">$999 <small>/ project</small></div>
+            <ul class="pricing-features">
+                <li>Premium naming consultation</li>
+                <li>Domain recommendations</li>
+                <li>Domain ownership process</li>
+                <li>Custom website (up to 10 pages)</li>
+                <li>No backend or database support</li>
+                <li>Mobile optimization</li>
+                <li>SEO setup</li>
+                <li>Launch support</li>
+            </ul>
+            <!-- UPDATED LINK -->
+            <a href="pricing-checkout.html?pkg=launch" class="pricing-btn">Launch My Brand</a>
+        </div>
+    </div>
+</section>
     <!-- FAQ -->
     <section class="section" style="background: var(--bg-light); border-top: 1px solid var(--border);">
         <div class="section-header">
@@ -354,7 +499,7 @@
             </div>
             <div class="faq-item">
                 <div class="faq-question">How much does the consulting service cost?</div>
-                <div class="faq-answer">Our engagements are scoped based on your needs. A standard Startup Naming Package typically starts at $2,500, while comprehensive Enterprise Rebranding and Domain Acquisition strategies are custom-quoted. Contact us below for a tailored proposal.</div>
+                <div class="faq-answer">Our engagements are scoped based on your needs. Startup Naming packages start at $99. Professional branding engagements start at $299, and complete Brand + Website Launch packages start at $999., while comprehensive Enterprise Rebranding and Domain Acquisition strategies are custom-quoted. Contact us below for a tailored proposal.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-question">How long does the process take?</div>

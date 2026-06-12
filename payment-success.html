@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - AutoDNG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
+    <style>
+        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --text-dark: #0f172a; --border: #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #334155; background: #f8fafc; margin: 0; }
+        .site-header { border-bottom: 1px solid var(--border); padding: 20px 0; background: #fff; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); text-decoration: none; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .site-footer { background: #0f172a; color: #94a3b8; padding: 40px 20px; text-align: center; font-size: 0.9rem; margin-top: 80px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">Auto<span>DNG</span></a>
+            <a href="/" style="color: #334155; text-decoration: none; font-weight: 500;">Back to Home</a>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto py-12 px-4">
+        
+        <!-- SUCCESS MESSAGE -->
+        <div class="bg-white p-8 rounded-lg shadow-md text-center mb-8 border border-gray-100">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            </div>
+            <h1 class="text-3xl font-bold mb-2 text-gray-900">Project Initiated!</h1>
+            <p class="text-gray-600 mb-6">Thank you for choosing AutoDNG. Please complete your payment in the new Wise tab that just opened.</p>
+            
+            <div class="bg-gray-50 p-4 rounded-md border border-gray-200 text-left max-w-sm mx-auto space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Invoice Number:</span>
+                    <span class="font-mono font-bold text-gray-800" id="successInvoice">Loading...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Package:</span>
+                    <span class="font-semibold text-gray-800" id="successPackage">Loading...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Total:</span>
+                    <span class="font-bold text-blue-600" id="successPrice">Loading...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Delivery:</span>
+                    <span class="font-semibold text-gray-800">3-5 Business Days</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-6">Once your Wise payment clears, we will email you a formal PDF invoice and begin work on your project brief.</p>
+        </div>
+
+        <!-- UPSELLS -->
+        <div class="bg-white p-8 rounded-lg shadow-md border-t-4 border-blue-600 border border-gray-100">
+            <h2 class="text-xl font-bold mb-2 text-gray-900">🚀 Accelerate Your Brand Launch</h2>
+            <p class="text-gray-600 mb-6 text-sm">Secure your brand identity while we work. Select an upgrade below to email us, and we'll send a secure payment link for the difference.</p>
+            
+            <div class="space-y-3">
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="upsell-check w-5 h-5 text-blue-600 rounded" data-name="Trademark Screening (+$49)" data-price="49">
+                        <div>
+                            <p class="font-semibold text-gray-800">Trademark Screening</p>
+                            <p class="text-xs text-gray-500">Ensure your new name is legally available.</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-blue-600">+$49</span>
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="upsell-check w-5 h-5 text-blue-600 rounded" data-name="Social Handle Audit (+$29)" data-price="29">
+                        <div>
+                            <p class="font-semibold text-gray-800">Social Handle Audit</p>
+                            <p class="text-xs text-gray-500">Check availability across 15+ major platforms.</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-blue-600">+$29</span>
+                </label>
+
+                <label class="flex items-center justify-between p-4 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="upsell-check w-5 h-5 text-blue-600 rounded" data-name="Premium Domain Brokerage (+$99)" data-price="99">
+                        <div>
+                            <p class="font-semibold text-gray-800">Premium Domain Brokerage</p>
+                            <p class="text-xs text-gray-500">We negotiate the purchase of premium .com domains.</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-blue-600">+$99</span>
+                </label>
+            </div>
+
+            <!-- Dynamic Upsell Button -->
+            <a href="#" id="upsell-email-link" class="block w-full mt-6 bg-gray-900 text-white font-bold py-3 rounded-md hover:bg-gray-800 transition text-center opacity-50 cursor-not-allowed">
+                Select an Upgrade Above
+            </a>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>&copy; 2026 AutoDNG. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // 1. Read URL Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoice = urlParams.get('inv');
+        const pkg = urlParams.get('pkg');
+        const price = urlParams.get('price');
+
+        if (invoice) document.getElementById('successInvoice').innerText = invoice;
+        if (pkg) document.getElementById('successPackage').innerText = decodeURIComponent(pkg);
+        if (price) document.getElementById('successPrice').innerText = decodeURIComponent(price);
+
+        // 2. Handle Upsell Logic
+        const upsellLink = document.getElementById('upsell-email-link');
+        
+        document.querySelectorAll('.upsell-check').forEach(cb => {
+            cb.addEventListener('change', updateUpsellEmail);
+        });
+
+        function updateUpsellEmail() {
+            const selected = Array.from(document.querySelectorAll('.upsell-check:checked'));
+            
+            if(selected.length > 0) {
+                const names = selected.map(cb => cb.dataset.name);
+                const totalAdd = selected.reduce((sum, cb) => sum + parseInt(cb.dataset.price), 0);
+                
+                const subject = `Add Upgrade to Invoice ${invoice}`;
+                const body = `Hi AutoDNG Team,\n\nI would like to add the following upgrade(s) to my recent order (${invoice}):\n\n- ${names.join('\n- ')}\n\nTotal additional: $${totalAdd}\n\nPlease send me a secure payment link for the difference.\n\nThanks!`;
+                
+                upsellLink.href = `mailto:contact@autodng.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                upsellLink.classList.remove('opacity-50', 'cursor-not-allowed');
+                upsellLink.innerText = `Email Us to Add Upgrades (+$${totalAdd})`;
+            } else {
+                upsellLink.href = '#';
+                upsellLink.classList.add('opacity-50', 'cursor-not-allowed');
+                upsellLink.innerText = 'Select an Upgrade Above';
+            }
+        }
+    </script>
+</body>
+</html>

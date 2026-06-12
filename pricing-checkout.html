@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout - AutoDNG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
+    <style>
+        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --text-dark: #0f172a; --border: #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #334155; background: #f8fafc; margin: 0; }
+        .site-header { border-bottom: 1px solid var(--border); padding: 20px 0; background: #fff; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); text-decoration: none; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .site-footer { background: #0f172a; color: #94a3b8; padding: 40px 20px; text-align: center; font-size: 0.9rem; margin-top: 80px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">Auto<span>DNG</span></a>
+            <a href="/brand-naming-consulting.html#pricing" style="color: #334155; text-decoration: none; font-weight: 500;">← Back to Services</a>
+        </div>
+    </header>
+
+    <!-- CHECKOUT FORM -->
+    <main class="max-w-2xl mx-auto py-12 px-4">
+        <h1 class="text-3xl font-bold mb-2 text-center text-gray-900">Complete Your Order</h1>
+        <p class="text-center text-gray-600 mb-8">Secure your branding package. You will be redirected to Wise to complete payment.</p>
+        
+        <!-- REPLACE 'YOUR_FORMSPREE_ENDPOINT' WITH YOUR ACTUAL FORMSPREE URL -->
+        <form id="checkoutForm" action="https://formspree.io/f/xvznwlpo" method="POST" class="bg-white p-8 rounded-lg shadow-md space-y-6 border border-gray-100">
+            
+            <!-- Hidden Fields for Formspree -->
+            <input type="hidden" name="package" id="hiddenPackage">
+            <input type="hidden" name="invoice_number" id="hiddenInvoice">
+            <input type="hidden" name="_subject" value="New AutoDNG Project Brief">
+
+            <!-- Order Summary -->
+            <div class="bg-blue-50 p-4 rounded-md border border-blue-200 flex justify-between items-center">
+                <div>
+                    <p class="font-semibold text-blue-900">Selected: <span id="packageName">Loading...</span></p>
+                    <p class="text-blue-700 text-sm">Total: <span id="packagePrice">$0</span></p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Your Invoice #</p>
+                    <p class="font-mono font-bold text-gray-800" id="displayInvoice">Generating...</p>
+                </div>
+            </div>
+
+            <!-- Customer Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Full Name *</label>
+                    <input type="text" name="name" required class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Email *</label>
+                    <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Company</label>
+                    <input type="text" name="company" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Country *</label>
+                    <input type="text" name="country" required class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Project Brief -->
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-700">Describe your business *</label>
+                <textarea name="business_desc" required rows="2" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-700">Target audience *</label>
+                <textarea name="target_audience" required rows="2" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Preferred style</label>
+                    <input type="text" name="preferred_style" placeholder="e.g., Modern, Playful" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Preferred domain extension</label>
+                    <select name="domain_ext" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value=".com">.com</option>
+                        <option value=".io">.io</option>
+                        <option value=".co">.co</option>
+                        <option value=".ai">.ai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Wise Instruction Warning -->
+            <div class="bg-yellow-50 p-4 rounded-md border border-yellow-200 text-sm text-yellow-800">
+                <strong>⚠️ Important:</strong> On the next Wise payment screen, please paste <span class="font-mono font-bold" id="warningInvoice">your invoice number</span> into the <strong>"Payment Reference"</strong> field so we can match your payment to your project.
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-md hover:bg-blue-700 transition flex justify-center items-center gap-2 text-lg">
+                <span>Proceed to Secure Payment</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+        </form>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>&copy; 2026 AutoDNG. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // 1. Define Packages & Wise Links (UPDATE THESE LINKS)
+        const wiseLinks = {
+            'starter': 'https://wise.com/pay/r/tjarw1ypOcN7i7A',
+            'pro': 'https://wise.com/pay/r/8ISG0UxVudDOa5w',
+            'launch': 'https://wise.com/pay/r/4KR8k_fmmVEj3BY'
+        };
+        const packages = {
+            'starter': { name: 'Starter Naming', price: '$99' },
+            'pro': { name: 'Professional Branding', price: '$299' },
+            'launch': { name: 'Brand + Website Launch', price: '$999' }
+        };
+
+        // 2. Read URL Parameter & Update UI
+        const urlParams = new URLSearchParams(window.location.search);
+        const pkgKey = urlParams.get('pkg') || 'pro'; // Default to Pro if missing
+        const selectedPkg = packages[pkgKey] || packages['pro'];
+        const wiseLink = wiseLinks[pkgKey] || wiseLinks['pro'];
+
+        document.getElementById('packageName').innerText = selectedPkg.name;
+        document.getElementById('packagePrice').innerText = selectedPkg.price;
+        document.getElementById('hiddenPackage').value = selectedPkg.name;
+
+        // 3. Generate Invoice Number
+        const year = new Date().getFullYear();
+        const randomId = Math.floor(100000 + Math.random() * 900000);
+        const invoiceNumber = `ADNG-${year}-${randomId}`;
+        
+        document.getElementById('displayInvoice').innerText = invoiceNumber;
+        document.getElementById('warningInvoice').innerText = invoiceNumber;
+        document.getElementById('hiddenInvoice').value = invoiceNumber;
+
+        // 4. Handle Form Submission
+        const form = document.getElementById('checkoutForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<span>Processing...</span>';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            const formData = new FormData(form);
+            
+            try {
+                // Submit to Formspree via Fetch (prevents Formspree's default redirect)
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    // Open Wise in a new tab
+                    window.open(wiseLink, '_blank');
+                    // Redirect current tab to success page
+                    window.location.href = `payment-success.html?inv=${invoiceNumber}&pkg=${encodeURIComponent(selectedPkg.name)}&price=${encodeURIComponent(selectedPkg.price)}`;
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                alert('There was an error submitting your information. Please try again.');
+                btn.innerHTML = '<span>Proceed to Secure Payment</span>';
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        });
+    </script>
+</body>
+</html>
