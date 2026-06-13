@@ -831,19 +831,32 @@ body{
       <div class="ic-title">Configure appraisal</div>
 
       <!-- Domain input -->
-      <div>
-        <label class="flbl" for="domain">Domain / Brand Name *</label>
-        <input class="finput" id="domain" placeholder="e.g. synara.ai, vaultx.com, klyro.io…" oninput="onDomainInput()" onkeydown="if(event.key==='Enter')run()">
-        <div class="pre-appraisal" id="preAppraisal">
-          <div>
-            <div class="pa-label">⚡ Instant local appraisal</div>
-            <div class="pa-signal" id="paSignal">—</div>
-          </div>
-          <div style="text-align:right">
-            <div class="pa-val" id="paVal">—</div>
-            <div class="pa-range" id="paRange">—</div>
-          </div>
-        </div>
+      <!-- Domain input -->
+<div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <label class="flbl" for="domain" style="margin:0">Domain / Brand Name *</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button type="button" class="sec-btn" id="modeToggle" onclick="toggleBulkMode()" style="padding:4px 10px;font-size:10px">
+        <span id="modeLabel">Switch to Bulk Mode</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Single mode input -->
+  <input class="finput" id="domain" placeholder="e.g. synara.ai, vaultx.com, klyro.io…" oninput="onDomainInput()" onkeydown="if(event.key==='Enter')run()">
+  
+  <!-- Bulk mode input (hidden by default) -->
+  <textarea class="ftextarea" id="bulkDomains" rows="8" placeholder="Enter one domain per line (max 100):&#10;synara.ai&#10;vaultx.com&#10;klyro.io&#10;..." style="display:none;font-family:var(--mono);font-size:12px;line-height:1.8"></textarea>
+  
+  <div id="bulkInfo" style="display:none;margin-top:8px;padding:10px;background:var(--gold-dim);border:1px solid rgba(245,200,66,.2);border-radius:8px;font-size:11px;color:var(--muted3)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span><strong id="domainCount">0</strong> domains detected</span>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="aiEnhanceTop" style="cursor:pointer">
+        <span>AI-enhance top <input type="number" id="aiTopN" value="10" min="1" max="50" style="width:50px;padding:2px 6px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px"> domains</span>
+      </label>
+    </div>
+  </div>
       </div>
 
       <!-- TLD selection -->
@@ -933,9 +946,9 @@ body{
       </div>
 
       <button class="runbtn" id="runBtn" onclick="run()">
-        <div class="btn-spin"></div>
-        <span id="runLbl">Run Full Appraisal →</span>
-      </button>
+  <div class="btn-spin"></div>
+  <span id="runLbl">Run Full Appraisal →</span>
+</button>
 
       <div class="sec-row">
         <button type="button" class="sec-btn" onclick="runLocalOnly()">⚡ Local Only (no API key)</button>
@@ -1774,17 +1787,202 @@ function parseAI(raw){
   return null;
 }
 
-async function run(){
-  if(busy)return;
-  const domain=document.getElementById('domain').value.trim();
-  if(!domain){showToast('Enter a domain name first');return;}
-  if(!key||!PROVS[prov].val(key)){runLocalOnly();return;}
-  await runFull(domain,false);
+async function run() {
+  if (busy) return;
+  
+  if (isBulkMode) {
+    await runBulk(false);
+  } else {
+    const domain = document.getElementById('domain').value.trim();
+    if (!domain) { showToast('Enter a domain name first'); return; }
+    if (!key || !PROVS[prov].val(key)) { runLocalOnly(); return; }
+    await runFull(domain, false);
+  }
 }
-async function runLocalOnly(){
-  const domain=document.getElementById('domain').value.trim();
-  if(!domain){showToast('Enter a domain name first');return;}
-  await runFull(domain,true);
+
+async function runLocalOnly() {
+  if (isBulkMode) {
+    await runBulk(true);
+  } else {
+    const domain = document.getElementById('domain').value.trim();
+    if (!domain) { showToast('Enter a domain name first'); return; }
+    await runFull(domain, true);
+  }
+}
+
+async function runBulk(localOnly) {
+  if (busy) return;
+  
+  const text = document.getElementById('bulkDomains').value.trim();
+  if (!text) { showToast('Enter at least one domain'); return; }
+  
+  const domains = text.split('\n')
+    .map(d => d.trim())
+    .filter(d => d.length > 0)
+    .slice(0, 100); // Max 100 domains
+  
+  if (domains.length === 0) {
+    showToast('No valid domains found');
+    return;
+  }
+  
+  busy = true;
+  const btn = document.getElementById('runBtn');
+  btn.classList.add('ld');
+  btn.disabled = true;
+  document.getElementById('runLbl').textContent = `Analyzing ${domains.length} domains…`;
+  
+  const industry = document.getElementById('industry').value.trim();
+  const region = document.getElementById('region').value;
+  const purpose = document.getElementById('purpose').value;
+  const context = document.getElementById('context').value.trim();
+  const asking = document.getElementById('asking').value.trim();
+  
+  const pw = document.getElementById('progWrap');
+  pw.classList.add('on');
+  document.getElementById('resultWrap').classList.remove('on');
+  
+  const steps = ['Local signals', 'Batch processing', 'AI enhancement', 'Summary stats', 'Export ready'];
+  document.getElementById('progSteps').innerHTML = steps.map((s, i) => 
+    `<span class="pst" id="pst-${i}">${s}</span>`
+  ).join('');
+  
+  try {
+    setProgress(5, `Running local appraisal on ${domains.length} domains…`);
+    stepDone(0);
+    
+    const results = [];
+    const batchSize = 10; // Process in batches of 10
+    
+    for (let i = 0; i < domains.length; i += batchSize) {
+      const batch = domains.slice(i, i + batchSize);
+      
+      for (const domain of batch) {
+        try {
+          const local = runLocalAppraisal(domain, industry);
+          if (local) {
+            results.push({
+              domain,
+              ...local,
+              industry,
+              region,
+              purpose,
+              localOnly: true,
+              timestamp: new Date().toISOString()
+            });
+          }
+        } catch (err) {
+          console.error(`Failed to appraise ${domain}:`, err);
+        }
+      }
+      
+      const progress = Math.round(((i + batch.length) / domains.length) * 60);
+      setProgress(progress, `Processed ${Math.min(i + batchSize, domains.length)} of ${domains.length} domains…`);
+      await sleep(50); // Small delay to prevent UI freeze
+    }
+    
+    stepDone(1);
+    setProgress(65, 'Calculating summary statistics…');
+    await sleep(200);
+    
+    // Optional AI enhancement for top N domains
+    const aiEnhance = !localOnly && key && PROVS[prov].val(key) && document.getElementById('aiEnhanceTop').checked;
+    const topN = aiEnhance ? parseInt(document.getElementById('aiTopN').value) || 10 : 0;
+    
+    if (aiEnhance && topN > 0) {
+      setProgress(70, `AI-enhancing top ${topN} domains…`);
+      
+      // Sort by composite score and take top N
+      const sorted = [...results].sort((a, b) => b.composite - a.composite);
+      const topDomains = sorted.slice(0, topN);
+      
+      for (let i = 0; i < topDomains.length; i++) {
+        const domain = topDomains[i];
+        try {
+          const { sys, usr } = buildAIPrompt(domain.full, domain, industry, region, purpose, context, asking);
+          const raw = await callAI(sys, usr);
+          const ai = parseAI(raw);
+          
+          if (ai) {
+            // Merge AI results
+            const merged = mergeResult(domain.full, domain, ai, industry, region, purpose, asking, false);
+            const idx = results.findIndex(r => r.full === domain.full);
+            if (idx >= 0) results[idx] = merged;
+          }
+        } catch (err) {
+          console.error(`AI enhancement failed for ${domain.full}:`, err);
+        }
+        
+        const progress = 70 + Math.round(((i + 1) / topDomains.length) * 20);
+        setProgress(progress, `AI-enhanced ${i + 1} of ${topN} domains…`);
+        await sleep(100);
+      }
+      
+      stepDone(2);
+    } else {
+      stepDone(2);
+    }
+    
+    setProgress(95, 'Generating summary…');
+    await sleep(150);
+    
+    // Calculate summary statistics
+    const stats = calculateBulkStats(results);
+    
+    stepDone(3);
+    setProgress(100, 'Done!');
+    
+    setTimeout(() => {
+      pw.classList.remove('on');
+      renderBulkResults(results, stats);
+      showToast(`✓ Bulk appraisal complete: ${results.length} domains`);
+    }, 400);
+    
+  } catch (err) {
+    pw.classList.remove('on');
+    showToast('⚠ Bulk appraisal failed: ' + err.message, 5000);
+  } finally {
+    busy = false;
+    btn.classList.remove('ld');
+    btn.disabled = false;
+    document.getElementById('runLbl').textContent = isBulkMode ? 'Run Bulk Appraisal →' : 'Run Full Appraisal →';
+  }
+}
+
+function calculateBulkStats(results) {
+  if (results.length === 0) return null;
+  
+  const totalValue = results.reduce((sum, r) => sum + r.central, 0);
+  const avgValue = totalValue / results.length;
+  
+  const tierCounts = {
+    ultra: results.filter(r => r.tier === 'ultra').length,
+    premium: results.filter(r => r.tier === 'premium').length,
+    strong: results.filter(r => r.tier === 'strong').length,
+    moderate: results.filter(r => r.tier === 'moderate').length,
+    weak: results.filter(r => r.tier === 'weak').length
+  };
+  
+  const tldCounts = {};
+  results.forEach(r => {
+    tldCounts[r.tld] = (tldCounts[r.tld] || 0) + 1;
+  });
+  
+  const topDomains = [...results]
+    .sort((a, b) => b.central - a.central)
+    .slice(0, 10);
+  
+  const avgComposite = results.reduce((sum, r) => sum + r.composite, 0) / results.length;
+  
+  return {
+    totalDomains: results.length,
+    totalValue,
+    avgValue,
+    avgComposite: Math.round(avgComposite),
+    tierCounts,
+    tldCounts,
+    topDomains
+  };
 }
 async function runFull(domain,localOnly){
   busy=true;
@@ -1990,6 +2188,263 @@ function renderResult(r){
   renderList('insightList',r.insights,'⚡','var(--violet)');
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// BULK VALUATION FUNCTIONS (MUST BE OUTSIDE renderResult)
+// ═══════════════════════════════════════════════════════════════════════
+
+function renderBulkResults(results, stats) {
+  document.getElementById('resultWrap').classList.add('on');
+  document.getElementById('resultWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+  // Summary statistics
+  const vhDomain = document.getElementById('vhDomain');
+  vhDomain.textContent = `${stats.totalDomains} Domains Appraised`;
+  
+  const vhTld = document.getElementById('vhTld');
+  vhTld.textContent = `Bulk Valuation Report`;
+  
+  const vhValue = document.getElementById('vhValue');
+  vhValue.textContent = fmtUSD(stats.totalValue);
+  
+  const vhRange = document.getElementById('vhRange');
+  vhRange.textContent = `Avg: ${fmtUSD(stats.avgValue)} · Score: ${stats.avgComposite}/100`;
+  
+  // Tier badge
+  const tb = document.getElementById('tierBadge');
+  const topTier = stats.tierCounts.ultra > 0 ? 'ultra' : 
+                  stats.tierCounts.premium > 0 ? 'premium' : 
+                  stats.tierCounts.strong > 0 ? 'strong' : 'moderate';
+  const tc = {
+    ultra: { cls: 'tier-ultra', icon: '🏆', lbl: 'Ultra-Premium Portfolio' },
+    premium: { cls: 'tier-premium', icon: '💎', lbl: 'Premium Portfolio' },
+    strong: { cls: 'tier-strong', icon: '⭐', lbl: 'Strong Portfolio' },
+    moderate: { cls: 'tier-moderate', icon: '✦', lbl: 'Moderate Portfolio' }
+  };
+  const cfg = tc[topTier];
+  tb.className = 'tier-badge ' + cfg.cls;
+  tb.innerHTML = `${cfg.icon} ${cfg.lbl}`;
+  
+  // Gauge (portfolio value)
+  const gaugeScore = stats.totalValue >= 500000 ? 95 : 
+                     stats.totalValue >= 100000 ? 80 : 
+                     stats.totalValue >= 30000 ? 62 : 
+                     stats.totalValue >= 5000 ? 40 : 20;
+  const gc = stats.totalValue >= 500000 ? 'var(--gold)' : 
+             stats.totalValue >= 100000 ? 'var(--teal)' : 
+             stats.totalValue >= 30000 ? 'var(--sky)' : 
+             stats.totalValue >= 5000 ? 'var(--amber)' : 'var(--rose)';
+  setTimeout(() => {
+    const gf = document.getElementById('gaugeFill');
+    gf.style.width = gaugeScore + '%';
+    gf.style.background = `linear-gradient(90deg,${gc},${gc}bb)`;
+  }, 200);
+  
+  // Hide single-domain sections
+  document.getElementById('sigGrid').innerHTML = '';
+  document.getElementById('hbarSection').innerHTML = '';
+  document.getElementById('confWrap').innerHTML = '';
+  document.getElementById('confNote').textContent = '';
+  document.getElementById('summaryBox').textContent = '';
+  document.getElementById('strengthsList').innerHTML = '';
+  document.getElementById('riskRow').innerHTML = '';
+  document.getElementById('riskList').innerHTML = '';
+  document.getElementById('buyerGrid').innerHTML = '';
+  document.getElementById('compsGrid').innerHTML = '';
+  document.getElementById('negList').innerHTML = '';
+  document.getElementById('negTbody').innerHTML = '';
+  document.getElementById('improveList').innerHTML = '';
+  document.getElementById('insightList').innerHTML = '';
+  
+  // Add bulk-specific sections
+  const resultWrap = document.getElementById('resultWrap');
+  
+  // Remove existing bulk sections if any
+  resultWrap.querySelectorAll('.bulk-section').forEach(el => el.remove());
+  
+  // Statistics section
+  const statsSection = document.createElement('div');
+  statsSection.className = 'asec bulk-section';
+  statsSection.innerHTML = `
+    <div class="asec-title gold">Portfolio Statistics</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">
+      <div style="background:var(--bg4);padding:14px;border-radius:9px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Total Value</div>
+        <div style="font-family:var(--serif);font-size:28px;color:var(--gold)">${fmtUSD(stats.totalValue)}</div>
+      </div>
+      <div style="background:var(--bg4);padding:14px;border-radius:9px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Average Value</div>
+        <div style="font-family:var(--serif);font-size:28px;color:var(--teal)">${fmtUSD(stats.avgValue)}</div>
+      </div>
+      <div style="background:var(--bg4);padding:14px;border-radius:9px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Avg Score</div>
+        <div style="font-family:var(--serif);font-size:28px;color:var(--sky)">${stats.avgComposite}/100</div>
+      </div>
+      <div style="background:var(--bg4);padding:14px;border-radius:9px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Domains</div>
+        <div style="font-family:var(--serif);font-size:28px;color:var(--violet)">${stats.totalDomains}</div>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+      <div style="background:var(--bg4);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">ULTRA</div>
+        <div style="font-size:20px;color:var(--gold);font-weight:600">${stats.tierCounts.ultra}</div>
+      </div>
+      <div style="background:var(--bg4);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">PREMIUM</div>
+        <div style="font-size:20px;color:var(--teal);font-weight:600">${stats.tierCounts.premium}</div>
+      </div>
+      <div style="background:var(--bg4);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">STRONG</div>
+        <div style="font-size:20px;color:var(--sky);font-weight:600">${stats.tierCounts.strong}</div>
+      </div>
+      <div style="background:var(--bg4);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">MODERATE</div>
+        <div style="font-size:20px;color:var(--amber);font-weight:600">${stats.tierCounts.moderate}</div>
+      </div>
+      <div style="background:var(--bg4);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">WEAK</div>
+        <div style="font-size:20px;color:var(--rose);font-weight:600">${stats.tierCounts.weak}</div>
+      </div>
+    </div>
+  `;
+  resultWrap.insertBefore(statsSection, resultWrap.querySelector('.exp-row'));
+  
+  // Top domains table
+  const topSection = document.createElement('div');
+  topSection.className = 'asec bulk-section';
+  topSection.innerHTML = `
+    <div class="asec-title teal">Top 10 Most Valuable Domains</div>
+    <table class="neg-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Domain</th>
+          <th>Value</th>
+          <th>Score</th>
+          <th>Tier</th>
+          <th>TLD</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${stats.topDomains.map((d, i) => `
+          <tr>
+            <td style="color:var(--muted)">${i + 1}</td>
+            <td style="color:var(--text);font-weight:500">${d.full}</td>
+            <td style="color:var(--gold);font-weight:600">${fmtUSD(d.central)}</td>
+            <td style="color:var(--teal)">${d.composite}/100</td>
+            <td>
+              <span class="tl-badge" style="background:${getTierColor(d.tier)}22;color:${getTierColor(d.tier)};border:1px solid ${getTierColor(d.tier)}44;padding:3px 8px;border-radius:4px;font-size:9px">
+                ${d.tier.toUpperCase()}
+              </span>
+            </td>
+            <td style="color:var(--muted3)">${d.tld}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  resultWrap.insertBefore(topSection, resultWrap.querySelector('.exp-row'));
+  
+  // All domains table (sortable)
+  const allSection = document.createElement('div');
+  allSection.className = 'asec bulk-section';
+  allSection.innerHTML = `
+    <div class="asec-title sky">All Domains (${results.length})</div>
+    <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="sec-btn" onclick="sortBulkResults('value')" style="padding:6px 12px;font-size:10px">Sort by Value</button>
+      <button type="button" class="sec-btn" onclick="sortBulkResults('score')" style="padding:6px 12px;font-size:10px">Sort by Score</button>
+      <button type="button" class="sec-btn" onclick="sortBulkResults('name')" style="padding:6px 12px;font-size:10px">Sort by Name</button>
+      <button type="button" class="sec-btn" onclick="filterBulkResults('all')" style="padding:6px 12px;font-size:10px">Show All</button>
+      <button type="button" class="sec-btn" onclick="filterBulkResults('premium')" style="padding:6px 12px;font-size:10px">Premium+ Only</button>
+    </div>
+    <div style="max-height:500px;overflow-y:auto">
+      <table class="neg-table" id="bulkTable">
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>Value</th>
+            <th>Range</th>
+            <th>Score</th>
+            <th>Tier</th>
+          </tr>
+        </thead>
+        <tbody id="bulkTableBody">
+          ${results.map(d => `
+            <tr data-value="${d.central}" data-score="${d.composite}" data-tier="${d.tier}">
+              <td style="color:var(--text)">${d.full}</td>
+              <td style="color:var(--gold);font-weight:600">${fmtUSD(d.central)}</td>
+              <td style="color:var(--muted3);font-size:10px">${fmtUSD(d.low)}–${fmtUSD(d.high)}</td>
+              <td style="color:var(--teal)">${d.composite}/100</td>
+              <td>
+                <span style="color:${getTierColor(d.tier)};font-size:10px;font-weight:600">${d.tier.toUpperCase()}</span>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  resultWrap.insertBefore(allSection, resultWrap.querySelector('.exp-row'));
+  
+  // Store results for export
+  window.bulkResults = results;
+  window.bulkStats = stats;
+}
+
+function getTierColor(tier) {
+  const colors = {
+    ultra: 'var(--gold)',
+    premium: 'var(--teal)',
+    strong: 'var(--sky)',
+    moderate: 'var(--amber)',
+    weak: 'var(--rose)'
+  };
+  return colors[tier] || 'var(--muted)';
+}
+
+function sortBulkResults(by) {
+  if (!window.bulkResults) return;
+  
+  const sorted = [...window.bulkResults];
+  if (by === 'value') {
+    sorted.sort((a, b) => b.central - a.central);
+  } else if (by === 'score') {
+    sorted.sort((a, b) => b.composite - a.composite);
+  } else if (by === 'name') {
+    sorted.sort((a, b) => a.full.localeCompare(b.full));
+  }
+  
+  const tbody = document.getElementById('bulkTableBody');
+  tbody.innerHTML = sorted.map(d => `
+    <tr data-value="${d.central}" data-score="${d.composite}" data-tier="${d.tier}">
+      <td style="color:var(--text)">${d.full}</td>
+      <td style="color:var(--gold);font-weight:600">${fmtUSD(d.central)}</td>
+      <td style="color:var(--muted3);font-size:10px">${fmtUSD(d.low)}–${fmtUSD(d.high)}</td>
+      <td style="color:var(--teal)">${d.composite}/100</td>
+      <td>
+        <span style="color:${getTierColor(d.tier)};font-size:10px;font-weight:600">${d.tier.toUpperCase()}</span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterBulkResults(filter) {
+  if (!window.bulkResults) return;
+  
+  const rows = document.querySelectorAll('#bulkTableBody tr');
+  rows.forEach(row => {
+    const tier = row.dataset.tier;
+    if (filter === 'all') {
+      row.style.display = '';
+    } else if (filter === 'premium') {
+      row.style.display = (tier === 'ultra' || tier === 'premium' || tier === 'strong') ? '' : 'none';
+    }
+  });
+}
+  
+
+
 function renderList(id,items,icon,color){
   const el=document.getElementById(id);
   if(!items?.length){el.innerHTML=`<div class="li"><span class="li-icon">ℹ️</span>Add API key for AI-enhanced analysis.</div>`;return;}
@@ -2049,43 +2504,157 @@ function copyReport(){
   navigator.clipboard.writeText(lines.join('\n')).then(()=>showToast('✓ Report copied')).catch(()=>showToast('✗ Copy failed'));
 }
 
-function exportJSON(){
-  if(!lastResult){showToast('Run appraisal first');return;}
-  const blob=new Blob([JSON.stringify(lastResult,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  Object.assign(document.createElement('a'),{href:url,download:`valuation-${lastResult.full.replace(/[^a-z0-9]/g,'-')}.json`}).click();
-  URL.revokeObjectURL(url);showToast('✓ JSON exported');
+function exportJSON() {
+  if (isBulkMode && window.bulkResults) {
+    // Bulk export
+    const exportData = {
+      type: 'bulk_valuation',
+      timestamp: new Date().toISOString(),
+      stats: window.bulkStats,
+      domains: window.bulkResults
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    Object.assign(document.createElement('a'), { 
+      href: url, 
+      download: `bulk-valuation-${Date.now()}.json` 
+    }).click();
+    URL.revokeObjectURL(url);
+    showToast('✓ Bulk JSON exported');
+  } else if (lastResult) {
+    // Single domain export
+    const blob = new Blob([JSON.stringify(lastResult, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    Object.assign(document.createElement('a'), { 
+      href: url, 
+      download: `valuation-${lastResult.full.replace(/[^a-z0-9]/g, '-')}.json` 
+    }).click();
+    URL.revokeObjectURL(url);
+    showToast('✓ JSON exported');
+  } else {
+    showToast('Run appraisal first');
+  }
 }
 
-function exportPDF(){
-  if(!lastResult){showToast('Run appraisal first');return;}
-  try{
-    const{jsPDF}=window.jspdf;const doc=new jsPDF();
-    doc.setFontSize(18);doc.setFont('helvetica','bold');doc.text('autoDNG Domain Valuation Report',20,20);
-    doc.setFontSize(12);doc.setFont('helvetica','normal');doc.setTextColor(60);
-    doc.text(`Domain: ${lastResult.full}`,20,32);
-    doc.text(`Value: ${fmtUSD(lastResult.central)} (${fmtUSD(lastResult.low)}–${fmtUSD(lastResult.high)})`,20,40);
-    doc.text(`Tier: ${lastResult.tier.toUpperCase()} · Score: ${lastResult.composite}/100`,20,48);
-    doc.setFontSize(9);doc.text(`Generated: ${new Date(lastResult.timestamp).toLocaleString()}`,20,54);
-    let y=66;
-    const sec=(title,items,icon='•')=>{
-      if(y>260){doc.addPage();y=20;}
-      doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);
-      doc.text(title,20,y);y+=7;
-      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(70);
-      (items||[]).forEach(item=>{if(y>270){doc.addPage();y=20;}
-        const txt=`${icon} ${typeof item==='string'?item:item.label?`${item.label}: ${item.score}/100`:item.note||item.strategy||JSON.stringify(item)}`;
-        doc.text(doc.splitTextToSize(txt,170),22,y);y+=5;});y+=3;};
-    sec('Summary',[lastResult.summary],'');
-    sec('Pricing Scenarios',lastResult.negScenarios?.map(s=>`${s.scenario}: ${s.price} — ${s.timeline}`),'→');
-    sec('Value Drivers',lastResult.strengths,'✓');
-    sec('Risks',lastResult.risks?.map(r=>`${r.level}: ${r.note}`),'⚠');
-    sec('Comparable Sales',lastResult.comps?.map(c=>`${c.domain||c.name} — ${c.sale} (${c.year})`),'◈');
-    sec('How to Increase Value',lastResult.improvements,'💡');
-    sec('Expert Insights',lastResult.insights,'⚡');
-    doc.save(`valuation-${lastResult.full.replace(/[^a-z0-9]/g,'-')}.pdf`);
-    showToast('✓ PDF exported');
-  }catch(e){showToast('PDF failed — try Copy Report');}
+function exportPDF() {
+  if (isBulkMode && window.bulkResults) {
+    // Bulk PDF export
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('autoDNG Bulk Domain Valuation Report', 20, 20);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
+      doc.text(`Total Domains: ${window.bulkStats.totalDomains}`, 20, 38);
+      
+      let y = 50;
+      
+      // Statistics
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30);
+      doc.text('Portfolio Statistics', 20, y);
+      y += 8;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(70);
+      doc.text(`Total Portfolio Value: ${fmtUSD(window.bulkStats.totalValue)}`, 22, y); y += 6;
+      doc.text(`Average Domain Value: ${fmtUSD(window.bulkStats.avgValue)}`, 22, y); y += 6;
+      doc.text(`Average Composite Score: ${window.bulkStats.avgComposite}/100`, 22, y); y += 10;
+      
+      // Tier distribution
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tier Distribution', 20, y);
+      y += 7;
+      
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      Object.entries(window.bulkStats.tierCounts).forEach(([tier, count]) => {
+        doc.text(`${tier.toUpperCase()}: ${count} domains`, 22, y);
+        y += 5;
+      });
+      y += 5;
+      
+      // Top 10 domains
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Top 10 Most Valuable Domains', 20, y);
+      y += 7;
+      
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      window.bulkStats.topDomains.forEach((d, i) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(`${i + 1}. ${d.full} — ${fmtUSD(d.central)} (Score: ${d.composite}/100, Tier: ${d.tier})`, 22, y);
+        y += 5;
+      });
+      
+      doc.save(`bulk-valuation-${Date.now()}.pdf`);
+      showToast('✓ Bulk PDF exported');
+    } catch (e) {
+      showToast('PDF export failed');
+    }
+  } else if (lastResult) {
+    // Single domain PDF (existing code)
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('autoDNG Domain Valuation Report', 20, 20);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60);
+      doc.text(`Domain: ${lastResult.full}`, 20, 32);
+      doc.text(`Value: ${fmtUSD(lastResult.central)} (${fmtUSD(lastResult.low)}–${fmtUSD(lastResult.high)})`, 20, 40);
+      doc.text(`Tier: ${lastResult.tier.toUpperCase()} · Score: ${lastResult.composite}/100`, 20, 48);
+      doc.setFontSize(9);
+      doc.text(`Generated: ${new Date(lastResult.timestamp).toLocaleString()}`, 20, 54);
+      let y = 66;
+      const sec = (title, items, icon = '•') => {
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(30);
+        doc.text(title, 20, y);
+        y += 7;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(70);
+        (items || []).forEach(item => {
+          if (y > 270) { doc.addPage(); y = 20; }
+          const txt = `${icon} ${typeof item === 'string' ? item : item.label ? `${item.label}: ${item.score}/100` : item.note || item.strategy || JSON.stringify(item)}`;
+          doc.text(doc.splitTextToSize(txt, 170), 22, y);
+          y += 5;
+        });
+        y += 3;
+      };
+      sec('Summary', [lastResult.summary], '');
+      sec('Pricing Scenarios', lastResult.negScenarios?.map(s => `${s.scenario}: ${s.price} — ${s.timeline}`), '→');
+      sec('Value Drivers', lastResult.strengths, '✓');
+      sec('Risks', lastResult.risks?.map(r => `${r.level}: ${r.note}`), '⚠');
+      sec('Comparable Sales', lastResult.comps?.map(c => `${c.domain || c.name} — ${c.sale} (${c.year})`), '◈');
+      sec('How to Increase Value', lastResult.improvements, '💡');
+      sec('Expert Insights', lastResult.insights, '⚡');
+      doc.save(`valuation-${lastResult.full.replace(/[^a-z0-9]/g, '-')}.pdf`);
+      showToast('✓ PDF exported');
+    } catch (e) {
+      showToast('PDF failed — try Copy Report');
+    }
+  } else {
+    showToast('Run appraisal first');
+  }
 }
 
 function shareLink(){
@@ -2131,6 +2700,35 @@ function setCat(val,el){
 }
 function openModal(id){document.getElementById(id).classList.add('on');}
 function closeModal(id){document.getElementById(id).classList.remove('on');}
+let isBulkMode = false;
+
+function toggleBulkMode() {
+  isBulkMode = !isBulkMode;
+  const singleInput = document.getElementById('domain');
+  const bulkInput = document.getElementById('bulkDomains');
+  const bulkInfo = document.getElementById('bulkInfo');
+  const modeLabel = document.getElementById('modeLabel');
+  
+  if (isBulkMode) {
+    singleInput.style.display = 'none';
+    bulkInput.style.display = 'block';
+    bulkInfo.style.display = 'block';
+    modeLabel.textContent = 'Switch to Single Mode';
+    bulkInput.addEventListener('input', updateDomainCount);
+    updateDomainCount();
+  } else {
+    singleInput.style.display = 'block';
+    bulkInput.style.display = 'none';
+    bulkInfo.style.display = 'none';
+    modeLabel.textContent = 'Switch to Bulk Mode';
+  }
+}
+
+function updateDomainCount() {
+  const text = document.getElementById('bulkDomains').value.trim();
+  const domains = text.split('\n').filter(d => d.trim().length > 0);
+  document.getElementById('domainCount').textContent = Math.min(domains.length, 100);
+}
 function clearAll(){
   document.getElementById('domain').value='';document.getElementById('industry').value='';
   document.getElementById('context').value='';document.getElementById('asking').value='';
