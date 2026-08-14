@@ -258,7 +258,7 @@
   "matic",
   "scape",
   "works"
-]
+],
     "soft_penalties": [
       { "pattern": "io$", "penalty": 0.65, "reason": "domain saturation" },
       { "pattern": "ly$", "penalty": 0.75, "reason": "SaaS trope fatigue" },

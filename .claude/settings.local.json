@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'NR>=1340 && NR<=1500' index.html)",
+      "Bash(awk 'NR>=1500 && NR<=1560' index.html)",
+      "Bash(awk 'NR>=1193 && NR<=1216' index.html)",
+      "Bash(awk 'NR>=1563 && NR<=1630' index.html)",
+      "Bash(node -e ' *)",
+      "Bash(node scripts/build-sitemap.js)",
+      "Bash(node scripts/fix-blog-meta.js)",
+      "Bash(node scripts/check-links.js)",
+      "Bash(node scripts/fix-links.js)",
+      "Bash(python scripts/build-og-image.py)",
+      "Bash(node scripts/build-meta.js)",
+      "Bash(sed -n '/autodng:meta:start/,/autodng:meta:end/p' index.html)",
+      "Bash(awk '/class=\"footer-bottom\"/,/<\\\\/footer>/' trademarks.html)",
+      "Bash(node scripts/verify-site.js)",
+      "Bash(node -e \"require\\('./data/aftermarket-intelligence.json'\\);console.log\\('data ok'\\)\")",
+      "Bash(awk 'NR>=2705 && NR<=2745' autodng-upgraded.html)",
+      "Bash(awk 'NR>=2766 && NR<=2800' autodng-upgraded.html)",
+      "Bash(node scripts/check-canonicals.js)"
+    ]
+  }
+}

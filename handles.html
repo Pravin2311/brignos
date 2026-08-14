@@ -4,10 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>autoDNG — Social Handle Checker</title>
+<!-- autodng:meta:start -->
+<meta name="description" content="Check whether a brand name is free across major social platforms before you commit to it.">
+<link rel="canonical" href="https://autodng.com/handles.html">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="autoDNG">
+<meta property="og:title" content="Social Handle Availability Checker — autoDNG">
+<meta property="og:description" content="Check whether a brand name is free across major social platforms before you commit to it.">
+<meta property="og:url" content="https://autodng.com/handles.html">
+<meta property="og:image" content="https://autodng.com/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Social Handle Availability Checker — autoDNG">
+<meta name="twitter:description" content="Check whether a brand name is free across major social platforms before you commit to it.">
+<meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
+<!-- autodng:meta:end -->
+
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng.css?v=6">
 <style>
 :root{
   --bg:#09090b;--bg2:#111114;--card:#141418;--border:#23232a;
@@ -256,122 +275,6 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 
 }
 /* ===== FOOTER ===== */
-
-.site-footer{
-  margin-top:60px;
-  background:#111115;
-  border-top:1px solid var(--border);
-}
-
-.footer-inner{
-  max-width:1280px;
-  margin:auto;
-  padding:50px 20px;
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:40px;
-}
-
-.footer-brand h3{
-  font-family:var(--serif);
-  font-size:32px;
-  font-weight:400;
-  margin-bottom:12px;
-}
-
-.footer-brand em{
-  color:var(--lime);
-}
-
-.footer-brand p{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.8;
-}
-
-.footer-col h4{
-  color:var(--lime);
-  margin-bottom:14px;
-  font-size:14px;
-}
-
-.footer-col ul{
-  list-style:none;
-}
-
-.footer-col li{
-  margin-bottom:8px;
-}
-
-.footer-col a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-}
-
-.footer-col a:hover{
-  color:var(--lime);
-}
-
-.footer-socials{
-  margin-top:16px;
-  display:flex;
-  gap:10px;
-}
-
-.footer-socials a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:18px;
-}
-
-.footer-socials a:hover{
-  color:var(--lime);
-}
-
-.footer-bottom{
-  border-top:1px solid var(--border);
-  padding:16px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.footer-bottom p{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.footer-bottom-links{
-  display:flex;
-  gap:14px;
-}
-
-.footer-bottom-links a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:13px;
-}
-
-.footer-bottom-links a:hover{
-  color:var(--lime);
-}
-
-@media(max-width:768px){
-
-  .footer-inner{
-    grid-template-columns:1fr;
-    gap:24px;
-  }
-
-  .footer-bottom{
-    flex-direction:column;
-    text-align:center;
-  }
-
-}
 </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -584,8 +487,6 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 <!-- ══ SEO FOOTER ══ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    
-    <!-- Brand Column -->
     <div class="footer-brand">
       <h3>auto<em>DNG</em></h3>
       <p>The world's most advanced AI brand name generator and domain valuation engine. Powered by 18-signal quality gates, VC naming DNA, and live RDAP domain checks.</p>
@@ -596,8 +497,6 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
         <a href="mailto:support@teachings.ai" aria-label="Email Support">✉</a>
       </div>
     </div>
-
-    <!-- Tools Column (Crucial for SEO Internal Linking) -->
     <nav class="footer-col" aria-label="Core Tools">
       <h4>Tools</h4>
       <ul>
@@ -607,22 +506,30 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
         <li><a href="trademarks.html">Trademark Checker</a></li>
       </ul>
     </nav>
-
-    <!-- Analytics Column -->
     <nav class="footer-col" aria-label="Analytics Tools">
       <h4>Analytics</h4>
       <ul>
         <li><a href="vc-score.html">VC Brand Score</a></li>
         <li><a href="handles.html">Social Handle Checker</a></li>
-        <li><a href="index.html?page=tools">Phonetics Analyzer</a></li>
-        <li><a href="index.html?page=tools">Bulk Name Analyzer</a></li>
+        <li><a href="analyze.html">Domain Analyzer</a></li>
+        <li><a href="autodng-domain-intelligence.html">Domain Intelligence</a></li>
       </ul>
     </nav>
-
-    
+    <nav class="footer-col" aria-label="Services">
+      <h4>More</h4>
+      <ul>
+        <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+      </ul>
+    </nav>
   </div>
-
-  
+  <div class="footer-bottom">
+    <p>© 2026 autoDNG. All rights reserved. Built for founders, domainers, and brand strategists.</p>
+    <div class="footer-bottom-links">
+      <a href="sitemap.xml">Sitemap</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
   </div>
 </footer>
 

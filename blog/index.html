@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The AutoDNG Blog | Startup Branding, Domain Investing & AI Naming Insights</title>
     <meta name="description" content="Explore the AutoDNG blog for expert insights on startup naming strategies, domain name valuation, AI branding psychology, and technical guides.">
-    <link rel="canonical" href="https://autodng.com/blog">
-    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<link rel="shortcut icon" href="img/favicon.ico">
+    <link rel="canonical" href="https://autodng.com/blog/">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="shortcut icon" href="/img/favicon.ico">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -147,7 +147,9 @@
 
         /* --- FOOTER --- */
         .site-footer { background: #f7fafc; border-top: 1px solid var(--border); padding: 40px 20px; text-align: center; color: var(--text-light); font-size: 0.9rem; }
-        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; }
+        /* flex-wrap: the row could not break, so "Terms of Service" ran 25px past
+           the viewport edge on a 375px screen. */
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
         .footer-links a { color: var(--text-body); }
 
         /* --- RESPONSIVE --- */
@@ -209,7 +211,7 @@
                 <div class="category-name">Domain Investing</div>
                 <div class="category-count">8 Articles</div>
             </a>
-            <a href="/blog/ai-naming-tech" class="category-card">
+            <a href="/blog/ai-and-naming-tech/" class="category-card">
                 <span class="category-icon">🤖</span>
                 <div class="category-name">AI & Naming Tech</div>
                 <div class="category-count">5 Articles</div>
@@ -225,7 +227,7 @@
     <!-- FEATURED POST -->
     <section class="featured-section">
         <h2 class="section-title">Featured Article</h2>
-        <a href="/blog/startup-branding/psychology-of-naming-ai-startup" class="featured-card">
+        <a href="/blog/startup-branding/the-psychology-of-naming-your-ai-startup.html" class="featured-card">
             <div class="featured-image">🧠</div>
             <div class="featured-content">
                 <span class="featured-tag">Startup Branding</span>
@@ -242,7 +244,7 @@
         <div class="posts-grid">
             
             <!-- Post 1 -->
-            <a href="/blog/startup-branding/ultimate-domain-branding-checklist.html" class="post-card">
+            <a href="/blog/domain-investing/ultimate-domain-branding-checklist.html" class="post-card">
                 <div class="post-thumb thumb-1">✅</div>
                 <div class="post-content">
                     <span class="post-tag">Startup Branding</span>
@@ -252,7 +254,7 @@
             </a>
 
             <!-- Post 2 -->
-            <a href="/blog/domain-investing/valuating-invented-brandable-domains" class="post-card">
+            <a href="/blog/domain-investing/valuating-invented-brandable-domains.html" class="post-card">
                 <div class="post-thumb thumb-2">💰</div>
                 <div class="post-content">
                     <span class="post-tag">Domain Investing</span>

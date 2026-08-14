@@ -4,12 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>autoDNG — AI Auto Name Generator</title>
+<!-- autodng:meta:start -->
+<meta name="description" content="Generate brandable startup names with 7 AI naming agents, then check .com/.ai/.io availability live. Free, runs in your browser, bring your own API key.">
+<link rel="canonical" href="https://autodng.com/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="autoDNG">
+<meta property="og:title" content="autoDNG — AI Brand Name Generator with Live Domain Checks">
+<meta property="og:description" content="Generate brandable startup names with 7 AI naming agents, then check .com/.ai/.io availability live. Free, runs in your browser, bring your own API key.">
+<meta property="og:url" content="https://autodng.com/">
+<meta property="og:image" content="https://autodng.com/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="autoDNG — AI Brand Name Generator with Live Domain Checks">
+<meta name="twitter:description" content="Generate brandable startup names with 7 AI naming agents, then check .com/.ai/.io availability live. Free, runs in your browser, bring your own API key.">
+<meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
+<!-- autodng:meta:end -->
+
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng.css?v=6">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -129,6 +148,23 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .snum{font-family:var(--mono);font-size:13px;font-weight:500;margin-bottom:3px}
 .sbar{height:2px;background:var(--border2);border-radius:99px;overflow:hidden}
 .sfill{height:100%;border-radius:99px}
+.rnote{font-size:11.5px;color:var(--muted);line-height:1.6;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--amber);border-radius:8px;padding:10px 13px;margin-bottom:14px}
+.rnote strong{color:var(--muted2)}
+/* Aftermarket appraisal block */
+.resale{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:11px 12px;margin-bottom:12px}
+.resale-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.resale-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.resale-score{font-family:var(--mono);font-size:15px;font-weight:600;line-height:1}
+.resale-price{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:-.02em;margin:5px 0 3px}
+.resale-band{font-size:11px;color:var(--muted2);line-height:1.45;margin-bottom:8px}
+.resale-flip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.resale-flip-tag{font-family:var(--mono);font-size:9.5px;font-weight:500;border:1px solid;border-radius:99px;padding:3px 9px;white-space:nowrap}
+.resale-odds{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.resale-route{font-size:10.5px;color:var(--muted);line-height:1.45;margin-bottom:8px}
+.resale-bits{display:flex;flex-wrap:wrap;gap:5px}
+.resale-bits span{font-family:var(--mono);font-size:9px;color:var(--muted2);background:var(--bg2);border:1px solid var(--border);border-radius:99px;padding:3px 8px}
+.resale-inds{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:7px;line-height:1.5}
+.resale-warn{font-family:var(--mono);font-size:9.5px;color:var(--amber);margin-top:7px;line-height:1.45}
 .drow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .dchip{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2);display:inline-flex;align-items:center;gap:4px;transition:all .2s}
 .dchip.ck{animation:pulse 1.4s ease infinite}
@@ -136,6 +172,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .dchip.av:hover{background:rgba(200,240,74,.2)}
 .dchip.tk{border-color:rgba(240,80,106,.3);color:var(--rose);opacity:.6}
 .dchip.un{border-color:rgba(240,184,74,.3);color:var(--amber);cursor:pointer}
+/* Only one of RDAP/DNS answered — available, but not corroborated. */
+.dchip.av.lk{border-color:rgba(200,240,74,.22);color:rgba(200,240,74,.72);background:rgba(200,240,74,.05)}
+/* Registry publishes no reachable RDAP — not an error, just uncheckable here. */
+.dchip.un.nc{border-color:var(--border2);color:var(--muted);cursor:pointer}
+.dretry{background:none;border:none;color:inherit;font-family:inherit;font-size:11px;cursor:pointer;padding:0 0 0 2px;line-height:1}
+.dretry:hover{color:var(--lime)}
 .dchip a{color:inherit;text-decoration:none}
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 .caution{font-family:var(--mono);font-size:10px;color:var(--muted);padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;line-height:1.5}
@@ -174,7 +216,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
   .modal-opts{grid-template-columns:1fr}
 }
 .footer{margin-top:60px;border-top:1px solid var(--border);background:rgba(9,9,11,.95);backdrop-filter:blur(10px)}
-.footer-inner{max-width:1100px;margin:auto;padding:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .fbtn{text-decoration:none;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;transition:.2s ease}
 .fbtn:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-1px)}
 .tools-section{margin-top:34px;padding-top:28px;border-top:1px solid var(--border)}
@@ -186,7 +227,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .tool-title{color:var(--text);font-size:18px;font-weight:600;margin-bottom:8px}
 .tool-sub{color:var(--muted2);font-size:14px;line-height:1.6}
 .tool-card.soon{opacity:.55;pointer-events:none}
-@media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.footer-inner{padding:18px 14px 28px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
+@media(max-width:800px){.tools-grid{grid-template-columns:1fr}.tool-card{padding:18px}.fbtn{flex:1;text-align:center;font-size:13px;padding:14px 10px}}
 .social-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .social-links a{color:var(--muted2);text-decoration:none;font-family:var(--mono);font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;transition:all .15s;white-space:nowrap}
 .social-links a:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim);transform:translateY(-1px)}
@@ -237,156 +278,51 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 /* ══════════════════════════════════════════════════
 SEO FOOTER
 ══════════════════════════════════════════════════ */
-.site-footer {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  margin-top: 80px;
-  padding: 60px 24px 20px;
-  font-family: var(--font);
-}
-.footer-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 40px;
-}
-.footer-brand h3 {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--text);
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-.footer-brand h3 em {
-  color: var(--lime);
-  font-style: italic;
-}
-.footer-brand p {
-  font-size: 14px;
-  color: var(--muted2);
-  line-height: 1.7;
-  max-width: 320px;
-  margin-bottom: 20px;
-}
-.footer-socials {
-  display: flex;
-  gap: 10px;
-}
-.footer-socials a {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  color: var(--muted2);
-  text-decoration: none;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-.footer-socials a:hover {
-  border-color: var(--lime);
-  color: var(--lime);
-  background: var(--lime-dim);
-}
-.footer-col h4 {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-}
-.footer-col ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.footer-col ul li a {
-  font-size: 14px;
-  color: var(--muted2);
-  text-decoration: none;
-  transition: color 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.footer-col ul li a:hover {
-  color: var(--lime);
-}
-.footer-col ul li a::before {
-  content: '→';
-  font-size: 12px;
-  opacity: 0;
-  transform: translateX(-5px);
-  transition: all 0.2s;
-}
-.footer-col ul li a:hover::before {
-  opacity: 1;
-  transform: translateX(0);
-}
-.footer-bottom {
-  max-width: 1280px;
-  margin: 40px auto 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.footer-bottom p {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-}
-.footer-bottom-links {
-  display: flex;
-  gap: 16px;
-}
-.footer-bottom-links a {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer-bottom-links a:hover {
-  color: var(--text);
-}
 
 /* Responsive Footer */
-@media (max-width: 960px) {
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-  .footer-brand {
-    grid-column: 1 / -1;
-  }
-}
-@media (max-width: 640px) {
-  .site-footer {
-    padding: 40px 20px 20px;
-    margin-top: 40px;
-  }
-  .footer-inner {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  .footer-bottom {
-    flex-direction: column;
-    text-align: center;
-  }
-}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://autodng.com/#org",
+      "name": "autoDNG",
+      "url": "https://autodng.com/",
+      "logo": "https://autodng.com/img/android-chrome-512x512.png",
+      "email": "support@teachings.ai",
+      "sameAs": ["https://twitter.com/autodng"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://autodng.com/#site",
+      "url": "https://autodng.com/",
+      "name": "autoDNG",
+      "publisher": { "@id": "https://autodng.com/#org" }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://autodng.com/#app",
+      "name": "autoDNG Brand Name Generator",
+      "url": "https://autodng.com/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any browser",
+      "description": "Generate brandable startup names with AI naming agents and check domain availability live.",
+      "featureList": [
+        "AI brand name generation",
+        "Live .com/.ai/.io domain availability checks",
+        "Brand name valuation",
+        "Trademark risk screening",
+        "Social handle availability",
+        "VC brand scoring"
+      ],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": { "@id": "https://autodng.com/#org" }
+    }
+  ]
+}
+</script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17440634922"></script>
@@ -543,6 +479,16 @@ SEO FOOTER
   
   <!-- Row 2: Style, TLD, Audience -->
   <div class="fg3">
+    <div class="field">
+      <label for="mode">Optimise for</label>
+      <select id="mode" onchange="onModeChange()">
+        <option value="resale">💰 Aftermarket resale value</option>
+        <option value="startup">🚀 Startup naming (invented)</option>
+      </select>
+      <div id="modeHint" style="margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">
+        Real-word compounds &amp; Latin roots — the shapes that clear on HugeDomains &amp; BrandBucket.
+      </div>
+    </div>
     <div class="field">
       <label for="style">Naming style</label>
       <select id="style" onchange="onFilterChange()">
@@ -703,19 +649,6 @@ SEO FOOTER
   </div>
 </div>
 
-<footer class="footer" style="align-items:center;gap:12px">
-  <div style="display:flex;flex-direction:column;gap:4px">
-    <span>autoDNG — Agentic AI naming engine</span>
-    <span style="font-size:10px">Training: a16z · YC · NameBio · Crunchbase · TechCrunch</span>
-  </div>
-  <div class="social-links">
-    <a href="https://twitter.com/autodng" target="_blank" rel="noopener" title="X / Twitter">𝕏</a>
-    <a href="https://facebook.com/autodng" target="_blank" rel="noopener" title="LinkedIn">𝐟</a>
-    <a href="https://instagram.com/autodng" target="_blank" rel="noopener" title="Instagram">IG</a>
-    <a href="mailto:support@teachings.ai" title="Email">✉</a>
-  </div>
-</footer>
-
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -754,11 +687,10 @@ SEO FOOTER
 <!-- ══ SEO FOOTER ══ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    
-    <!-- Brand Column -->
     <div class="footer-brand">
       <h3>auto<em>DNG</em></h3>
       <p>The world's most advanced AI brand name generator and domain valuation engine. Powered by 18-signal quality gates, VC naming DNA, and live RDAP domain checks.</p>
+      <p style="font-size:11px;opacity:.75;margin-bottom:12px">Training: a16z · YC · NameBio · Crunchbase · TechCrunch</p>
       <div class="footer-socials">
         <a href="https://twitter.com/autodng" target="_blank" rel="noopener" aria-label="Twitter">𝕏</a>
         
@@ -766,8 +698,6 @@ SEO FOOTER
         <a href="mailto:support@teachings.ai" aria-label="Email Support">✉</a>
       </div>
     </div>
-
-    <!-- Tools Column (Crucial for SEO Internal Linking) -->
     <nav class="footer-col" aria-label="Core Tools">
       <h4>Tools</h4>
       <ul>
@@ -777,27 +707,30 @@ SEO FOOTER
         <li><a href="trademarks.html">Trademark Checker</a></li>
       </ul>
     </nav>
-
-    <!-- Analytics Column -->
     <nav class="footer-col" aria-label="Analytics Tools">
       <h4>Analytics</h4>
       <ul>
         <li><a href="vc-score.html">VC Brand Score</a></li>
         <li><a href="handles.html">Social Handle Checker</a></li>
-        <li><a href="index.html?page=tools">Phonetics Analyzer</a></li>
-        <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="analyze.html">Domain Analyzer</a></li>
+        <li><a href="autodng-domain-intelligence.html">Domain Intelligence</a></li>
       </ul>
     </nav>
     <nav class="footer-col" aria-label="Services">
-    <h4>Services</h4>
-    <ul>
-    <li>
-<a href="/brand-naming-consulting.html">
-Brand Naming Advisory
-</a>
-</li>
-</ul>
-   </nav> 
+      <h4>More</h4>
+      <ul>
+        <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 autoDNG. All rights reserved. Built for founders, domainers, and brand strategists.</p>
+    <div class="footer-bottom-links">
+      <a href="sitemap.xml">Sitemap</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
   </div>
 </footer>
 <script>
@@ -870,22 +803,39 @@ let key=localStorage.getItem('bl_k_'+prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
 if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
 let busy=false,domC={},pill='all',helpOn=false,language='global',filtersChanged=false;
-let lastGeneratedNames=[],rufloIntel=null,namingIntel=null,industryIntel={},promptSummary='';
-const recentNamesCache=new Set(JSON.parse(localStorage.getItem('dng_recent_names')||'[]'));
+let lastGeneratedNames=[],rufloIntel=null,namingIntel=null,industryIntel={},promptSummary='',aftermarketIntel=null;
+// Capped: an unbounded history makes the near-duplicate filter reject everything over time.
+const RECENT_NAMES_CAP=200;
+const recentNamesCache=(()=>{
+  let stored=[];
+  try{stored=JSON.parse(localStorage.getItem('dng_recent_names')||'[]');}catch(e){}
+  return new Set((Array.isArray(stored)?stored:[]).map(n=>String(n).toLowerCase()).slice(-RECENT_NAMES_CAP));
+})();
+function persistRecentNames(){
+  try{
+    const trimmed=[...recentNamesCache].slice(-RECENT_NAMES_CAP);
+    if(trimmed.length<recentNamesCache.size){recentNamesCache.clear();trimmed.forEach(n=>recentNamesCache.add(n));}
+    localStorage.setItem('dng_recent_names',JSON.stringify(trimmed));
+  }catch(e){}
+}
 
 // ── Intelligence Loading (Safe Fallback) ───────────────────────────
+const DATA_VERSION='2';
 async function loadIntelligence(){
   try {
-    const [intelRes, rufloRes, promptRes, industryRes] = await Promise.all([
-      fetch('./data/naming-intelligence.json').catch(()=>null),
-      fetch('./data/ruflo-intelligence.json').catch(()=>null),
-      fetch('./data/prompt-summary.txt').catch(()=>null),
-      fetch('./data/industry-intelligence.json').catch(()=>null)
+    const [intelRes, rufloRes, promptRes, industryRes, afterRes] = await Promise.all([
+      // ?v= busts caches still holding the previously malformed ruflo payload.
+      fetch('./data/naming-intelligence.json?v='+DATA_VERSION).catch(()=>null),
+      fetch('./data/ruflo-intelligence.json?v='+DATA_VERSION).catch(()=>null),
+      fetch('./data/prompt-summary.txt?v='+DATA_VERSION).catch(()=>null),
+      fetch('./data/industry-intelligence.json?v='+DATA_VERSION).catch(()=>null),
+      fetch('./data/aftermarket-intelligence.json?v='+DATA_VERSION).catch(()=>null)
     ]);
     if (intelRes?.ok) namingIntel = await intelRes.json();
     if (rufloRes?.ok) { rufloIntel = await rufloRes.json(); window.rufloIntel = rufloIntel; }
     if (promptRes?.ok) promptSummary = await promptRes.text();
     if (industryRes?.ok) industryIntel = await industryRes.json();
+    if (afterRes?.ok) { aftermarketIntel = await afterRes.json(); window.aftermarketIntel = aftermarketIntel; }
   } catch(err) { console.warn('⚠️ Using fallback defaults'); }
   
   if (!rufloIntel) {
@@ -1041,13 +991,32 @@ function applyLocalSteering(names, steerFeedback) {
 }
 
 // ── Procedural Generation (Phonetic-Valid Only) ─────────────────────
+// Concatenating morphemes can yield stutters ("Aevaevo") or doubled vowels
+// ("Lumdraa") that read as typos rather than brands.
+function hasMorphemeStutter(name) {
+  const s = name.toLowerCase().replace(/[^a-z]/g, '');
+  if (/(.)\1\1/.test(s)) return true;                    // three identical letters
+  if (/[aeiou]{3,}/.test(s)) return true;                // vowel pile-up
+  if (/([aeiou])\1$/.test(s)) return true;               // doubled vowel ending
+  for (let n = 3; n <= 4; n++) {                         // any 3-4 char chunk repeated
+    for (let i = 0; i + n <= s.length; i++) {
+      if (s.indexOf(s.slice(i, i + n), i + n) !== -1) return true;
+    }
+  }
+  return false;
+}
+
 function proceduralGenerate(grammar, morphology, count = 100, industry = null) {
   const { phonetic_inventory, structural_patterns, invented_endings, pattern_weights, suffix_probability } = grammar;
   const { prefixes, suffixes, clusters } = morphology;
   const availableSuffixes = getIndustryAppropriateSuffixes(industry, suffixes);
   const candidates = [], seen = new Set(), suffixCounts = {}, prefixCounts = {};
-  
-  while (candidates.length < count) {
+  // Hard iteration cap: without it, a grammar whose output every filter rejects
+  // spins this loop forever and hangs the tab.
+  let iterations = 0;
+  const MAX_ITERATIONS = count * 60;
+
+  while (candidates.length < count && iterations++ < MAX_ITERATIONS) {
     const weightedPatterns = structural_patterns.map(p => ({ pattern: p, weight: pattern_weights?.[p] || 1 }));
     const pattern = pickWeighted(weightedPatterns)?.pattern || structural_patterns[0];
     
@@ -1082,6 +1051,7 @@ function proceduralGenerate(grammar, morphology, count = 100, industry = null) {
     const key = normalizeBrandName(name);
     
     if (!isPhoneticallyValid(name)) continue;
+    if (hasMorphemeStutter(name)) continue;
     const len = name.replace(/\s+/g, '').length;
     if (len < 3 || len > 10) continue;
     
@@ -1094,6 +1064,161 @@ function proceduralGenerate(grammar, morphology, count = 100, industry = null) {
     }
   }
   return candidates;
+}
+
+// ── Aftermarket Resale Engine ──────────────────────────────────────
+// Optimises for what actually clears on HugeDomains / BrandBucket / Squadhelp:
+// spellable-on-hearing, built from real morphemes, broad buyer pool.
+// Deliberately the inverse of calculateAvailabilityScore, which rewards rare
+// letters because odd strings are easier to hand-register — not because they sell.
+
+function countSyllables(word) {
+  const s = String(word).toLowerCase().replace(/[^a-z]/g, '');
+  if (!s) return 0;
+  const groups = s.replace(/e$/, '').match(/[aeiouy]+/g);   // trailing e is usually silent
+  return Math.max(1, groups ? groups.length : 1);
+}
+
+function radioTestScore(name) {
+  const s = String(name).toLowerCase().replace(/[^a-z]/g, '');
+  let score = 100; const flags = [];
+  for (const p of aftermarketIntel.radio_test.penalties) {
+    const hits = (s.match(new RegExp(p.pattern, 'g')) || []).length;
+    if (hits) { score -= p.cost * Math.min(hits, 2); flags.push(p.reason); }
+  }
+  return { score: Math.max(0, Math.min(100, Math.round(score))), flags };
+}
+
+function semanticEvocation(name) {
+  const s = String(name).toLowerCase();
+  const banks = [
+    ...aftermarketIntel.modifiers, ...aftermarketIntel.nouns,
+    ...aftermarketIntel.dictionary_words, ...aftermarketIntel.latin_roots.map(r => r.term),
+  ];
+  const hits = banks.filter(w => w.length >= 3 && s.includes(w));
+  // How much of the name is recognisable meaning, not how many words matched.
+  const longest = hits.reduce((m, w) => Math.max(m, w.length), 0);
+  const ratio = longest / Math.max(1, s.length);
+  return { score: Math.round(Math.min(100, ratio * 130)), morphemes: [...new Set(hits)].slice(0, 4) };
+}
+
+function buyerBreadth(name) {
+  const s = String(name).toLowerCase();
+  const industries = Object.entries(aftermarketIntel.buyer_industries)
+    .filter(([, kws]) => kws.some(k => s.includes(k)))
+    .map(([ind]) => ind);
+  const n = industries.length;
+  const score = n === 0 ? 35 : n === 1 ? 62 : n === 2 ? 80 : n === 3 ? 92 : 100;
+  return { score, industries };
+}
+
+// Works for model output too, which arrives without a known archetype.
+function inferArchetype(name) {
+  const s = String(name).toLowerCase().replace(/[^a-z]/g, '');
+  const A = aftermarketIntel;
+  if (A.dictionary_words.includes(s)) return 'dictionary';
+  const words = [...A.modifiers, ...A.nouns];
+  for (const a of words) {
+    if (s.startsWith(a) && words.includes(s.slice(a.length))) return 'compound';
+  }
+  if (A.latin_roots.some(r => s.startsWith(r.term))) return 'latinate';
+  return 'coined';
+}
+
+function scoreResaleValue(name, archetypeHint) {
+  if (!aftermarketIntel) return null;
+  const clean = String(name).toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const radio = radioTestScore(name);
+  const evo = semanticEvocation(name);
+  const breadth = buyerBreadth(name);
+  const syllables = countSyllables(name);
+  const sylScore = aftermarketIntel.syllable_scores[String(Math.min(syllables, 5))] ?? 40;
+  const band = aftermarketIntel.length_bands.find(b => clean.length >= b.min && clean.length <= b.max);
+  const lenScore = band ? band.score : 50;
+
+  const w = aftermarketIntel.scoring_weights;
+  let score = radio.score * w.radio_test + lenScore * w.length_band + sylScore * w.syllables
+            + evo.score * w.semantic_evocation + breadth.score * w.buyer_breadth;
+
+  const killers = [];
+  for (const k of aftermarketIntel.resale_killers) {
+    if (new RegExp(k.pattern).test(clean)) { killers.push(k.reason); score *= 0.72; }
+  }
+
+  // Constrain into the archetype's realistic value range. A coined blend does not
+  // fetch one-word-dictionary money however clean its phonetics are.
+  const archetype = archetypeHint || inferArchetype(name);
+  const arch = aftermarketIntel.archetypes[archetype] || aftermarketIntel.archetypes.coined;
+  const span = arch.value_ceiling - arch.value_floor;
+  score = arch.value_floor + (Math.max(0, Math.min(100, score)) / 100) * span;
+  score = Math.round(Math.max(0, Math.min(100, score)));
+
+  const priceBand = aftermarketIntel.price_bands.find(b => score >= b.min_score)
+                 || aftermarketIntel.price_bands[aftermarketIntel.price_bands.length - 1];
+
+  // Acquisition: longer names are likelier to be free; very short ones are gone.
+  let handRegOdds = arch.hand_reg_odds;
+  if (clean.length >= 12) handRegOdds = Math.min(96, handRegOdds + 18);
+  else if (clean.length <= 6) handRegOdds = Math.max(1, handRegOdds - 16);
+
+  // The reseller's actual metric: value, adjusted by whether you can get it.
+  // Value-led on purpose — a pure odds discount let low-value/high-availability
+  // coined strings outrank strong compounds, inverting what a reseller wants.
+  const flipScore = Math.round(score * (0.6 + 0.4 * (handRegOdds / 100)));
+  const flipBand = aftermarketIntel.flip_bands.find(b => flipScore >= b.min_score)
+                || aftermarketIntel.flip_bands[aftermarketIntel.flip_bands.length - 1];
+
+  return { score, priceBand, radio, evo, breadth, syllables, length: clean.length, killers,
+           archetype, archetypeLabel: arch.label, handRegOdds, route: arch.route, flipScore, flipBand };
+}
+
+function generateResellable(count = 100) {
+  if (!aftermarketIntel) return [];
+  const A = aftermarketIntel;
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const archetypes = Object.entries(A.archetypes)
+    .filter(([, c]) => c.generate !== false)
+    .map(([id, c]) => ({ id, ...c }));
+  const out = [], seen = new Set(), endingUse = {};
+  let guard = 0;
+
+  while (out.length < count && guard++ < count * 40) {
+    const a = pickWeighted(archetypes);
+    let name = '';
+    if (a.id === 'compound')        name = cap(pick(A.modifiers)) + cap(pick(A.nouns));
+    else if (a.id === 'latinate') {
+      let root = pickWeighted(A.latin_roots).term;
+      const ending = pickWeighted(A.latin_endings).term;
+      // Spread endings: unchecked, -ity/-ance dominate a run and the set reads samey.
+      if ((endingUse[ending] || 0) >= Math.ceil(count / A.latin_endings.length) + 1) continue;
+      // Drop the root's trailing vowel before a vowel-initial ending, so
+      // cura + ance yields Curance rather than the misspelt-looking Curaance.
+      if (/[aeiou]$/.test(root) && /^[aeiou]/.test(ending)) root = root.slice(0, -1);
+      endingUse[ending] = (endingUse[ending] || 0) + 1;
+      name = cap(root + ending);
+    }
+    else if (a.id === 'dictionary') name = cap(pick(A.dictionary_words));
+    else continue;
+
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    // 12+ characters reads long in the brandable market and hurts recall.
+    if (name.length > (A.max_length || 11) || name.length < 4) continue;
+    if (hasMorphemeStutter(name)) continue;
+    seen.add(key);
+    out.push({ name, source: 'aftermarket', _archetype: a.id, naming_pattern: a.label });
+  }
+  return out;
+}
+
+function onModeChange() {
+  const mode = document.getElementById('mode')?.value || 'resale';
+  const hint = document.getElementById('modeHint');
+  if (hint) hint.textContent = mode === 'resale'
+    ? 'Real-word compounds & Latin roots — the shapes that clear on HugeDomains & BrandBucket.'
+    : 'Invented phonetic brandables — distinctive, but a narrower resale buyer pool.';
+  onFilterChange();
 }
 
 function isConsumerHealthIndustry(industry) { return ["Mental Health & Wellness", "Consumer & E-commerce", "Food & FoodTech"].includes(industry); }
@@ -1344,34 +1469,57 @@ async function go(skipAI = false) {
   try{
     pt.textContent = 'Generating candidate names…'; pp.textContent = '48%';
     const targetCount = rufloIntel?.pipeline_config?.stage_1_local_generation?.target_count || 100;
+    const mode = document.getElementById('mode')?.value || 'resale';
     let candidates = [];
-    try { if (rufloIntel?.generation_grammar && rufloIntel?.morphology) { candidates = proceduralGenerate(rufloIntel.generation_grammar, rufloIntel.morphology, targetCount, ind); } } 
-    catch (e) { console.warn('Procedural gen failed', e); }
-    
-    if (candidates.length < 15) {
-      const fallback = generateSimplePhoneticFallback(20);
-      candidates = [...candidates, ...fallback];
-      if (skipAI) toast('Injecting local fallback names for diversity...');
-    } else {
-      let rawCandidates = [];
-      for(const agent of NAMING_AGENTS){
-        const count = Math.ceil(40 * agent.weight);
-        const generated = await generateRawCandidates(ind, agent.id, document.getElementById('kw')?.value||'', count, agent);
-        rawCandidates.push(...generated);
-      }
-      candidates=rawCandidates.map(c=>({name:c.name,source:'llm'}));
+
+    if (mode === 'resale') {
+      // Resale archetypes only — invented phonetic strings dilute the shortlist
+      // and are precisely what the aftermarket discounts.
+      try { candidates = generateResellable(targetCount); }
+      catch (e) { console.warn('Resale gen failed', e); }
+    }
+    if (mode !== 'resale' || candidates.length < 15) {
+      try { if (rufloIntel?.generation_grammar && rufloIntel?.morphology) { candidates = [...candidates, ...proceduralGenerate(rufloIntel.generation_grammar, rufloIntel.morphology, targetCount, ind)]; } }
+      catch (e) { console.warn('Procedural gen failed', e); }
+    }
+
+    // Local pool is always built first so results are never empty, key or no key.
+    if (candidates.length < 15) candidates = [...candidates, ...generateSimplePhoneticFallback(30)];
+    const localPool = candidates.slice();
+
+    if (!skipAI && PROVS[prov].val(key)) {
+      const kwVal = document.getElementById('kw')?.value || '';
+      const settled = await Promise.allSettled(
+        NAMING_AGENTS.map(agent => generateRawCandidates(ind, agent.id, kwVal, Math.ceil(40 * agent.weight), agent))
+      );
+      const llm = settled.filter(s => s.status === 'fulfilled')
+        .flatMap(s => s.value || [])
+        .filter(c => c && c.name)
+        .map(c => ({ name: String(c.name).trim(), source: 'llm' }));
+      // In resale mode keep both pools and let the resale score arbitrate — the
+      // local archetypes are often stronger comps than free-form model output.
+      candidates = mode === 'resale' ? [...llm, ...localPool]
+                 : llm.length >= 15 ? llm : [...llm, ...localPool];
+      if (!llm.length) toast('AI generation unavailable — showing locally generated names');
     }
     
-    pt.textContent='Scoring for availability…';pp.textContent='72%';
+    pt.textContent = mode === 'resale' ? 'Appraising resale value…' : 'Scoring for availability…';
+    pp.textContent='72%';
     let scored=candidates.map(c=>{
       const availScore=calculateAvailabilityScore(c.name,tlds[0]);
       const rubricScore=computeRubricScore(c);
-      return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_combinedScore:(availScore*0.6)+(rubricScore*0.4)};
+      const resale=scoreResaleValue(c.name, c._archetype);
+      // In resale mode rank on flip potential — brand value discounted by whether
+      // the .com is realistically obtainable. That spread is where resellers earn.
+      const combined = (mode === 'resale' && resale)
+        ? (resale.flipScore * 0.8) + (availScore * 0.2)
+        : (availScore * 0.6) + (rubricScore * 0.4);
+      return{...c,_availabilityScore:availScore,_rubricScore:rubricScore,_resale:resale,_combinedScore:combined};
     });
     
     // 🧭 Apply local steering fallback (works without API key)
     const steerFeedback = sessionStorage.getItem('steer_feedback');
-    if (steerFeedback && !skipAI) {
+    if (steerFeedback) {
       scored = applyLocalSteering(scored, steerFeedback);
     }
     
@@ -1389,9 +1537,10 @@ async function go(skipAI = false) {
         item.diversityPenalty=similarityHits*8;
         item.finalScore=(item._combinedScore||70)-item.diversityPenalty;
         uniqueNames.push(item);
-        recentNamesCache.add(item.name);
+        recentNamesCache.add(String(item.name).toLowerCase());
       }
     }
+    persistRecentNames();
     if(uniqueNames.length<(prov==='gemini'?3:5)&&candidates.length>finalNames.length){
       const extras=candidates.filter(c=>{
         const norm=normalizeBrandName(c.name);
@@ -1402,6 +1551,12 @@ async function go(skipAI = false) {
     
     // 🎯 Sort: Score (60%) + Tier Bonus (30%) + Pronounceability (10%)
     let names = uniqueNames.sort((a, b) => {
+      // Resale mode: the appraisal already encodes radio test, length, syllables,
+      // meaning and buyer breadth. The startup tier bonus rewards rare letters,
+      // which is exactly the wrong signal here, so it is excluded.
+      if (mode === 'resale') {
+        return (b._resale?.flipScore ?? b._combinedScore ?? 0) - (a._resale?.flipScore ?? a._combinedScore ?? 0);
+      }
       const scoreA = a.finalScore || a._combinedScore || 70;
       const scoreB = b.finalScore || b._combinedScore || 70;
       const tierA = getTierBonus(a.name);
@@ -1411,8 +1566,25 @@ async function go(skipAI = false) {
       const weightedA = (scoreA * 0.60) + (tierA * 30) + (pronA * 0.10);
       const weightedB = (scoreB * 0.60) + (tierB * 30) + (pronB * 0.10);
       return weightedB - weightedA;
-    }).slice(0, prov === 'gemini' ? 5 : 10);
-    
+    });
+    // Cap phonetic crowding: a shortlist of Aevdra/Aevaevo/Aroaev/Aersol reads as
+    // one idea repeated. Take best-first, allowing at most 2 per 3-letter prefix,
+    // then top up from the remainder if that leaves us short.
+    const wanted = prov === 'gemini' ? 5 : 10;
+    const prefixUse = {}, archUse = {};
+    // In resale mode also cap any single archetype at ~half the shortlist: the most
+    // registrable shape would otherwise crowd out every other kind of opportunity.
+    const archCap = Math.ceil(wanted / 2);
+    const spread = [], overflow = [];
+    for (const n of names) {
+      const pfx = String(n.name).toLowerCase().replace(/[^a-z]/g, '').slice(0, 3);
+      const arch = mode === 'resale' ? (n._resale?.archetype || 'coined') : null;
+      const prefixOk = (prefixUse[pfx] = (prefixUse[pfx] || 0) + 1) <= 2;
+      const archOk = !arch || (archUse[arch] = (archUse[arch] || 0) + 1) <= archCap;
+      if (prefixOk && archOk) spread.push(n); else overflow.push(n);
+    }
+    names = [...spread, ...overflow].slice(0, wanted);
+
     if (names.length === 0 && scored.length > 0) { names = scored.slice(0, 10); names.forEach(n => n.finalScore = 70); }
     if (names.length === 0) { names = candidates.slice(0, 10).map(n => ({...n, finalScore: 65, _rubricScore: 65, _availabilityScore: 70})); }
     
@@ -1477,7 +1649,8 @@ async function go(skipAI = false) {
     
     pt.textContent='Validating domains…';pp.textContent='96%';
     lastGeneratedNames=names.map(n=>({
-      ...n, _d:tlds.map(t=>n.name.toLowerCase().replace(/\s+/g,'')+t), _id:n.name.replace(/\s+/g,'-'),
+      // Strip to registrable characters so RDAP/DNS lookups and the chip ids stay valid.
+      ...n, _d:tlds.map(t=>String(n.name).toLowerCase().replace(/[^a-z0-9-]/g,'')+t), _id:String(n.name).replace(/\s+/g,'-'),
       _generated:new Date().toISOString(), _provider:prov, score:computeScores(n), _model:mdl
     }));
     clearInterval(tick);pf.style.width='100%';pp.textContent='100%';pt.textContent=`Found ${names.length} candidates`;
@@ -1507,6 +1680,44 @@ async function generateRawCandidates(industry,style,kw,targetCount=25,agent=null
   const topClusters=(intel.top_clusters||[]).slice(0,8).join(', ');
   const topSuffixes=(intel.top_suffixes||[]).slice(0,8).join(', ');
   const topPrefixes=(intel.top_prefixes||[]).slice(0,8).join(', ');
+  // Resale mode needs the opposite instructions to startup mode: real morphemes,
+  // radio-test spelling, no rare-letter bias. Without this an API key drags the
+  // shortlist straight back to sci-fi strings that the aftermarket discounts.
+  if ((document.getElementById('mode')?.value || 'resale') === 'resale') {
+    const resalePrompt=`Generate ${targetCount} BRANDABLE DOMAIN NAMES built to resell on the aftermarket (HugeDomains, BrandBucket, Squadhelp, Afternic). Loose industry context: "${industry}".
+
+WHAT SELLS — use these four shapes only:
+1. COMPOUND: two real English words joined. e.g. SwiftLane, BrightHarbor, ClearVault, NorthPeak, StoneLedger
+2. LATINATE: a Latin/Greek root plus a clean vowel ending. e.g. Lumina, Verita, Solara, Curana, Valora
+3. DICTIONARY: one evocative real English word. e.g. Beacon, Kindred, Lattice, Vantage, Crucible
+4. BLEND: two real words fused at a shared sound, still spellable. e.g. Bravado, Meritly, Kindlo
+
+HARD RULES:
+- THE RADIO TEST IS EVERYTHING: a buyer hears the name once and must spell it correctly. If spelling is ambiguous, discard it.
+- 5-11 characters, never 12 or more. Two syllables is ideal, three is fine.
+- NO invented sci-fi strings (Vorxel, Xeldra, Zyntra, Aevdra). These do not sell.
+- Avoid x, z and q unless the result is still obviously spellable.
+- No hyphens, no digits, no doubled letters, no silent-letter onsets.
+- Avoid saturated endings: -ify, -ly, -io, -zy, and trend-locked tails: -ai, -crypto, -nft, -meta, -web3.
+- Prefer names a buyer in SEVERAL industries could use — breadth raises the price.
+🔄 BATCH ${batchId} 🎲 SEED: ${randomSeed}${exclusionList}
+${kw?`Lean toward this theme where it does not hurt spellability: ${kw}`:''}
+Return ONLY a JSON array: [{"name":"BrightHarbor","reason":"compound, 2 syllables, spellable, broad buyer pool"}, ...] No markdown.`;
+    const resaleSys=`You are a domain investor who buys and resells brandable .com domains. You only propose names that clear the radio test and have a broad buyer pool. Return ONLY a valid JSON array.`;
+    try{
+      let r;
+      if(prov==='gemini')r=await callGemini(resaleSys,resalePrompt,()=>{});
+      else if(prov==='openai')r=await callOpenAI(resaleSys,resalePrompt,()=>{});
+      else if(prov==='groq')r=await callGroq(resaleSys,resalePrompt,()=>{});
+      else r=await callOpenRouter(resaleSys,resalePrompt,()=>{});
+      const clean=String(r||'').replace(/```json|```/g,'').trim();
+      let names=null;
+      try{names=JSON.parse(clean||'[]');}catch(e){const a=clean.indexOf('['),b=clean.lastIndexOf(']');if(a!==-1&&b!==-1)names=JSON.parse(clean.slice(a,b+1).replace(/,\s*}/g,'}').replace(/,\s*]/g,']'));}
+      if(!Array.isArray(names))return [];
+      return names.filter(n=>n?.name&&!recentNamesCache.has(String(n.name).toLowerCase()));
+    }catch(e){console.error('Resale generation error:',e);return [];}
+  }
+
   const prompt=`Generate ${targetCount} invented brandable startup names for "${industry}".
 REAL INDUSTRY DATA: Top consonant clusters: ${topClusters}, Top startup suffixes: ${topSuffixes}, Top startup prefixes: ${topPrefixes}
 🎯 STYLE EXAMPLES: ${exampleList}
@@ -1530,7 +1741,7 @@ Return ONLY a JSON array: [{"name":"Zylox","reason":"invented, short, tech-phone
     if(!Array.isArray(names)){return [];}
     const unique=[];const usedPrefixes={};
     for(const n of names){
-      if(recentNamesCache.has(n.name.toLowerCase())){continue;} if(!n?.name)continue;
+      if(!n?.name)continue; if(recentNamesCache.has(String(n.name).toLowerCase()))continue;
       const dup=unique.some(u=>isNearDuplicate(u.name,n.name));
       if(!dup){ const prefix=n.name.toLowerCase().slice(0,3); usedPrefixes[prefix]=(usedPrefixes[prefix]||0)+1; if(usedPrefixes[prefix]<=2){unique.push(n);} }
     }
@@ -1561,24 +1772,99 @@ function computeScores(nameObj){
 
 // ── Render Results ─────────────────────────────────────────────────
 function renderCards(names,tlds){
-  const sorted=[...names].sort((a,b)=>Object.values(b.score||{}).reduce((x,y)=>x+y,0)-Object.values(a.score||{}).reduce((x,y)=>x+y,0));
+  const resaleMode=(document.getElementById('mode')?.value||'resale')==='resale';
+  // Keep the pipeline's ranking (availability + rubric + tier + pronounceability);
+  // the legacy score sum is only a tiebreak for names the pipeline scored equally.
+  // In resale mode order by the flip score the card badge shows, so the grid
+  // never displays a 71 above a 72.
+  const rank=n=>(resaleMode&&n._resale)?n._resale.flipScore
+    :(n.finalScore??n._combinedScore??Object.values(n.score||{}).reduce((x,y)=>x+y,0)/4);
+  const sorted=[...names].sort((a,b)=>rank(b)-rank(a));
   const pats=[...new Set(names.map(n=>n.naming_pattern))].filter(Boolean),prov_label=PROVS[prov].models.find(m=>m.id===mdl)?.l||mdl;
-  
-  let h=`<div class="rhdr"><div class="rtitle">Brand name candidates</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div><div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" onclick="filt('${p}',this)">${p}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><button class="fpill" onclick="filtLang('${language}',this)">${LANG_LABELS[language]}</button></div><div class="cgrid">`;
+
+  // The caveat must appear wherever prices appear — appraisal blocks also render
+  // in startup mode, where they flag that an invented name has thin resale value.
+  const showsPrices = names.some(n => n._resale);
+  const appraisalNote = showsPrices ? `<div class="rnote">Figures are modelled <strong>asking</strong> ranges for comparable brandables, not observed sale prices or an appraisal. Registration odds are archetype heuristics — the domain chips below are the live check. Verify at a registrar before buying.</div>` : '';
+
+  let h=`<div class="rhdr"><div class="rtitle">${resaleMode?'Resale candidates':'Brand name candidates'}</div><div class="rsub">${names.length} names · ${prov_label} · domains checking…</div></div>${appraisalNote}<div class="frow"><button class="fpill on" onclick="filt('all',this)">All (${names.length})</button>${pats.map(p=>`<button class="fpill" data-k="${escapeHtml(p)}" onclick="filt(this.dataset.k,this)">${escapeHtml(p)}</button>`).join('')}<button class="fpill" onclick="filt('available',this)">✅ Available domains</button><span class="fpill" style="cursor:default;opacity:.7" title="Output language preference for this run">${LANG_LABELS[language]}</span></div><div class="cgrid">`;
   
   sorted.forEach((n,i)=>{
     const c=n.colors?.[0]||'#c8f04a';
     const sc=SC_K.map((k,ki)=>`<div><div class="slbl">${SC_L[ki]}</div><div class="snum" style="color:${SC_C[ki]}">${n.score?.[k]??'—'}</div><div class="sbar"><div class="sfill" style="width:${n.score?.[k]||0}%;background:${SC_C[ki]}"></div></div></div>`).join('');
     const availScore=n._availabilityScore||calculateAvailabilityScore(n.name,tlds[0]),availColor=availScore>=80?'var(--lime)':availScore>=60?'var(--amber)':'var(--rose)',availLabel=availScore>=80?'Likely available':availScore>=60?'Possible':'Competitive';
     const availIndicator=`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${availColor}"></span><span style="color:var(--muted2)">${availLabel} <span style="color:${availColor}">(${availScore})</span></span></div>`;
+    const r=n._resale;
+    const resaleBlock = r ? (()=>{
+      const c = r.score>=80?'var(--lime)':r.score>=70?'var(--teal)':r.score>=60?'var(--amber)':'var(--rose)';
+      const money = `$${r.priceBand.low.toLocaleString()}–$${r.priceBand.high.toLocaleString()}`;
+      const fc = r.flipScore>=62?'var(--lime)':r.flipScore>=45?'var(--teal)':r.flipScore>=28?'var(--amber)':'var(--rose)';
+      const bits = [r.archetypeLabel, `${r.syllables} syl`, `${r.length} chars`, `radio ${r.radio.score}`];
+      if (r.breadth.industries.length) bits.push(`${r.breadth.industries.length} vertical${r.breadth.industries.length===1?'':'s'}`);
+      return `<div class="resale">
+        <div class="resale-top">
+          <span class="resale-lbl">Est. aftermarket ask</span>
+          <span class="resale-score" style="color:${c}">${r.score}</span>
+        </div>
+        <div class="resale-price" style="color:${c}">${money}</div>
+        <div class="resale-band">${escapeHtml(r.priceBand.label)} · ${escapeHtml(r.priceBand.venue)}</div>
+        <div class="resale-flip">
+          <span class="resale-flip-tag" style="color:${fc};border-color:${fc}55">${escapeHtml(r.flipBand.label)} ${r.flipScore}</span>
+          <span class="resale-odds">~${r.handRegOdds}% odds the .com is free</span>
+        </div>
+        <div class="resale-route">${escapeHtml(r.route)}</div>
+        <div class="resale-bits">${bits.map(b=>`<span>${escapeHtml(b)}</span>`).join('')}</div>
+        ${r.breadth.industries.length?`<div class="resale-inds">${r.breadth.industries.slice(0,3).map(i=>escapeHtml(i)).join(' · ')}</div>`:''}
+        ${r.killers.length?`<div class="resale-warn">⚠ ${escapeHtml(r.killers[0])}</div>`:''}
+      </div>`;
+    })() : '';
     const dc=(n._d||[]).map(d=>`<span class="dchip ck" id="dc-${d.replace(/[.]/g,'-')}" title="Checking…">${d} <span>⏳</span></span>`).join('');
     const meta=JSON.stringify({language_suitability:n.language_suitability||['en']}).replace(/"/g,'&quot;');
     
-    h+=`<div class="card ${i===0?'win':''}" data-pat="${n.naming_pattern}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${n.name}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags"><span class="tag tp">${n.naming_pattern||''}</span><span class="tag tv">${escapeHtml(n.vc_signal||'')}</span></div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${n.avoid_reason}</div>`:''}</div>`;
+    h+=`<div class="card ${i===0?'win':''}" data-pat="${escapeHtml(n.naming_pattern||'')}" data-meta='${meta}' style="animation-delay:${i*50}ms"><div class="cbar" style="background:${c}22;border-left:3px solid ${c}55"></div><div class="cname">${escapeHtml(n.name||'')}</div><div class="cline">${escapeHtml(n.tagline||'')}</div><div class="ctags">${n.naming_pattern?`<span class="tag tp">${escapeHtml(n.naming_pattern)}</span>`:''}${n.vc_signal?`<span class="tag tv">${escapeHtml(n.vc_signal)}</span>`:''}</div><div class="cwhy">${escapeHtml(n.why_it_works||'')}</div><div class="scores">${sc}</div>${resaleBlock}${availIndicator}<div class="drow">${dc}</div>${n.avoid_reason?`<div class="caution">⚠ ${escapeHtml(n.avoid_reason)}</div>`:''}</div>`;
   });
   h+='</div>';
   document.getElementById('results').innerHTML=h;
-  names.forEach(n=>n._d.forEach(d=>chkDom(d)));
+  runDomainChecks(names.flatMap(n=>n._d||[]));
+}
+
+// RDAP/DNS providers rate-limit bursts, so walk the list with a small worker pool.
+async function runDomainChecks(domains,concurrency=4){
+  const queue=[...new Set(domains)];
+  const total=queue.length;
+  const worker=async()=>{while(queue.length){const d=queue.shift();if(d)await chkDom(d);}};
+  await Promise.all(Array.from({length:Math.min(concurrency,total)},worker));
+
+  // One automatic retry for anything that failed — most misses are transient
+  // rate-limiting, and a second pass after the burst usually resolves them.
+  // :not(.nc) — a TLD with no reachable RDAP service will never resolve on retry.
+  const failed=[...document.querySelectorAll('.dchip.un:not(.nc)')].map(el=>el.id.replace(/^dc-/,''))
+    .map(id=>queueIdToDomain(id)).filter(Boolean);
+  if(failed.length){
+    await new Promise(r=>setTimeout(r,1200));
+    for(const d of failed){await chkDom(d);}
+  }
+
+  const sub=document.querySelector('.rsub');
+  if(sub){
+    const avail=document.querySelectorAll('.dchip.av').length;
+    const unknown=document.querySelectorAll('.dchip.un:not(.nc)').length;
+    sub.textContent=sub.textContent.replace('domains checking…',
+      `${avail} available${unknown?` · ${unknown} lookup${unknown===1?'':'s'} failed`:''}`);
+  }
+}
+
+// Chip ids replace dots with dashes; recover the domain from the rendered list.
+function queueIdToDomain(id){
+  const known=(lastGeneratedNames||[]).flatMap(n=>n._d||[]);
+  return known.find(d=>d.replace(/[.]/g,'-')===id)||null;
+}
+
+async function retryDom(d){
+  delete domC[d];
+  const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
+  if(el){el.className='dchip ck';el.innerHTML=`${d} <span>⏳</span>`;}
+  await chkDom(d);
 }
 
 // ── Filtering ──────────────────────────────────────────────────────
@@ -1594,28 +1880,119 @@ function filt(k,btn){
     c.style.display = s ? '' : 'none';
   });
 }
-function filtLang(lang,btn){
-  document.querySelectorAll('.fpill[onclick*="filtLang"]').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.card').forEach(c=>{c.style.display='';});
-}
 
 // ── Domain Check ───────────────────────────────────────────────────
+const DOMAIN_TIMEOUT_MS=7000;
+
+// DNS-over-HTTPS. Cloudflare first, Google as fallback — a single resolver
+// rate-limiting was a large share of the "unknown" results.
+// -> 'nxdomain' (no such name) | 'resolves' (has NS) | 'nodata' | 'unknown'
+const DNS_TIMEOUT_MS=3500;   // DNS answers fast; a slow one is a blocked one
+let dnsStrikes=0,dnsDisabled=false;
+
+async function dnsProbe(d){
+  // Corporate networks and ad blockers commonly block DoH. Once it is clearly
+  // unavailable, stop paying the timeout on every remaining domain.
+  if(dnsDisabled)return 'unknown';
+  const resolvers=[
+    `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=NS`,
+    `https://dns.google/resolve?name=${encodeURIComponent(d)}&type=NS`
+  ];
+  for(const url of resolvers){
+    try{
+      const res=await fetch(url,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(DNS_TIMEOUT_MS)});
+      if(!res.ok)continue;
+      const j=await res.json();
+      dnsStrikes=0;
+      if(j.Status===3)return 'nxdomain';
+      if(j.Answer?.length>0)return 'resolves';
+      if(j.Status===0)return 'nodata';
+      return 'unknown';
+    }catch(e){}
+  }
+  if(++dnsStrikes>=3){dnsDisabled=true;console.info('autoDNG: DNS-over-HTTPS unreachable — relying on RDAP alone.');}
+  return 'unknown';
+}
+
+// ccTLDs that IANA's RDAP bootstrap does not list but which do run RDAP.
+// Without these, rdap.org answers 404 for REGISTERED names (elevenlabs.io,
+// vercel.co both 404) — indistinguishable from available, i.e. a false positive.
+const RDAP_FALLBACKS={ io:'https://rdap.identitydigital.services/rdap/' };
+let rdapBootstrap=null;
+
+// The authoritative TLD -> RDAP-server map, cached for a week. Using it directly
+// avoids rdap.org's redirect hop, whose target does not always send CORS headers.
+async function loadRdapBootstrap(){
+  if(rdapBootstrap)return rdapBootstrap;
+  try{
+    const c=JSON.parse(localStorage.getItem('dng_rdap_map')||'null');
+    if(c&&c.m&&Date.now()-c.t<7*864e5){rdapBootstrap=c.m;return rdapBootstrap;}
+  }catch(e){}
+  const map={};
+  try{
+    const r=await fetch('https://data.iana.org/rdap/dns.json',{signal:AbortSignal.timeout(DOMAIN_TIMEOUT_MS)});
+    if(r.ok){const j=await r.json();for(const [tlds,urls] of (j.services||[])){for(const t of tlds)if(urls&&urls[0])map[t]=urls[0];}}
+  }catch(e){}
+  Object.assign(map,RDAP_FALLBACKS);
+  rdapBootstrap=map;
+  try{localStorage.setItem('dng_rdap_map',JSON.stringify({t:Date.now(),m:map}));}catch(e){}
+  return map;
+}
+
+// -> 'taken' | 'free' | 'unsupported' (no RDAP server for this TLD) | 'unknown'
+async function rdapProbe(d){
+  const tld=d.split('.').pop().toLowerCase();
+  const map=await loadRdapBootstrap();
+  const base=map[tld];
+  // No known server: a 404 from a generic endpoint would prove nothing, so do
+  // not guess. 'unsupported' keeps us from inventing availability.
+  if(!base)return 'unsupported';
+  const url=base.replace(/\/+$/,'')+'/domain/'+encodeURIComponent(d);
+  for(let attempt=0;attempt<2;attempt++){
+    try{
+      const res=await fetch(url,{mode:'cors',credentials:'omit',signal:AbortSignal.timeout(DOMAIN_TIMEOUT_MS)});
+      if(res.status===200)return 'taken';
+      if(res.status===404)return 'free';
+      if(res.status===429||res.status>=500){await new Promise(r=>setTimeout(r,600));continue;}
+      return 'unknown';
+    }catch(e){ if(attempt===0)await new Promise(r=>setTimeout(r,400)); }
+  }
+  return 'unknown';
+}
+
 async function chkDom(d){
-  if(domC[d]){applyDom(d,domC[d]);return;}
-  if(location.search.includes('dev=1')||location.hostname==='localhost'){domC[d]='unknown';applyDom(d,'unknown');return'unknown';}
+  if(domC[d]){applyDom(d,domC[d]);return domC[d];}
+  // Previously this bailed out on localhost, so availability never worked while
+  // testing locally — every chip showed "unknown". Live lookups are now the
+  // default everywhere; pass ?dev=1 to explicitly opt out.
+  if(location.search.includes('dev=1')){applyDom(d,'unknown');return'unknown';}
+
+  // Probe both in parallel; neither should gate the other. Many networks and
+  // ad blockers block DNS-over-HTTPS entirely, so DNS must never be required.
+  const [rdap,dns]=await Promise.all([rdapProbe(d),dnsProbe(d)]);
+
   let r='unknown';
-  try{const res=await fetch(`https://rdap.org/domain/${d}`,{mode:'cors',signal:AbortSignal.timeout(4000),credentials:'omit'});if(res.status===404)r='available';else if(res.status===200)r='taken';}catch(e){}
-  if(r==='unknown')try{const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${d}&type=NS`,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(3000)});if(res.ok){const j=await res.json();r=j.Status===3?'available':(j.Answer?.length>0?'taken':'unknown');}}catch(e){}
-  domC[d]=r;applyDom(d,r);return r;
+  if(rdap==='taken'||dns==='resolves')            r='taken';      // either proves registration
+  else if(rdap==='free')                          r='available';  // authoritative registry 404 = definitive
+  else if(rdap==='unsupported'&&dns==='nxdomain') r='likely';     // DNS-only evidence, no RDAP server
+  else if(rdap==='unsupported')                   r='nocheck';    // e.g. .co — no CORS-reachable RDAP
+  // Reporting availability off a generic endpoint's 404 is how .io/.co produced
+  // false positives, so an unsupported TLD never yields an availability claim.
+
+  // Never cache a failure: leave it retryable rather than sticky.
+  if(r!=='unknown')domC[d]=r;
+  applyDom(d,r);
+  return r;
 }
 function applyDom(d,r){
   const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
   if(!el)return;
   const registerUrl=`https://www.namecheap.com/domains/registration/results/?domain=${d}`,aftermarketUrl=`https://${d}`;
-  if(r==='available'){el.className='dchip av';el.title='Available — register now!';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
+  if(r==='available'){el.className='dchip av';el.title='Available — RDAP and DNS agree it is unregistered';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ✅</a>`;}
+  else if(r==='likely'){el.className='dchip av lk';el.title='Likely available — only one of RDAP/DNS answered. Confirm at the registrar.';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ~</a>`;}
   else if(r==='taken'){el.className='dchip tk';el.title='Registered — check aftermarket';el.innerHTML=`<a href="${aftermarketUrl}" target="_blank" rel="noopener">${d} 🔍</a>`;}
-  else{el.className='dchip un';el.title='Status unknown — verify manually';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener" title="Check availability">${d} ❓</a>`;}
+  else if(r==='nocheck'){el.className='dchip un nc';el.title='This registry publishes no browser-reachable RDAP service, so availability cannot be verified here. Check at the registrar.';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d} ↗</a>`;}
+  else{el.className='dchip un';el.title='Lookup failed — click to retry, or check at the registrar';el.innerHTML=`<a href="${registerUrl}" target="_blank" rel="noopener">${d}</a> <button class="dretry" onclick="retryDom('${d}')" title="Retry lookup">↻</button>`;}
   if(pill==='available'){
     const card=el.closest('.card');
     if(card){const hasAvailable=card.querySelectorAll('.dchip.av').length>0;card.style.display=hasAvailable?'':'none';}

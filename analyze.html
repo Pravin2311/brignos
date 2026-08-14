@@ -4,12 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Domain Analyzer | autoDNG</title>
+<!-- autodng:meta:start -->
+<link rel="canonical" href="https://autodng.com/analyze.html">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="autoDNG">
+<meta property="og:title" content="Domain Analyzer — Phonetics, Structure &amp; Risk — autoDNG">
+<meta property="og:description" content="Break down any domain: syllable structure, pronounceability, brandability, and trademark risk signals.">
+<meta property="og:url" content="https://autodng.com/analyze.html">
+<meta property="og:image" content="https://autodng.com/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Domain Analyzer — Phonetics, Structure &amp; Risk — autoDNG">
+<meta name="twitter:description" content="Break down any domain: syllable structure, pronounceability, brandability, and trademark risk signals.">
+<meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
+<!-- autodng:meta:end -->
+
 <meta name="description" content="Validate any domain using startup-branding intelligence, sales patterns, and market fit analysis.">
-<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap)" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng.css?v=6">
 <style>
 :root{
   --bg:#09090b;--bg2:#111115;--panel:#141419;--border:#23232b;
@@ -118,9 +136,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
 }
 
 .search-box input{
-  width:100% !important;
-  min-width:100% !important;
-  flex:none !important;
+  /* Was width:100% + min-width:100% + flex:none, so the input could not shrink
+     to share .api-key-wrap with the icon and ran 2px past the viewport.
+     Letting it flex with min-width:0 is what actually fits. */
+  min-width:0 !important;
+  max-width:100%;
+  flex:1 1 auto !important;
   font-size:16px;
 }
 
@@ -157,122 +178,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
 }
 }
 /* ===== FOOTER ===== */
-
-.site-footer{
-  margin-top:60px;
-  background:#111115;
-  border-top:1px solid var(--border);
-}
-
-.footer-inner{
-  max-width:1280px;
-  margin:auto;
-  padding:50px 20px;
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:40px;
-}
-
-.footer-brand h3{
-  font-family:var(--serif);
-  font-size:32px;
-  font-weight:400;
-  margin-bottom:12px;
-}
-
-.footer-brand em{
-  color:var(--lime);
-}
-
-.footer-brand p{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.8;
-}
-
-.footer-col h4{
-  color:var(--lime);
-  margin-bottom:14px;
-  font-size:14px;
-}
-
-.footer-col ul{
-  list-style:none;
-}
-
-.footer-col li{
-  margin-bottom:8px;
-}
-
-.footer-col a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-}
-
-.footer-col a:hover{
-  color:var(--lime);
-}
-
-.footer-socials{
-  margin-top:16px;
-  display:flex;
-  gap:10px;
-}
-
-.footer-socials a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:18px;
-}
-
-.footer-socials a:hover{
-  color:var(--lime);
-}
-
-.footer-bottom{
-  border-top:1px solid var(--border);
-  padding:16px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.footer-bottom p{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.footer-bottom-links{
-  display:flex;
-  gap:14px;
-}
-
-.footer-bottom-links a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:13px;
-}
-
-.footer-bottom-links a:hover{
-  color:var(--lime);
-}
-
-@media(max-width:768px){
-
-  .footer-inner{
-    grid-template-columns:1fr;
-    gap:24px;
-  }
-
-  .footer-bottom{
-    flex-direction:column;
-    text-align:center;
-  }
-
-}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -444,8 +349,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
 <!-- ══ SEO FOOTER ══ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    
-    <!-- Brand Column -->
     <div class="footer-brand">
       <h3>auto<em>DNG</em></h3>
       <p>The world's most advanced AI brand name generator and domain valuation engine. Powered by 18-signal quality gates, VC naming DNA, and live RDAP domain checks.</p>
@@ -456,8 +359,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
         <a href="mailto:support@teachings.ai" aria-label="Email Support">✉</a>
       </div>
     </div>
-
-    <!-- Tools Column (Crucial for SEO Internal Linking) -->
     <nav class="footer-col" aria-label="Core Tools">
       <h4>Tools</h4>
       <ul>
@@ -467,22 +368,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
         <li><a href="trademarks.html">Trademark Checker</a></li>
       </ul>
     </nav>
-
-    <!-- Analytics Column -->
     <nav class="footer-col" aria-label="Analytics Tools">
       <h4>Analytics</h4>
       <ul>
         <li><a href="vc-score.html">VC Brand Score</a></li>
         <li><a href="handles.html">Social Handle Checker</a></li>
-        <li><a href="index.html?page=tools">Phonetics Analyzer</a></li>
-        <li><a href="index.html?page=tools">Bulk Name Analyzer</a></li>
+        <li><a href="analyze.html">Domain Analyzer</a></li>
+        <li><a href="autodng-domain-intelligence.html">Domain Intelligence</a></li>
       </ul>
     </nav>
-
-    
+    <nav class="footer-col" aria-label="Services">
+      <h4>More</h4>
+      <ul>
+        <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+      </ul>
+    </nav>
   </div>
-
-  
+  <div class="footer-bottom">
+    <p>© 2026 autoDNG. All rights reserved. Built for founders, domainers, and brand strategists.</p>
+    <div class="footer-bottom-links">
+      <a href="sitemap.xml">Sitemap</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
   </div>
 </footer>
 <script>
@@ -1317,7 +1226,7 @@ document.getElementById('registerLink').href =
   document.getElementById('trademarkRisk').innerHTML = `
     <div class="signal-row"><span class="signal-label">Risk Level</span><span class="signal-value" style="color:${trademark.color}">${trademark.risk}</span></div>
     <div style="margin-top:10px;padding:10px;border-radius:10px;background:#1a1a21;font-size:13px;color:var(--muted)">${trademark.message}</div>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted)">Always verify via <a href="[uspto.gov](https://www.uspto.gov/trademarks/search)" target="_blank" style="color:var(--teal)">USPTO TESS</a> and <a href="[euipo.europa.eu](https://euipo.europa.eu/eSearch/)" target="_blank" style="color:var(--teal)">EUIPO</a> before acquiring.</div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted)">Always verify via <a href="https://www.uspto.gov/trademarks/search" target="_blank" style="color:var(--teal)">USPTO TESS</a> and <a href="https://euipo.europa.eu/eSearch/" target="_blank" style="color:var(--teal)">EUIPO</a> before acquiring.</div>
   `;
 
   // ── Sales Patterns ────────────────────────────────────────────
@@ -1328,7 +1237,7 @@ document.getElementById('registerLink').href =
 
   // ── Similar Domains ───────────────────────────────────────────
   document.getElementById('similarDomains').innerHTML = similar.map(d =>
-    `<span class="tag">${d}<a href="[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)})" target="_blank" rel="noopener" title="Check availability">🔍</a></span>`
+    `<span class="tag">${d}<a href="https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)}" target="_blank" rel="noopener" title="Check availability">🔍</a></span>`
   ).join('');
 
   // ── Final Verdict ─────────────────────────────────────────────
@@ -1370,7 +1279,7 @@ function generateMoreSimilar() {
   if(!lastResult) return;
   const more = generateAlternatives(lastResult.name);
   document.getElementById('similarDomains').innerHTML = more.map(d =>
-    `<span class="tag">${d}<a href="[namecheap.com](https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)})" target="_blank" rel="noopener">🔍</a></span>`
+    `<span class="tag">${d}<a href="https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(d)}" target="_blank" rel="noopener">🔍</a></span>`
   ).join('');
 }
 

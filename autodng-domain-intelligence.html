@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>autoDNG — Domain Intelligence Platform · Should you build a company on this domain?</title>
+<!-- autodng:meta:start -->
+<link rel="canonical" href="https://autodng.com/autodng-domain-intelligence.html">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="autoDNG">
+<meta property="og:title" content="Domain Intelligence — Should You Build On This Domain? — autoDNG">
+<meta property="og:description" content="A full intelligence read on any domain: history, risk, brand fit, and whether it is worth building a company on.">
+<meta property="og:url" content="https://autodng.com/autodng-domain-intelligence.html">
+<meta property="og:image" content="https://autodng.com/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Domain Intelligence — Should You Build On This Domain? — autoDNG">
+<meta name="twitter:description" content="A full intelligence read on any domain: history, risk, brand fit, and whether it is worth building a company on.">
+<meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
+<!-- autodng:meta:end -->
 <meta name="description" content="The Bloomberg Terminal for domain decisions. 15 intelligence categories, 60+ live signals: brand, DNS, email, security, history, archive, trademark, startup, AI readiness, investor value. BUY / HOLD / AVOID verdicts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -11,6 +27,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng.css?v=6">
 <style>
 :root{
 --bg:#09090b;--bg2:#101013;--bg3:#17171c;--bg4:#1e1e25;
@@ -146,6 +163,14 @@ footer{border-top:1px solid var(--border);padding:26px 0 40px;font-family:var(--
 .err-box{display:none;margin-top:20px;background:var(--rose-dim);border:1px solid rgba(240,80,106,.35);color:var(--rose);border-radius:12px;padding:15px 19px;font-size:14px}
 @media(max-width:880px){.verdict-band{grid-template-columns:1fr;text-align:center}.verdict-mid .verdict-summary{margin-inline:auto}.flag-counts{justify-content:center}.bar-r{grid-template-columns:120px 1fr 36px}}
 @media print{header,.search-shell,.search-hints,.engine-note,.hero-sub,.export-row,.hint-chip{display:none!important}body{background:#fff;color:#111}.sec-body{display:block!important}.sec,.verdict-band,.ss-item,.sig,.test-card{background:#fff;border-color:#ddd}.sig-l,.bar-l,.test-note,.reason,.flag{color:#333}}
+/* Mobile: header nav sat at 17px tall inside a fixed 60px bar, and the footer
+   link rows were 17px — both well under the 44px touch minimum. */
+@media(max-width:768px){
+  .hbar{height:auto;flex-wrap:wrap;padding:8px 0;gap:10px}
+  .hbar a{min-height:44px;display:inline-flex;align-items:center}
+  footer a{min-height:44px;display:inline-flex;align-items:center}
+  footer .wrap>div{gap:6px 14px}
+}
 </style>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -225,9 +250,28 @@ footer{border-top:1px solid var(--border);padding:26px 0 40px;font-family:var(--
 <div id="sections"></div>
 </section>
 </main>
-<footer><div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:0">
-<span>autoDNG Domain Intelligence Platform · 15 categories · 60+ signals · 2026</span>
-<span>Live data: dns.google · rdap.org · archive.org — security &amp; trademark verification via official registries</span>
+<footer><div class="wrap" style="display:flex;flex-direction:column;gap:14px;padding:0">
+  <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <span>autoDNG Domain Intelligence Platform · 15 categories · 60+ signals · 2026</span>
+    <span>Live data: dns.google · rdap.org · archive.org — security &amp; trademark verification via official registries</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid var(--border);padding-top:14px">
+    <span style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="index.html" style="color:inherit;text-decoration:none">Name Generator</a>
+      <a href="domains.html" style="color:inherit;text-decoration:none">Domains</a>
+      <a href="valuation.html" style="color:inherit;text-decoration:none">Valuation</a>
+      <a href="trademarks.html" style="color:inherit;text-decoration:none">Trademarks</a>
+      <a href="vc-score.html" style="color:inherit;text-decoration:none">VC Score</a>
+      <a href="handles.html" style="color:inherit;text-decoration:none">Handles</a>
+      <a href="analyze.html" style="color:inherit;text-decoration:none">Analyzer</a>
+      <a href="blog/index.html" style="color:inherit;text-decoration:none">Blog</a>
+    </span>
+    <span class="footer-bottom-links" style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="sitemap.xml" style="color:inherit;text-decoration:none">Sitemap</a>
+      <a href="privacy.html" style="color:inherit;text-decoration:none">Privacy</a>
+      <a href="terms.html" style="color:inherit;text-decoration:none">Terms</a>
+    </span>
+  </div>
 </div></footer>
 <script>
 // ═══════════════════════ LINGUISTIC CORE ═══════════════════════

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — autoDNG</title>
+<meta name="robots" content="noindex,follow">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="shortcut icon" href="/img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng.css?v=6">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#09090b;--bg2:#111115;--bg3:#18181e;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+--text:#ededee;--muted:#6b6b72;--muted2:#9898a2;--lime:#c8f04a;
+--font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px}
+main{position:relative;z-index:1;flex:1;max-width:860px;margin:0 auto;padding:80px 24px 60px;width:100%}
+.code{font-family:var(--mono);font-size:12px;color:var(--lime);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(34px,6vw,56px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:14px}
+h1 em{font-style:italic;color:var(--lime)}
+.lead{font-size:16px;color:var(--muted2);line-height:1.75;max-width:560px;margin-bottom:38px}
+.lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:34px}
+.card{display:block;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;transition:border-color .18s,transform .18s}
+.card:hover{border-color:var(--lime);transform:translateY(-2px)}
+.card h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px}
+.card p{font-size:12.5px;color:var(--muted);line-height:1.55}
+.home{display:inline-block;background:var(--lime);color:#09090b;font-weight:600;font-size:14px;padding:12px 22px;border-radius:9px;text-decoration:none}
+.home:hover{opacity:.9}
+footer{position:relative;z-index:1;border-top:1px solid var(--border)}
+.finner{max-width:860px;margin:0 auto;padding:22px 24px;font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.finner a{color:var(--muted);text-decoration:none}.finner a:hover{color:var(--lime)}
+</style>
+</head>
+<body>
+<main>
+  <div class="code">Error 404</div>
+  <h1>That page has <em>no name</em>.</h1>
+  <p class="lead">The URL you followed doesn't exist here — but everything autoDNG does is one click away below.</p>
+
+  <div class="lbl">Jump to a tool</div>
+  <div class="grid">
+    <a class="card" href="/index.html"><h3>AI Name Generator →</h3><p>Generate brandable startup names with live domain checks.</p></a>
+    <a class="card" href="/domains.html"><h3>Premium Domains →</h3><p>Browse curated brandable domains for sale.</p></a>
+    <a class="card" href="/valuation.html"><h3>Domain Valuation →</h3><p>Estimate what a brand name or domain is worth.</p></a>
+    <a class="card" href="/analyze.html"><h3>Domain Analyzer →</h3><p>Break down the phonetics and structure of any domain.</p></a>
+    <a class="card" href="/trademarks.html"><h3>Trademark Risk →</h3><p>Screen a name for obvious conflict signals.</p></a>
+    <a class="card" href="/vc-score.html"><h3>VC Brand Score →</h3><p>Rate a name against venture-backed naming patterns.</p></a>
+    <a class="card" href="/handles.html"><h3>Social Handles →</h3><p>Check handle availability across platforms.</p></a>
+    <a class="card" href="/blog/index.html"><h3>Blog →</h3><p>Guides on naming, domains, and branding.</p></a>
+  </div>
+
+  <a class="home" href="/index.html">Start naming →</a>
+</main>
+
+<footer><div class="finner">
+  <span>© 2026 autoDNG</span>
+  <span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="mailto:support@teachings.ai">Contact</a></span>
+</div></footer>
+</body>
+</html>

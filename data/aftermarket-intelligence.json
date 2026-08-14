@@ -1,0 +1,199 @@
+{
+  "_README": "Resale-oriented naming model. Optimises for what actually clears in the brandable aftermarket (HugeDomains / BrandBucket / Squadhelp / Atom) rather than for hand-registration availability. Price bands are HEURISTIC MODELS of public marketplace ASKING ranges, not observed sale comps.",
+  "version": "1.1",
+
+  "max_length": 11,
+  "_max_length_note": "Hard cap on generated names. 12+ characters reads long in the brandable market and hurts recall; 86% of the compound bank fits under this, and the latinate/dictionary banks always do.",
+
+
+  "principles": [
+    "Radio test dominates: a buyer must spell it correctly after hearing it once.",
+    "Real morphemes beat invented phonetics — meaning widens the buyer pool.",
+    "Two syllables and 5-9 characters is the premium band.",
+    "Breadth of plausible buyer industries is a price multiplier.",
+    "x/z/q-heavy invented strings read as dated and sell thin."
+  ],
+
+  "archetypes": {
+    "compound": {
+      "weight": 0.52,
+      "label": "Compound",
+      "note": "Two real English words. The dominant HugeDomains inventory shape.",
+      "value_ceiling": 92,
+      "value_floor": 68,
+      "hand_reg_odds": 34,
+      "route": "Often still hand-registrable — the core reseller play",
+      "resale_ceiling": 95
+    },
+    "latinate": {
+      "weight": 0.31,
+      "label": "Latinate",
+      "note": "Latin/Greek root plus a clean vowel ending. The BrandBucket shape.",
+      "value_ceiling": 86,
+      "value_floor": 62,
+      "hand_reg_odds": 62,
+      "route": "Usually available to register — coined but meaningful",
+      "resale_ceiling": 92
+    },
+    "dictionary": {
+      "weight": 0.14,
+      "label": "Dictionary",
+      "note": "A single evocative real word. Highest value, effectively zero .com availability.",
+      "value_ceiling": 100,
+      "value_floor": 84,
+      "hand_reg_odds": 3,
+      "route": "The .com is long gone — aftermarket purchase or alternate TLD only",
+      "resale_ceiling": 100
+    },
+    "coined": {
+      "weight": 0,
+      "generate": false,
+      "label": "Coined",
+      "note": "Classification bucket for model output that matches no resale archetype. Not generated locally — word-plus-nonsense-tail names (Anchordo, Summitno) read as typos and do not clear.",
+      "value_ceiling": 72,
+      "value_floor": 44,
+      "hand_reg_odds": 80,
+      "route": "Likely free to register, but thin resale demand",
+      "resale_ceiling": 80
+    }
+  },
+
+  "acquisition_note": "Resellers profit on the SPREAD between acquisition cost and sale price. A $12k name you cannot buy is worth nothing; a $2k name you register for $10 is the trade. Flip score = brand value discounted by how obtainable the .com actually is.",
+
+  "modifiers": [
+    "swift", "bright", "clear", "true", "prime", "north", "bold", "sharp",
+    "solid", "open", "wide", "high", "deep", "pure", "fair", "grand",
+    "iron", "silver", "blue", "amber", "quick", "steady", "keen", "brave",
+    "first", "vital", "noble", "quiet", "golden", "silent", "royal", "crisp"
+  ],
+
+  "nouns": [
+    "lane", "path", "harbor", "peak", "ridge", "vault", "forge", "bridge",
+    "gate", "field", "stone", "river", "craft", "works", "point", "grove",
+    "haven", "trail", "yard", "anchor", "beacon", "compass", "summit", "arbor",
+    "creek", "bay", "cove", "spring", "hollow", "meadow", "orchard", "quarry",
+    "ledger", "atlas", "mantle", "keystone", "lantern", "signal", "current", "canvas"
+  ],
+
+  "latin_roots": [
+    { "term": "lumin", "gloss": "light", "weight": 1.2 },
+    { "term": "clar", "gloss": "clear", "weight": 1.1 },
+    { "term": "ver", "gloss": "truth", "weight": 1.2 },
+    { "term": "viv", "gloss": "life", "weight": 1.0 },
+    { "term": "nov", "gloss": "new", "weight": 0.8 },
+    { "term": "sol", "gloss": "sun", "weight": 1.1 },
+    { "term": "terr", "gloss": "earth", "weight": 1.0 },
+    { "term": "aqua", "gloss": "water", "weight": 0.9 },
+    { "term": "vit", "gloss": "life", "weight": 1.0 },
+    { "term": "cred", "gloss": "trust", "weight": 1.2 },
+    { "term": "fort", "gloss": "strong", "weight": 1.1 },
+    { "term": "mont", "gloss": "mountain", "weight": 1.0 },
+    { "term": "cura", "gloss": "care", "weight": 1.1 },
+    { "term": "val", "gloss": "worth", "weight": 1.1 },
+    { "term": "alt", "gloss": "high", "weight": 1.0 },
+    { "term": "celer", "gloss": "swift", "weight": 0.9 },
+    { "term": "san", "gloss": "heal", "weight": 1.0 },
+    { "term": "mer", "gloss": "sea", "weight": 1.0 },
+    { "term": "port", "gloss": "carry", "weight": 1.0 },
+    { "term": "firm", "gloss": "steady", "weight": 1.1 },
+    { "term": "grand", "gloss": "great", "weight": 0.9 },
+    { "term": "ampl", "gloss": "wide", "weight": 0.9 },
+    { "term": "cent", "gloss": "centre", "weight": 0.9 },
+    { "term": "ordin", "gloss": "order", "weight": 0.8 }
+  ],
+
+  "latin_endings": [
+    { "term": "a", "weight": 1.3 },
+    { "term": "o", "weight": 1.0 },
+    { "term": "is", "weight": 0.9 },
+    { "term": "ia", "weight": 1.1 },
+    { "term": "ora", "weight": 1.2 },
+    { "term": "ara", "weight": 1.1 },
+    { "term": "eo", "weight": 0.7 },
+    { "term": "an", "weight": 0.9 },
+    { "term": "ance", "weight": 0.8 },
+    { "term": "ity", "weight": 0.9 }
+  ],
+
+  "dictionary_words": [
+    "verity", "zenith", "kindred", "beacon", "anchor", "compass", "lattice",
+    "quarry", "thicket", "ember", "cascade", "summit", "vantage", "prism",
+    "cipher", "meridian", "tessera", "bellows", "harbinger", "keystone",
+    "trellis", "bastion", "alcove", "quiver", "furrow", "plateau", "estuary",
+    "aperture", "solstice", "equinox", "lodestar", "waypoint", "threshold",
+    "citadel", "crucible", "foundry", "almanac", "sextant", "quill", "tandem"
+  ],
+
+  "radio_test": {
+    "_note": "Penalties for graphemes a listener cannot map to spelling reliably.",
+    "penalties": [
+      { "pattern": "x", "cost": 14, "reason": "heard as 'ks' or 'z' — spelling ambiguous" },
+      { "pattern": "z", "cost": 10, "reason": "commonly misheard as 's'" },
+      { "pattern": "q(?!u)", "cost": 22, "reason": "q without u has no stable English mapping" },
+      { "pattern": "ph", "cost": 12, "reason": "competes with 'f'" },
+      { "pattern": "kn|wr|gn|ps", "cost": 14, "reason": "silent-letter onset" },
+      { "pattern": "y[aeiou]", "cost": 8, "reason": "y-as-consonant is unstable" },
+      { "pattern": "[bcdfghjklmnpqrstvwxz]{4,}", "cost": 20, "reason": "unpronounceable cluster" },
+      { "pattern": "(.)\\1", "cost": 7, "reason": "doubled letter — single/double ambiguity" },
+      { "pattern": "^[aeiou]{2}", "cost": 10, "reason": "vowel-pair onset is hard to place" },
+      { "pattern": "ae|oe", "cost": 8, "reason": "digraph spelling is guessed wrong" },
+      { "pattern": "c[eiy]", "cost": 6, "reason": "soft-c competes with 's'" }
+    ]
+  },
+
+  "scoring_weights": {
+    "radio_test": 0.32,
+    "length_band": 0.18,
+    "syllables": 0.16,
+    "semantic_evocation": 0.20,
+    "buyer_breadth": 0.14
+  },
+
+  "length_bands": [
+    { "min": 4, "max": 4, "score": 78 },
+    { "min": 5, "max": 9, "score": 100 },
+    { "min": 10, "max": 11, "score": 88 },
+    { "min": 12, "max": 12, "score": 64 },
+    { "min": 13, "max": 14, "score": 46 },
+    { "min": 15, "max": 99, "score": 28 }
+  ],
+
+  "syllable_scores": { "1": 74, "2": 100, "3": 88, "4": 58, "5": 34 },
+
+  "buyer_industries": {
+    "SaaS & B2B": ["works", "flow", "desk", "suite", "ledger", "atlas", "signal", "compass"],
+    "Fintech": ["vault", "ledger", "cred", "val", "mint", "capital", "anchor", "keystone"],
+    "Health & Wellness": ["cura", "san", "vit", "viv", "haven", "spring", "grove", "meadow"],
+    "Real Estate & Property": ["harbor", "ridge", "peak", "yard", "arbor", "meadow", "orchard", "hollow"],
+    "Logistics & Trade": ["port", "lane", "bridge", "gate", "trail", "current", "compass", "anchor"],
+    "Agency & Creative": ["craft", "forge", "canvas", "prism", "quill", "studio", "atlas"],
+    "Outdoors & Lifestyle": ["peak", "ridge", "creek", "cove", "bay", "trail", "summit", "grove"],
+    "Legal & Professional": ["ver", "cred", "firm", "bastion", "citadel", "keystone", "merit"],
+    "Energy & Climate": ["sol", "terr", "current", "spring", "ember", "aqua"],
+    "Education": ["almanac", "lattice", "beacon", "lodestar", "threshold", "tandem"]
+  },
+
+  "price_bands": [
+    { "min_score": 93, "low": 8000, "high": 40000, "label": "Top-tier one-word", "venue": "Private / Sedo / Atom" },
+    { "min_score": 86, "low": 3500, "high": 9000, "label": "Premium brandable", "venue": "Squadhelp / Atom / BrandBucket" },
+    { "min_score": 78, "low": 1800, "high": 4200, "label": "Strong brandable", "venue": "BrandBucket / HugeDomains" },
+    { "min_score": 70, "low": 1000, "high": 2500, "label": "Solid brandable", "venue": "HugeDomains / Afternic" },
+    { "min_score": 62, "low": 500, "high": 1400, "label": "Entry brandable", "venue": "Afternic / Dan" },
+    { "min_score": 0, "low": 100, "high": 500, "label": "Thin — hold cost may exceed return", "venue": "Hard to place" }
+  ],
+
+  "flip_bands": [
+    { "min_score": 62, "label": "Strong flip", "note": "High value and realistically registrable — this is the trade" },
+    { "min_score": 45, "label": "Worth checking", "note": "Good name; confirm the .com is actually free" },
+    { "min_score": 28, "label": "Marginal", "note": "Either thin value or unlikely to be available" },
+    { "min_score": 0, "label": "Aftermarket only", "note": "Valuable but you will have to buy it, not register it" }
+  ],
+
+  "resale_killers": [
+    { "pattern": "-", "reason": "hyphens are near-unsellable in the brandable market" },
+    { "pattern": "[0-9]", "reason": "digits collapse resale value" },
+    { "pattern": "^(the|my|get|try|go)", "reason": "filler prefixes signal a leftover registration" },
+    { "pattern": "(ify|ly|io|zy|xy)$", "reason": "saturated startup suffix — heavily discounted" },
+    { "pattern": "(ai|crypto|nft|meta|web3)$", "reason": "trend-locked; value decays with the cycle" }
+  ]
+}

@@ -1,0 +1,245 @@
+/* ============================================================
+   autoDNG — shared design tokens + shared footer component
+
+   Every page in this site carries its own embedded <style> block.
+   That is why the same footer rendered in six different greys and
+   four different fonts. This file is the single source of truth for
+   the pieces that must look identical on every page.
+
+   Load order matters: link this BEFORE a page's own <style> so a page
+   can still override deliberately. The footer rules below are written
+   with .site-footer as a parent (specificity 0,2,1) so they beat the
+   pages' existing bare .footer-* rules (0,1,1) without editing them.
+   ============================================================ */
+
+:root {
+  /* Canonical palette. Pages may still define their own tokens for
+     bespoke sections; these are the values the shared chrome uses. */
+  --adng-bg: #09090b;
+  --adng-bg2: #111115;
+  --adng-bg3: #18181e;
+  --adng-border: rgba(255, 255, 255, 0.07);
+  --adng-border2: rgba(255, 255, 255, 0.13);
+  --adng-text: #ededee;
+  --adng-muted: #6b6b72;
+  --adng-muted2: #9898a2;
+  --adng-lime: #c8f04a;
+
+  --adng-font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --adng-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ---------- Shared footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--adng-border);
+  background: var(--adng-bg);
+  margin-top: 60px;
+}
+
+.site-footer .footer-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 40px 24px 28px;
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
+  gap: 32px;
+}
+
+.site-footer .footer-brand h3 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--adng-text);
+  margin-bottom: 10px;
+}
+
+.site-footer .footer-brand h3 em {
+  font-style: italic;
+  color: var(--adng-lime);
+}
+
+.site-footer .footer-brand p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--adng-muted);
+  max-width: 42ch;
+  margin-bottom: 14px;
+}
+
+.site-footer .footer-socials {
+  display: flex;
+  gap: 10px;
+}
+
+.site-footer .footer-socials a {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--adng-border2);
+  border-radius: 8px;
+  color: var(--adng-muted2);
+  text-decoration: none;
+  font-size: 13px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.site-footer .footer-socials a:hover {
+  border-color: var(--adng-lime);
+  color: var(--adng-lime);
+}
+
+.site-footer .footer-col h4 {
+  font-family: var(--adng-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--adng-muted);
+  margin-bottom: 12px;
+}
+
+.site-footer .footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer .footer-col ul li {
+  margin-bottom: 8px;
+}
+
+.site-footer .footer-col ul li a {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--adng-muted2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.site-footer .footer-col ul li a:hover {
+  color: var(--adng-lime);
+}
+
+/* Some pages decorate list links with a ::before marker that shifts
+   alignment. Neutralised so the columns line up across the site. */
+.site-footer .footer-col ul li a::before {
+  content: none;
+}
+
+.site-footer .footer-bottom {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 18px 24px 30px;
+  border-top: 1px solid var(--adng-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.site-footer .footer-bottom p {
+  font-family: var(--adng-mono);
+  font-size: 11px;
+  color: var(--adng-muted);
+  margin: 0;
+}
+
+.site-footer .footer-bottom-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-footer .footer-bottom-links a {
+  font-family: var(--adng-mono);
+  font-size: 11px;
+  color: var(--adng-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.site-footer .footer-bottom-links a:hover {
+  color: var(--adng-lime);
+}
+
+/* ---------- Mobile touch targets ----------
+   Audited at 375px: provider tabs were 26px, model chips 22-28px, the API-key
+   reveal button 16px, and primary buttons 35-40px — all under the 44px minimum
+   (WCAG 2.5.5 / iOS HIG). These control classes recur on every tool page, so
+   the rule belongs with the shared chrome rather than in seven copies. */
+@media (max-width: 768px) {
+  /* The sticky header wraps to 240px on index and 329px on handles — 30% and
+     41% of an iPhone viewport — permanently covering content and overlapping
+     result cards. Let it scroll away on small screens.
+     !important: the pages declare .header{position:sticky} at equal specificity
+     but later in source order, since their <style> follows this file. */
+  .header, header.hd { position: static !important; }
+
+  .ptab, .mchip, .tld-chip, .cat-chip, .ind-chip, .filter-btn, .fpill,
+  .sec-btn, .hdbtn, .helpbtn, .getkeybtn, .btn, .buy-btn, .gbtn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Absolutely positioned inside the key field, so a bigger hit area is free. */
+  .eyebtn {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 16px also stops iOS from zooming the page when a field takes focus. */
+  input[type="text"], input[type="password"], input[type="email"],
+  input[type="search"], input:not([type]), select, textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* Navigation links measured 17-22px tall across analyze, domain-intelligence
+     and the legal pages — too small to hit reliably. */
+  .nav-links a, .hbar a, .back, .finner a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Footer links sit in dense lists; padding gives them a real hit area. */
+  .site-footer .footer-col ul li a,
+  .site-footer .footer-bottom-links a,
+  .footer-bottom-links a {
+    display: inline-block;
+    padding: 7px 0;
+  }
+  .site-footer .footer-socials a {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 860px) {
+  .site-footer .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+    padding: 30px 18px 22px;
+  }
+  .site-footer .footer-brand {
+    grid-column: 1 / -1;
+  }
+  .site-footer .footer-bottom {
+    padding: 16px 18px 26px;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-footer .footer-inner {
+    grid-template-columns: 1fr;
+  }
+}

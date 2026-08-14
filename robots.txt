@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Superseded drafts and duplicate builds — kept in the repo, not for indexing.
+# autodng-upgraded.html is NOT listed here: it is the "Advanced Mode" tool linked
+# from the homepage, so blocking it would hide a page users are sent to.
+Disallow: /v2.html
+Disallow: /old.html
+Disallow: /in.html
+Disallow: /local.html
+Disallow: /note
+Disallow: /payment-success.html
+
+Sitemap: https://autodng.com/sitemap.xml
