@@ -22,12 +22,13 @@
 <!-- autodng:meta:end -->
 <meta name="description" content="The Bloomberg Terminal for domain decisions. 15 intelligence categories, 60+ live signals: brand, DNS, email, security, history, archive, trademark, startup, AI readiness, investor value. BUY / HOLD / AVOID verdicts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng.css?v=6">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 :root{
 --bg:#09090b;--bg2:#101013;--bg3:#17171c;--bg4:#1e1e25;
@@ -38,7 +39,7 @@
 --amber:#f2c14e;--amber-dim:rgba(242,193,78,.12);
 --rose:#f0506a;--rose-dim:rgba(240,80,106,.1);
 --purple:#b18cf2;
---serif:'Fraunces',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;--mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -172,6 +173,7 @@ footer{border-top:1px solid var(--border);padding:26px 0 40px;font-family:var(--
   footer .wrap>div{gap:6px 14px}
 }
 </style>
+<script src="/assets/autodng-rdap.js?v=1"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -181,6 +183,26 @@ footer{border-top:1px solid var(--border);padding:26px 0 40px;font-family:var(--
   gtag('config', 'G-PVV83DRSFT');
 </script>
 <body>
+<!-- autodng:header:start -->
+<header class="adng-header">
+  <div class="adng-header__inner">
+    <a class="adng-brand" href="/index.html">auto<em>DNG</em></a>
+    <nav class="adng-nav" aria-label="Tools">
+      <a href="/index.html">Generator</a>
+      <a href="/autodng-upgraded.html">Advanced</a>
+      <a href="/domains.html">Domains</a>
+      <a href="/valuation.html">Valuation</a>
+      <a href="/analyze.html">Analyzer</a>
+      <a href="/trademarks.html">Trademarks</a>
+      <a href="/vc-score.html">VC Score</a>
+      <a href="/handles.html">Handles</a>
+      <a href="/autodng-domain-intelligence.html" aria-current="page">Intelligence</a>
+      <a href="/blog/index.html">Blog</a>
+    </nav>
+    <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
+  </div>
+</header>
+<!-- autodng:header:end -->
 <header><div class="wrap hbar">
 <a class="logo" href="index.html">auto<b>DNG</b></a>
 <span class="logo-sub">Domain Intelligence Platform</span>
@@ -253,7 +275,7 @@ footer{border-top:1px solid var(--border);padding:26px 0 40px;font-family:var(--
 <footer><div class="wrap" style="display:flex;flex-direction:column;gap:14px;padding:0">
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <span>autoDNG Domain Intelligence Platform · 15 categories · 60+ signals · 2026</span>
-    <span>Live data: dns.google · rdap.org · archive.org — security &amp; trademark verification via official registries</span>
+    <span>Live data: authoritative registry RDAP (via IANA bootstrap) · dns.google · archive.org — security &amp; trademark verification via official registries</span>
   </div>
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid var(--border);padding-top:14px">
     <span style="display:flex;gap:14px;flex-wrap:wrap">
@@ -502,10 +524,24 @@ links:[['SecurityHeaders.com',`https://securityheaders.com/?q=${domain}&followRe
 async function catHistory(domain){
 let s=55;const flags=[];const sigs=[];let reg=null;
 try{
-const r=await fetch(`https://rdap.org/domain/${domain}`,{signal:AbortSignal.timeout(8000),headers:{'Accept':'application/rdap+json'}});
+// Resolve the authoritative registry first. A bare rdap.org 404 also fires for
+// TLDs it does not serve, which reported registered .io/.co domains as
+// "available to hand-register" — a confident false positive on the one page
+// whose whole job is deciding whether to build a company on a domain.
+const tld=String(domain).split('.').pop().toLowerCase();
+const rdapMap=await autodngRdap.loadBootstrap();
+const rdapBase=rdapMap[tld];
+if(!rdapBase){
+flags.push(['y',`The .${tld} registry publishes no browser-reachable RDAP service, so registration status cannot be verified here. Check at a registrar before acting.`]);
+return{score:55,flags,sigs:[['Registration','not verifiable in-browser']],registered:null,ageYears:0};}
+const r=await fetch(`${rdapBase.replace(/\/+$/,'')}/domain/${encodeURIComponent(domain)}`,
+{mode:'cors',credentials:'omit',signal:AbortSignal.timeout(8000),headers:{'Accept':'application/rdap+json, application/json'}});
 if(r.status===404){
 flags.push(['g','Domain appears UNREGISTERED — available to hand-register at base cost.']);
 return{score:80,flags,sigs:[['Registration','available ✓']],registered:false,ageYears:0};}
+if(r.status!==200){
+flags.push(['y','Registry lookup failed — status unverified. Retry or check at a registrar.']);
+return{score:55,flags,sigs:[['Registration','lookup failed']],registered:null,ageYears:0};}
 const d=await r.json();reg=d;
 const ev=Object.fromEntries((d.events||[]).map(e=>[e.eventAction,e.eventDate]));
 const created=ev.registration?new Date(ev.registration):null;

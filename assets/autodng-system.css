@@ -1,0 +1,624 @@
+/* ============================================================
+   autoDNG — design system
+
+   Audience: founders and investors evaluating whether this engine
+   is rigorous enough to trust with a naming decision. That argues
+   for restraint and evidence, not decoration:
+
+     - one identity on every page (shared header, type, spacing)
+     - accent colour reserved for the primary action, never ornament
+     - data rendered in mono so numbers read as measurements
+     - editorial serif for display, so headings feel considered
+     - hairline borders and generous space instead of heavy chrome
+
+   Load order: autodng-system.css -> autodng.css -> page <style>.
+   Components are namespaced `adng-` so they cannot collide with the
+   bespoke per-page CSS that still exists underneath.
+   ============================================================ */
+
+/* ---------- Tokens ---------- */
+:root {
+  /* Ground and surfaces. Four steps is enough to build depth without
+     resorting to shadows, which read as consumer-app rather than tool. */
+  --adng-bg:        #0a0a0c;
+  --adng-surface-1: #101013;
+  --adng-surface-2: #16161b;
+  --adng-surface-3: #1d1d23;
+
+  --adng-line:      rgba(255, 255, 255, 0.07);
+  --adng-line-2:    rgba(255, 255, 255, 0.13);
+
+  --adng-ink:       #ededee;
+  --adng-ink-2:     #a8a8b3;
+  --adng-ink-3:     #6f6f79;
+
+  /* Accent is load-bearing: primary action and "good" data only. */
+  --adng-accent:    #c8f04a;
+  --adng-accent-dim: rgba(200, 240, 74, 0.12);
+
+  /* Signal colours for data. Distinct in hue, matched in lightness so
+     no single series shouts louder than the others. */
+  --adng-teal:  #4af0c0;
+  --adng-amber: #f0b84a;
+  --adng-rose:  #f0506a;
+  --adng-violet:#9a6af0;
+
+  /* Type */
+  --adng-sans:  'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --adng-mono:  'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --adng-serif: 'Instrument Serif', Georgia, serif;
+
+  /* Modular scale, 1.25. Fluid at the display sizes only. */
+  --adng-t-display: clamp(34px, 5.2vw, 56px);
+  --adng-t-h2:      clamp(24px, 3vw, 34px);
+  --adng-t-h3:      19px;
+  --adng-t-lede:    17px;
+  --adng-t-body:    15px;
+  --adng-t-sm:      13px;
+  --adng-t-xs:      11px;
+  --adng-t-micro:   9.5px;
+
+  /* 4px base */
+  --adng-s1: 4px;  --adng-s2: 8px;  --adng-s3: 12px; --adng-s4: 16px;
+  --adng-s5: 24px; --adng-s6: 32px; --adng-s7: 48px; --adng-s8: 72px;
+  --adng-s9: 104px;
+
+  --adng-r-sm: 6px;
+  --adng-r:    10px;
+  --adng-r-lg: 14px;
+  --adng-r-pill: 999px;
+
+  --adng-maxw: 1140px;
+  --adng-maxw-prose: 720px;
+}
+
+/* ---------- Primitives ---------- */
+
+.adng-shell {
+  max-width: var(--adng-maxw);
+  margin: 0 auto;
+  padding-left: var(--adng-s5);
+  padding-right: var(--adng-s5);
+}
+.adng-shell--prose { max-width: var(--adng-maxw-prose); }
+
+.adng-section { padding-block: var(--adng-s8); }
+.adng-section--tight { padding-block: var(--adng-s7); }
+
+/* Mono uppercase label. Used to introduce a section without a heading. */
+.adng-eyebrow {
+  font-family: var(--adng-mono);
+  font-size: var(--adng-t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+  margin-bottom: var(--adng-s3);
+}
+.adng-eyebrow--accent { color: var(--adng-accent); }
+
+.adng-display {
+  font-family: var(--adng-serif);
+  font-size: var(--adng-t-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--adng-ink);
+}
+.adng-display em { font-style: italic; color: var(--adng-accent); }
+
+.adng-h2 {
+  font-family: var(--adng-serif);
+  font-size: var(--adng-t-h2);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--adng-ink);
+}
+.adng-h3 {
+  font-size: var(--adng-t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--adng-ink);
+}
+.adng-lede {
+  font-size: var(--adng-t-lede);
+  line-height: 1.65;
+  color: var(--adng-ink-2);
+  max-width: 58ch;
+}
+.adng-body { font-size: var(--adng-t-body); line-height: 1.7; color: var(--adng-ink-2); }
+.adng-muted { color: var(--adng-ink-3); }
+
+/* ---------- Buttons ---------- */
+
+.adng-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--adng-s2);
+  min-height: 46px;
+  padding: 0 var(--adng-s5);
+  border-radius: var(--adng-r);
+  border: 1px solid transparent;
+  font-family: var(--adng-sans);
+  font-size: var(--adng-t-body);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s, opacity .15s;
+}
+.adng-btn--primary { background: var(--adng-accent); color: #0a0a0c; }
+.adng-btn--primary:hover { opacity: .9; }
+.adng-btn--secondary {
+  background: transparent;
+  border-color: var(--adng-line-2);
+  color: var(--adng-ink);
+}
+.adng-btn--secondary:hover { border-color: var(--adng-accent); color: var(--adng-accent); }
+.adng-btn--ghost { background: transparent; color: var(--adng-ink-2); }
+.adng-btn--ghost:hover { color: var(--adng-accent); }
+.adng-btn--lg { min-height: 54px; padding: 0 var(--adng-s6); font-size: var(--adng-t-lede); }
+.adng-btn--block { width: 100%; }
+.adng-btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Fields ---------- */
+
+.adng-field { display: flex; flex-direction: column; gap: var(--adng-s2); }
+.adng-label {
+  font-family: var(--adng-mono);
+  font-size: var(--adng-t-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+}
+.adng-input, .adng-select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 var(--adng-s4);
+  background: var(--adng-surface-2);
+  border: 1px solid var(--adng-line-2);
+  border-radius: var(--adng-r);
+  color: var(--adng-ink);
+  font-family: var(--adng-sans);
+  font-size: var(--adng-t-body);
+  transition: border-color .15s;
+}
+.adng-input::placeholder { color: var(--adng-ink-3); }
+.adng-input:focus, .adng-select:focus {
+  outline: none;
+  border-color: var(--adng-accent);
+}
+.adng-select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--adng-ink-3) 50%),
+                    linear-gradient(135deg, var(--adng-ink-3) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: var(--adng-s7);
+}
+.adng-hint { font-family: var(--adng-mono); font-size: var(--adng-t-micro); color: var(--adng-ink-3); line-height: 1.55; }
+
+/* ---------- Surfaces ---------- */
+
+.adng-card {
+  background: var(--adng-surface-1);
+  border: 1px solid var(--adng-line);
+  border-radius: var(--adng-r-lg);
+  padding: var(--adng-s5);
+}
+.adng-card--flush { padding: 0; overflow: hidden; }
+
+.adng-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--adng-s1);
+  font-family: var(--adng-mono);
+  font-size: var(--adng-t-micro);
+  color: var(--adng-ink-2);
+  background: var(--adng-surface-2);
+  border: 1px solid var(--adng-line);
+  border-radius: var(--adng-r-pill);
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+/* Evidence block: a measured number with its label. The core credibility
+   device — claims are shown as figures, not adjectives. */
+.adng-stat { display: flex; flex-direction: column; gap: 2px; }
+.adng-stat__num {
+  font-family: var(--adng-mono);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--adng-ink);
+  line-height: 1;
+}
+.adng-stat__num--accent { color: var(--adng-accent); }
+.adng-stat__label {
+  font-family: var(--adng-mono);
+  font-size: var(--adng-t-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+}
+.adng-statrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--adng-s5);
+}
+
+/* Caveat / disclaimer. Deliberately plain — hedging that looks designed
+   reads as marketing rather than disclosure. */
+.adng-note {
+  font-size: var(--adng-t-sm);
+  line-height: 1.6;
+  color: var(--adng-ink-3);
+  background: var(--adng-surface-1);
+  border: 1px solid var(--adng-line);
+  border-left: 2px solid var(--adng-amber);
+  border-radius: var(--adng-r-sm);
+  padding: var(--adng-s3) var(--adng-s4);
+}
+.adng-note strong { color: var(--adng-ink-2); font-weight: 600; }
+
+.adng-rule { height: 1px; background: var(--adng-line); border: 0; margin: 0; }
+
+/* ---------- Layout helpers ---------- */
+.adng-grid { display: grid; gap: var(--adng-s4); }
+.adng-grid--2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.adng-grid--3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.adng-row { display: flex; gap: var(--adng-s3); flex-wrap: wrap; align-items: center; }
+.adng-stack { display: flex; flex-direction: column; gap: var(--adng-s4); }
+
+@media (max-width: 768px) {
+  .adng-section { padding-block: var(--adng-s7); }
+  .adng-shell { padding-left: var(--adng-s4); padding-right: var(--adng-s4); }
+  .adng-statrow { gap: var(--adng-s4); }
+  .adng-stat__num { font-size: 22px; }
+}
+
+/* ============================================================
+   Shared site header
+
+   Replaced six different headers (.header div, header.hd, bare
+   <header>, .nav ...) that ranged 60-329px tall and carried
+   different nav sets. One header on every page is the single
+   largest coherence win for a visitor moving between tools.
+
+   API-key controls deliberately do NOT live here: they were
+   occupying up to 41% of a phone viewport before any content.
+   ============================================================ */
+
+.adng-header {
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--adng-line);
+}
+.adng-header__inner {
+  max-width: var(--adng-maxw);
+  margin: 0 auto;
+  padding: 0 var(--adng-s5);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: var(--adng-s5);
+}
+.adng-brand {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--adng-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.adng-brand em { font-style: italic; color: var(--adng-accent); }
+/* Wordmark is a link home on every page — give it a real hit area. */
+.adng-brand { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* min-width:0 + overflow lets the 10-link nav shrink and scroll inside the
+   flex row. Without it the nav held its intrinsic width and pushed the CTA
+   past the viewport edge between roughly 900px and 1150px. */
+.adng-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.adng-nav::-webkit-scrollbar { display: none; }
+.adng-header__cta { flex: none; }
+.adng-nav a {
+  font-size: var(--adng-t-sm);
+  color: var(--adng-ink-2);
+  text-decoration: none;
+  padding: 8px var(--adng-s3);
+  border-radius: var(--adng-r-sm);
+  white-space: nowrap;
+  transition: color .15s, background-color .15s;
+}
+.adng-nav a:hover { color: var(--adng-ink); background: var(--adng-surface-2); }
+.adng-nav a[aria-current="page"] { color: var(--adng-accent); }
+
+.adng-header__cta { margin-left: var(--adng-s3); }
+
+/* Mobile: the nav becomes a horizontally scrollable rail on its own row.
+   A hamburger would hide the tool set, which is the product surface. */
+.adng-navtoggle { display: none; }
+
+@media (max-width: 900px) {
+  .adng-header { position: static; }   /* a 2-row header must not eat the viewport */
+  .adng-header__inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: var(--adng-s3) var(--adng-s4);
+    gap: var(--adng-s2);
+  }
+  .adng-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .adng-nav::-webkit-scrollbar { display: none; }
+  /* 10 nav links on every page: at 35px they were the single biggest
+     tap-target regression, so give them the full 44px. */
+  .adng-nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--adng-s3);
+    font-size: var(--adng-t-sm);
+  }
+  .adng-header__cta { margin-left: auto; }
+}
+
+/* ============================================================
+   Legacy header neutralisation
+
+   Every page still has its original top bar in the DOM, and on the
+   tool pages that bar holds the API-key field, provider tabs and
+   model chips — all referenced by id from page JS. Removing the
+   markup would break generation, so the chrome is restyled instead:
+
+     - bars that contain controls become an inline settings panel
+     - bars that were only branding/nav are hidden, now redundant
+     - the duplicate wordmark is suppressed either way
+
+   :has() does the "contains controls" test. Browsers without it fall
+   back to the inline-panel treatment, which is the safe direction.
+   ============================================================ */
+
+.header, header.hd, header.header, .site-header, nav.nav {
+  position: static !important;   /* never a second sticky bar */
+  backdrop-filter: none;
+  background: transparent;
+  border-bottom: 0;
+}
+
+/* The wordmark now lives in the shared header. */
+.header .logo, header.hd .logo, header.header .logo,
+.site-header .logo, nav.nav .logo, .header a.logo { display: none !important; }
+
+/* Pure branding/nav bars carry nothing the page needs. */
+.header:not(:has(input, select, textarea)),
+header.hd:not(:has(input, select, textarea)),
+header.header:not(:has(input, select, textarea)),
+.site-header:not(:has(input, select, textarea)),
+nav.nav:not(:has(input, select, textarea)) { display: none !important; }
+
+/* Bars that do carry controls become a panel inside the page flow. */
+.header:has(input), header.hd:has(input), header.header:has(input), header.hd:has(input), header.header:has(input), header.hd:has(input), header.header:has(input) {
+  max-width: var(--adng-maxw);
+  margin: var(--adng-s5) auto 0;
+  padding: var(--adng-s3) var(--adng-s4);
+  background: var(--adng-surface-1);
+  border: 1px solid var(--adng-line);
+  border-radius: var(--adng-r);
+}
+.header:has(input) .header-inner, header.hd:has(input) .header-inner, header.header:has(input) .header-inner,
+header.hd:has(input) .header-inner,
+header.header:has(input) .header-inner, header.hd:has(input) .header-inner, header.header:has(input) .header-inner {
+  height: auto;
+  padding: 0;
+  max-width: none;
+  flex-wrap: wrap;
+  gap: var(--adng-s3);
+}
+
+@media (max-width: 900px) {
+  .header:has(input), header.hd:has(input), header.header:has(input), header.hd:has(input), header.header:has(input), header.hd:has(input), header.header:has(input) {
+    margin: var(--adng-s4) var(--adng-s4) 0;
+  }
+}
+
+/* Progressive disclosure for secondary generator options. Nine fields stood
+   between arrival and the first result; only industry is actually required. */
+.adng-refine { margin-bottom: var(--adng-s4); }
+.adng-refine > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--adng-s2);
+  min-height: 44px;
+  font-family: var(--adng-mono);
+  font-size: var(--adng-t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+}
+.adng-refine > summary::-webkit-details-marker { display: none; }
+.adng-refine > summary::before { content: '+'; font-size: 14px; line-height: 1; }
+.adng-refine[open] > summary::before { content: '\2212'; }
+.adng-refine > summary:hover { color: var(--adng-accent); }
+
+/* ============================================================
+   Form grid rhythm
+
+   index.html dropped .fg4 from 3 columns straight to 1 at 800px,
+   while Advanced Mode kept its grids multi-column at every width.
+   Side by side that made the homepage form read sparse and long
+   and Advanced read dense and scannable — the difference was the
+   missing intermediate step, not the styling.
+
+   A 3 -> 2 -> 1 progression, shared by every page.
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .fg4, .fg3 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 560px) {
+  .fg4, .fg3, .fg2 { grid-template-columns: 1fr !important; }
+}
+
+/* Model picker: wrap into a grid rather than a cramped single row, matching
+   the 2x2 card block that reads well in Advanced Mode. */
+.mrow {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--adng-s2);
+}
+.mchip {
+  justify-content: center;
+  min-height: 44px;
+  border-radius: var(--adng-r-sm);
+}
+
+/* Refine disclosure sits between field groups; give it the same rhythm. */
+.adng-refine { border-top: 1px solid var(--adng-line); padding-top: var(--adng-s3); }
+
+/* ============================================================
+   Form section bands — Advanced Mode's pattern, shared
+
+   .fc > .fsec > .fsec-label + .fg* > .field
+
+   Grouping the fields under labelled bands is what made Advanced
+   Mode read as a structured brief while index read as a flat list.
+   Defined here so both pages use one definition.
+   ============================================================ */
+
+.fsec { margin-bottom: var(--adng-s5); }
+.fsec + .fsec { border-top: 1px solid var(--adng-line); padding-top: var(--adng-s5); }
+.fsec-label {
+  font-family: var(--adng-mono);
+  font-size: 10px;
+  color: var(--adng-ink-3);
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: var(--adng-s3);
+  display: flex;
+  align-items: center;
+  gap: var(--adng-s2);
+}
+/* Hairline running off the label, so bands read as sections not headings. */
+.fsec-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--adng-line);
+}
+.adng-refine .fsec:first-of-type { border-top: 0; padding-top: 0; }
+
+/* ============================================================
+   AI provider bar
+
+   These controls were authored for a right-aligned top bar
+   (.hright used justify-content:flex-end and the key field was
+   capped at 250px). Once the bar moved into the page as a
+   full-width card, everything drifted to one side with a large
+   empty gutter and "get key ?" ballooned into a full-width
+   button — it read like a debug panel.
+
+   Rebuilt as one deliberate row: provider, key, status, help.
+   Labelled "optional" because the generator works without a key.
+   ============================================================ */
+
+.header:has(input), header.hd:has(input), header.header:has(input) {
+  position: relative;
+  padding-top: var(--adng-s6);
+}
+.header:has(input)::before, header.hd:has(input)::before, header.header:has(input)::before {
+  content: 'AI provider — optional, for smarter names';
+  position: absolute;
+  top: var(--adng-s3);
+  left: var(--adng-s4);
+  font-family: var(--adng-mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+}
+
+.header:has(input) .hright, header.hd:has(input) .hright, header.header:has(input) .hright {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--adng-s3);
+  flex: none;
+  justify-content: stretch;
+  width: 100%;
+}
+.header:has(input) .hright > form, header.hd:has(input) .hright > form, header.header:has(input) .hright > form { display: block !important; min-width: 0; }
+
+/* Segmented control rather than four spread-out tabs. */
+.header:has(input) .ptabs, header.hd:has(input) .ptabs, header.header:has(input) .ptabs { padding: 3px; gap: 2px; border-radius: var(--adng-r-sm); }
+.header:has(input) .ptab, header.hd:has(input) .ptab, header.header:has(input) .ptab { min-height: 36px; padding: 0 var(--adng-s3); border-radius: 4px; }
+
+/* Key field fills the row instead of being capped and floating. */
+.header:has(input) .kwrap, header.hd:has(input) .kwrap, header.header:has(input) .kwrap { max-width: none; flex: none; width: 100%; }
+.header:has(input) .kwrap input, header.hd:has(input) .kwrap input, header.header:has(input) .kwrap input { width: 100%; min-height: 44px; }
+
+/* Status reads as an inline indicator, not a chip competing with the field. */
+.header:has(input) .spill, header.hd:has(input) .spill, header.header:has(input) .spill {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+/* Help is a quiet link. It was a bordered button the width of the card. */
+.header:has(input) .helpbtn, header.hd:has(input) .helpbtn, header.header:has(input) .helpbtn {
+  border: 0;
+  padding: 0 var(--adng-s2);
+  min-height: 44px;
+  font-size: var(--adng-t-xs);
+  color: var(--adng-ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.header:has(input) .helpbtn:hover, header.hd:has(input) .helpbtn:hover, header.header:has(input) .helpbtn:hover { color: var(--adng-accent); }
+
+@media (max-width: 1100px) {
+  .header:has(input) .hright, header.hd:has(input) .hright, header.header:has(input) .hright {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: var(--adng-s2);
+  }
+  .header:has(input) .ptabs, header.hd:has(input) .ptabs, header.header:has(input) .ptabs {
+    grid-column: 1 / -1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .header:has(input) .ptabs::-webkit-scrollbar, header.hd:has(input) .ptabs::-webkit-scrollbar, header.header:has(input) .ptabs::-webkit-scrollbar { display: none; }
+  .header:has(input) .hright > form, header.hd:has(input) .hright > form, header.header:has(input) .hright > form { grid-column: 1 / -1; }
+  .header:has(input) .spill, header.hd:has(input) .spill, header.header:has(input) .spill { grid-column: 1; }
+  .header:has(input) .helpbtn, header.hd:has(input) .helpbtn, header.header:has(input) .helpbtn { grid-column: 2; justify-self: end; }
+}
+
+/* Touch devices need the full 44px on the provider tabs; the compact 36px
+   above is fine for a mouse. */
+@media (max-width: 1100px) {
+  .header:has(input) .ptab,
+  header.hd:has(input) .ptab,
+  header.header:has(input) .ptab { min-height: 44px; }
+}

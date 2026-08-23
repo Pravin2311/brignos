@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const CSS_VERSION = '6';   // bump to bust caches when autodng.css changes
+const CSS_VERSION = '8';   // bump to bust caches when autodng.css changes
 const LINK = `<link rel="stylesheet" href="/assets/autodng.css?v=${CSS_VERSION}">`;
 // Every page, not just the ones with the shared footer — the stylesheet also
 // carries the mobile tap-target and sticky-header rules, which all pages need.

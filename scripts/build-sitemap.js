@@ -11,7 +11,6 @@ const ORIGIN = 'https://autodng.com';
 
 // Superseded drafts / duplicate builds / thin pages — kept in the repo, excluded from search.
 const EXCLUDE = new Set([
-  'v2.html', 'old.html', 'in.html', 'local.html',
   '404.html', 'payment-success.html',
 ]);
 
