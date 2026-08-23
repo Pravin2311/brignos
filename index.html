@@ -324,7 +324,8 @@ SEO FOOTER
   ]
 }
 </script>
-<script src="/assets/autodng-rdap.js?v=1"></script>
+<script src="/assets/autodng-rdap.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=1"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17440634922"></script>
@@ -389,23 +390,18 @@ SEO FOOTER
     <h1>Names that get<br><em>funded.</em><br>Domains actually available.</h1>
     <p>Real-time AI brand generator trained on a16z, YC, NameBio & Crunchbase data — with live .com, .ai, .io, .xyz, .co availability. Works with Claude, GPT-4o, or Gemini.</p>
   <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
-    <a href="/brand-naming-consulting.html"
-       style="background:var(--lime);
-              color:#09090b;
-              padding:14px 24px;
-              border-radius:8px;
-              text-decoration:none;
-              font-weight:700;">
-       Book Naming Consultation
+    <!-- Primary action is the product. It previously led to consulting, so the
+         generator — the reason people arrive — had no call to action at all. -->
+    <button type="button" class="adng-btn adng-btn--primary adng-btn--lg" onclick="startNaming()">
+      Generate names →
+    </button>
+
+    <a class="adng-btn adng-btn--secondary adng-btn--lg" href="domains.html">
+      Browse premium domains
     </a>
 
-    <a href="domains.html"
-       style="border:1px solid var(--border2);
-              color:var(--text);
-              padding:14px 24px;
-              border-radius:8px;
-              text-decoration:none;">
-       Explore Premium Domains
+    <a class="adng-btn adng-btn--ghost adng-btn--lg" href="/brand-naming-consulting.html">
+      Naming advisory
     </a>
 </div>
   </div>
@@ -415,6 +411,60 @@ SEO FOOTER
     <div class="chip"><span class="cdot" style="background:var(--amber)"></span>5 TLDs checked: .com .ai .io .xyz .co<span class="cval">RDAP</span></div>
     <div class="chip"><span class="cdot" style="background:var(--purple)"></span>LLM providers<span class="cval">Claude · GPT · Gemini · Groq · OpenRouter</span></div>
     <div class="chip"><span class="cdot" style="background:var(--rose)"></span>Global + English modes<span class="cval">new</span></div>
+  </div>
+</section>
+
+<!-- EVIDENCE — what the engine actually measures.
+     Every figure here is read from the shipped code or data files, not
+     marketing copy: 7 agents in NAMING_AGENTS, 19 signals in the Advanced
+     gate, 11 radio-test rules and 10 buyer verticals in
+     aftermarket-intelligence.json, 5 TLDs in the mix TLD set. -->
+<section class="adng-section--tight" style="border-block:1px solid var(--border)">
+  <div class="adng-shell">
+    <div class="adng-eyebrow">How a name is judged</div>
+    <div class="adng-statrow" style="margin-bottom:28px">
+      <div class="adng-stat">
+        <div class="adng-stat__num adng-stat__num--accent">7</div>
+        <div class="adng-stat__label">Naming agents</div>
+      </div>
+      <div class="adng-stat">
+        <div class="adng-stat__num">19</div>
+        <div class="adng-stat__label">Signal quality gate</div>
+      </div>
+      <div class="adng-stat">
+        <div class="adng-stat__num">11</div>
+        <div class="adng-stat__label">Radio-test rules</div>
+      </div>
+      <div class="adng-stat">
+        <div class="adng-stat__num">10</div>
+        <div class="adng-stat__label">Buyer verticals</div>
+      </div>
+      <div class="adng-stat">
+        <div class="adng-stat__num">5</div>
+        <div class="adng-stat__label">TLDs checked live</div>
+      </div>
+    </div>
+
+    <div class="adng-grid adng-grid--3">
+      <div>
+        <div class="adng-h3" style="margin-bottom:6px">Registry-authoritative lookups</div>
+        <p class="adng-body" style="font-size:13.5px">Availability resolves each extension to its own registry through IANA's RDAP
+        bootstrap — not a generic endpoint that answers 404 for domains it simply cannot see. Where no registry
+        publishes a browser-reachable service, the tool says so instead of guessing.</p>
+      </div>
+      <div>
+        <div class="adng-h3" style="margin-bottom:6px">Scored for resale, not novelty</div>
+        <p class="adng-body" style="font-size:13.5px">Names are built from real morphemes — compounds, Latin roots, dictionary
+        words — then scored on spellability, length, syllables, meaning and how many industries could plausibly buy
+        them. Invented sci-fi strings are easy to register and hard to sell.</p>
+      </div>
+      <div>
+        <div class="adng-h3" style="margin-bottom:6px">Stated limits, not implied precision</div>
+        <p class="adng-body" style="font-size:13.5px">Price ranges are modelled asking bands for comparable brandables, not sale
+        comps or an appraisal. Trademark indicators are heuristics, not clearance. Both are labelled that way in the
+        product and in the <a href="terms.html" style="color:var(--lime)">terms</a>.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -839,7 +889,7 @@ function getTierBonus(name) {
 
 // ── State ──────────────────────────────────────────────────────────
 let prov=localStorage.getItem('bl_p')||'openrouter';
-let key=localStorage.getItem('bl_k_'+prov)||'';
+let key=autodngKeys.get(prov)||'';
 let mdl=localStorage.getItem('bl_m_'+prov)||PROVS[prov].models[0].id;
 if(!PROVS[prov].models.find(m=>m.id===mdl)){mdl=PROVS[prov].models[0].id;localStorage.setItem('bl_m_'+prov,mdl);}
 let busy=false,domC={},pill='all',helpOn=false,language='global',filtersChanged=false;
@@ -910,9 +960,9 @@ document.addEventListener('DOMContentLoaded', async function init(){
 
 // ── Provider/Model Switching ───────────────────────────────────────
 function switchProv(p,el){
-  localStorage.setItem('bl_k_'+prov,key);
+  autodngKeys.set(prov, key);
   prov=p;localStorage.setItem('bl_p',p);
-  key=localStorage.getItem('bl_k_'+p)||'';
+  key=autodngKeys.get(p)||'';
   mdl=localStorage.getItem('bl_m_'+p)||PROVS[p].models[0].id;
   if(!PROVS[p].models.find(m=>m.id===mdl)){mdl=PROVS[p].models[0].id;localStorage.setItem('bl_m_'+p,mdl);}
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('on'));
@@ -938,13 +988,21 @@ function selMdl(id,el){
   document.querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
 }
-function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('bl_k_'+prov,key);setKeyUI(key);}
+function onKey(){key=document.getElementById('akey').value.trim();autodngKeys.set(prov, key);setKeyUI(key);}
 function setKeyUI(k){const ok=PROVS[prov].val(k);document.getElementById('sdot').className='sdot'+(ok?' ok':'');document.getElementById('stxt').textContent=ok?'key ready':'no key';
   // Show/hide steering based on key status
   const steeringWrap = document.getElementById('steeringWrap');
   if (steeringWrap) steeringWrap.classList.toggle('on', ok);
 }
 function toggleEye(){const e=document.getElementById('akey');e.type=e.type==='password'?'text':'password';}
+// Hero CTA — the generator is the product, so the primary action opens it.
+function startNaming(){
+  const card = document.querySelector('.fcard');
+  const industry = document.getElementById('industry');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (industry) setTimeout(() => industry.focus(), 320);
+}
+
 function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').className='helpbar'+(helpOn?' on':'');}
 function onFilterChange(){filtersChanged=true;const btn=document.getElementById('gbtn');if(btn&&!btn.disabled){btn.querySelector('.blbl').textContent='Regenerate with new filters →';btn.style.background='var(--amber)';toast('Filters updated — click Generate for new names');}}
 function resetFilterState(){filtersChanged=false;const btn=document.getElementById('gbtn');if(btn){btn.querySelector('.blbl').textContent='Generate brand names →';btn.style.background='var(--lime)';}}

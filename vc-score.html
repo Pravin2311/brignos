@@ -293,6 +293,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 }
 /* ===== FOOTER ===== */
 </style>
+<script src="/assets/autodng-keys.js?v=1"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -753,7 +754,7 @@ const NEGROOTS = ['mord','tot','krank','gift','faul','dreck','mal','mort','laid'
 
 // ── State ──────────────────────────────────────────────────────────────
 let prov = localStorage.getItem('vcs_p') || 'openrouter';
-let key  = localStorage.getItem('vcs_k_'+prov) || '';
+let key  = autodngKeys.get(prov) || '';
 let mdl  = localStorage.getItem('vcs_m_'+prov) || PROVS[prov].models[0];
 let lastResult = null;
 let busy = false;
@@ -1695,10 +1696,10 @@ function stepDone(i){
 }
 function switchProv(p,el){
   // Save current key
-  localStorage.setItem('vcs_k_'+prov,document.getElementById('akey').value.trim());
+  autodngKeys.set(prov, document.getElementById('akey').value.trim());
   prov=p;localStorage.setItem('vcs_p',p);
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  key=localStorage.getItem('vcs_k_'+p)||'';
+  key=autodngKeys.get(p)||'';
   mdl=localStorage.getItem('vcs_m_'+p)||PROVS[p].models[0];
   document.getElementById('akey').value=key;
   document.getElementById('akey').placeholder=PROVS[p].ph;
@@ -1709,7 +1710,7 @@ function buildModelSelect(){
   sel.innerHTML=PROVS[prov].models.map(m=>`<option value="${m}" ${m===mdl?'selected':''}>${m.split('/').pop().slice(0,20)}</option>`).join('');
 }
 function onMdl(){mdl=document.getElementById('mdlSel').value;localStorage.setItem('vcs_m_'+prov,mdl);}
-function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('vcs_k_'+prov,key);updateKeyStatus();}
+function onKey(){key=document.getElementById('akey').value.trim();autodngKeys.set(prov, key);updateKeyStatus();}
 function updateKeyStatus(){
   const valid=key&&PROVS[prov].val(key);
   document.getElementById('sdot').className='sdot'+(valid?' ok':'');
@@ -1771,5 +1772,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(brandParam){document.getElementById('brand').value=brandParam;onBrandInput();}
 });
 </script>
+</div><!-- /.app -->
 </body>
 </html>

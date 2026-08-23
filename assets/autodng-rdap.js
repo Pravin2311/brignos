@@ -108,10 +108,17 @@
   async function dnsProbe(domain) {
     if (dnsDisabled) return 'unknown';
     var d = encodeURIComponent(domain);
+    // NS first (authoritative for delegation), then A. For TLDs with no
+    // reachable RDAP — .co above all — DNS is the only evidence available, and
+    // a registered domain parked without NS at this level may still have an A
+    // record. Checking both materially widens what we can call for those.
     var resolvers = [
       'https://cloudflare-dns.com/dns-query?name=' + d + '&type=NS',
-      'https://dns.google/resolve?name=' + d + '&type=NS'
+      'https://dns.google/resolve?name=' + d + '&type=NS',
+      'https://cloudflare-dns.com/dns-query?name=' + d + '&type=A',
+      'https://dns.google/resolve?name=' + d + '&type=A'
     ];
+    var sawNodata = false;
     for (var i = 0; i < resolvers.length; i++) {
       try {
         var res = await fetch(resolvers[i], {
@@ -121,12 +128,12 @@
         if (!res.ok) continue;
         var j = await res.json();
         dnsStrikes = 0;
-        if (j.Status === 3) return 'nxdomain';
-        if (j.Answer && j.Answer.length > 0) return 'resolves';
-        if (j.Status === 0) return 'nodata';
-        return 'unknown';
+        if (j.Status === 3) return 'nxdomain';                 // definitive: no such name
+        if (j.Answer && j.Answer.length > 0) return 'resolves'; // definitive: registered
+        if (j.Status === 0) { sawNodata = true; continue; }     // try the next record type
       } catch (e) {}
     }
+    if (sawNodata) return 'nodata';
     // Once DoH is clearly unavailable, stop paying the timeout on every domain.
     if (++dnsStrikes >= 3) {
       dnsDisabled = true;

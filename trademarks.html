@@ -400,6 +400,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 
 }
 </style>
+<script src="/assets/autodng-keys.js?v=1"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -838,7 +839,7 @@ function clamp(v,lo=0,hi=100){return Math.max(lo,Math.min(hi,Math.round(v)));}
 function countSyl(w){w=w.toLowerCase().replace(/[^a-z]/g,'');if(!w)return 0;w=w.replace(/(?:[^laeiouy]es|[^laeiouy]ed|[^laeiouy]e)$/,'').replace(/^y/,'');const m=w.match(/[aeiouy]{1,2}/g);return m?m.length:1;}
 
 let prov=localStorage.getItem('tm2_p')||'openrouter';
-let key=localStorage.getItem('tm2_k_'+prov)||'';
+let key=autodngKeys.get(prov)||'';
 let mdl=localStorage.getItem('tm2_m_'+prov)||PROVS[prov].models[0];
 let busy=false, lastResult=null;
 
@@ -1572,10 +1573,10 @@ function stepDone(i){
   const next=document.getElementById('pst-'+(i+1));if(next)next.classList.add('active');
 }
 function switchProv(p,el){
-  localStorage.setItem('tm2_k_'+prov,document.getElementById('akey').value.trim());
+  autodngKeys.set(prov, document.getElementById('akey').value.trim());
   prov=p;localStorage.setItem('tm2_p',p);
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  key=localStorage.getItem('tm2_k_'+p)||'';mdl=localStorage.getItem('tm2_m_'+p)||PROVS[p].models[0];
+  key=autodngKeys.get(p)||'';mdl=localStorage.getItem('tm2_m_'+p)||PROVS[p].models[0];
   document.getElementById('akey').value=key;document.getElementById('akey').placeholder=PROVS[p].ph;
   updateKeyStatus();buildMdlSel();
 }
@@ -1584,7 +1585,7 @@ function buildMdlSel(){
   sel.innerHTML=PROVS[prov].models.map(m=>`<option value="${m}" ${m===mdl?'selected':''}>${m.split('/').pop().slice(0,22)}</option>`).join('');
 }
 function onMdl(){mdl=document.getElementById('mdlSel').value;localStorage.setItem('tm2_m_'+prov,mdl);}
-function onKey(){key=document.getElementById('akey').value.trim();localStorage.setItem('tm2_k_'+prov,key);updateKeyStatus();}
+function onKey(){key=document.getElementById('akey').value.trim();autodngKeys.set(prov, key);updateKeyStatus();}
 function updateKeyStatus(){
   const valid=key&&PROVS[prov].val(key);
   document.getElementById('sdot').className='sdot'+(valid?' ok':'');
@@ -1624,5 +1625,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   const bp=p.get('brand');if(bp){document.getElementById('brand').value=bp;onBrandInput();}
 });
 </script>
+</div><!-- /.app -->
 </body>
 </html>
