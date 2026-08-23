@@ -277,6 +277,7 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
 }
 /* ===== FOOTER ===== */
 </style>
+<script src="/assets/autodng-keys.js?v=1"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -669,7 +670,7 @@ function init() {
     btn.classList.toggle('on', btn.textContent.toLowerCase().includes(prov));
   });
 
-  const key = localStorage.getItem('sh_k_' + prov) || '';
+  const key = autodngKeys.get(prov) || '';
   document.getElementById('apikey').value = key;
   document.getElementById('apikey').placeholder = PROVS[prov].ph;
   updateKeyStatus(key);
@@ -677,7 +678,7 @@ function init() {
 
   document.getElementById('apikey').addEventListener('input', e => {
     const val = e.target.value.trim();
-    localStorage.setItem('sh_k_' + prov, val);
+    autodngKeys.set(prov, val);
     updateKeyStatus(val);
   });
   document.getElementById('model').addEventListener('change', e => {
@@ -709,12 +710,12 @@ function renderModels() {
 }
 
 function switchProv(p, el) {
-  localStorage.setItem('sh_k_' + prov, document.getElementById('apikey').value.trim());
+  autodngKeys.set(prov, document.getElementById('apikey').value.trim());
   prov = p; localStorage.setItem('sh_p', p);
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('apikey').placeholder = PROVS[p].ph;
-  document.getElementById('apikey').value = localStorage.getItem('sh_k_' + p) || '';
+  document.getElementById('apikey').value = autodngKeys.get(p) || '';
   updateKeyStatus(document.getElementById('apikey').value);
   renderModels();
 }

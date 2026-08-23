@@ -1117,7 +1117,8 @@ justify-content: center;
 
 }
 </style>
-<script src="/assets/autodng-rdap.js?v=1"></script>
+<script src="/assets/autodng-rdap.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=1"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -1866,7 +1867,7 @@ const W_SUFFIX=['ly','ify','io','eo','ia','ium','ora','era','ix','ex','ax','ox',
 const W_MUTSEED=['nimbus','crest','meridian','cobalt','indigo','amber','onyx','quartz','garnet','jasper','opal','topaz','zircon','beryl','coral','ivory','sienna','umber','ochre','slate','flint','basalt','granite','marble','silica','helium','neon','argon','xenon','radon','krypton','lithium','sodium','carbon','silicon','titan','vortex','cipher','vector','tensor','axiom','lemma','theorem','prism','spectra','photon','quark','boson','lepton','hadron'];
 // ── State ──────────────────────────────────────────────────────────────
 let prov = localStorage.getItem('dngp') || 'openrouter';
-let key  = localStorage.getItem('dngk'+prov) || '';
+let key  = autodngKeys.get(prov) || '';
 let mdl  = localStorage.getItem('dngm'+prov) || PROVS[prov].models[0].id;
 let vcId = 'none', stageId = 'seed';
 let busy = false, pill = 'all', helpOn = false;
@@ -3185,7 +3186,7 @@ if(id==='premium'){renderPremium();startCountdown();}
 }
 function switchProv(p,el){
 prov=p;localStorage.setItem('dngp',p);
-key=localStorage.getItem('dngk'+p)||'';mdl=localStorage.getItem('dngm'+p)||PROVS[p].models[0].id;
+key=autodngKeys.get(p)||'';mdl=localStorage.getItem('dngm'+p)||PROVS[p].models[0].id;
 document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
 document.getElementById('akey').placeholder=PROVS[p].ph;
 document.getElementById('akey').value=key;
@@ -3199,7 +3200,7 @@ row.innerHTML=models.map(m=>`<button class="mchip${m.id===mdl?' on':''}" onclick
 function selectMdl(id,el){mdl=id;localStorage.setItem('dngm'+prov,id);document.querySelectorAll('.mchip').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
 function onKey(){
 key=document.getElementById('akey').value.trim();
-if(key)localStorage.setItem('dngk'+prov,key);
+if(key)autodngKeys.set(prov, key);
 updateKeyStatus();
 }
 function updateKeyStatus(){
