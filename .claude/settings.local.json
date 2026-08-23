@@ -18,7 +18,10 @@
       "Bash(node -e \"require\\('./data/aftermarket-intelligence.json'\\);console.log\\('data ok'\\)\")",
       "Bash(awk 'NR>=2705 && NR<=2745' autodng-upgraded.html)",
       "Bash(awk 'NR>=2766 && NR<=2800' autodng-upgraded.html)",
-      "Bash(node scripts/check-canonicals.js)"
+      "Bash(node scripts/check-canonicals.js)",
+      "Bash(sed -i \"s/const CSS_VERSION = '7'/const CSS_VERSION = '8'/\" scripts/link-shared-css.js)",
+      "Bash(node scripts/link-shared-css.js)",
+      "Bash(git rm *)"
     ]
   }
 }

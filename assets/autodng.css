@@ -180,11 +180,22 @@
   .header, header.hd { position: static !important; }
 
   .ptab, .mchip, .tld-chip, .cat-chip, .ind-chip, .filter-btn, .fpill,
-  .sec-btn, .hdbtn, .helpbtn, .getkeybtn, .btn, .buy-btn, .gbtn {
+  .sec-btn, .hdbtn, .helpbtn, .getkeybtn, .btn, .buy-btn, .gbtn,
+  /* Advanced Mode + trademarks controls that were still 29-32px */
+  .ntab, .vcchip, .stchip, .ub-link, .logo,
+  .home, .header-inner a, .hright a {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* A bare checkbox is ~15px; the real target is the label wrapping it, so give
+     that the height rather than resizing the control itself. */
+  label.tld-check, label:has(> input[type="checkbox"]) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   /* Absolutely positioned inside the key field, so a bigger hit area is free. */
@@ -211,13 +222,16 @@
     align-items: center;
   }
 
-  /* Footer links sit in dense lists; padding gives them a real hit area. */
+  /* Footer links sit in dense lists. 7px padding only reached 34px, so use an
+     explicit min-height — these are 13 links repeated on every page. */
   .site-footer .footer-col ul li a,
   .site-footer .footer-bottom-links a,
   .footer-bottom-links a {
-    display: inline-block;
-    padding: 7px 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
+  .site-footer .footer-col ul li { margin-bottom: 0; }
   .site-footer .footer-socials a {
     width: 44px;
     height: 44px;

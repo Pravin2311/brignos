@@ -26,7 +26,8 @@
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng.css?v=6">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 *,::before,::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -38,7 +39,7 @@
 --rose:#f0506a;--rose-dim:rgba(240,80,106,.10);--rose-mid:rgba(240,80,106,.20);
 --amber:#f0b84a;--amber-dim:rgba(240,184,74,.10);--amber-mid:rgba(240,184,74,.20);
 --purple:#9a6af0;--purple-dim:rgba(154,106,240,.10);--purple-mid:rgba(154,106,240,.20);
---font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
+--font:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;--mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--serif:'Instrument Serif',Georgia,serif;
 --r:8px;--rl:14px;--rxl:18px;
 }
 html{scroll-behavior:smooth}
@@ -1116,6 +1117,7 @@ justify-content: center;
 
 }
 </style>
+<script src="/assets/autodng-rdap.js?v=1"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -1125,6 +1127,26 @@ justify-content: center;
   gtag('config', 'G-PVV83DRSFT');
 </script>
 <body>
+<!-- autodng:header:start -->
+<header class="adng-header">
+  <div class="adng-header__inner">
+    <a class="adng-brand" href="/index.html">auto<em>DNG</em></a>
+    <nav class="adng-nav" aria-label="Tools">
+      <a href="/index.html">Generator</a>
+      <a href="/autodng-upgraded.html" aria-current="page">Advanced</a>
+      <a href="/domains.html">Domains</a>
+      <a href="/valuation.html">Valuation</a>
+      <a href="/analyze.html">Analyzer</a>
+      <a href="/trademarks.html">Trademarks</a>
+      <a href="/vc-score.html">VC Score</a>
+      <a href="/handles.html">Handles</a>
+      <a href="/autodng-domain-intelligence.html">Intelligence</a>
+      <a href="/blog/index.html">Blog</a>
+    </nav>
+    <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
+  </div>
+</header>
+<!-- autodng:header:end -->
 <div class="app">
 <!-- ══ HEADER ══ -->
 <header class="hd">
@@ -2232,52 +2254,14 @@ sound:snd.score,tm,snd,prn,mem,spl,am};
 // names — so a bare 404 reported elevenlabs.io and vercel.co as AVAILABLE.
 // Resolve each TLD to its authoritative RDAP server via the IANA bootstrap
 // instead, and never claim availability for a TLD we cannot actually query.
-const RDAP_FALLBACKS = { io: 'https://rdap.identitydigital.services/rdap/' };
-let _rdapMap = null;
-
-async function loadRdapMap() {
-  if (_rdapMap) return _rdapMap;
-  try {
-    const c = JSON.parse(localStorage.getItem('dng_rdap_map') || 'null');
-    if (c && c.m && Date.now() - c.t < 7 * 864e5) { _rdapMap = c.m; return _rdapMap; }
-  } catch (e) {}
-  const map = {};
-  try {
-    const r = await fetch('https://data.iana.org/rdap/dns.json', { signal: AbortSignal.timeout(7000) });
-    if (r.ok) {
-      const j = await r.json();
-      for (const [tlds, urls] of (j.services || [])) for (const t of tlds) if (urls && urls[0]) map[t] = urls[0];
-    }
-  } catch (e) {}
-  Object.assign(map, RDAP_FALLBACKS);
-  _rdapMap = map;
-  try { localStorage.setItem('dng_rdap_map', JSON.stringify({ t: Date.now(), m: map })); } catch (e) {}
-  return map;
+// Domain availability lives in assets/autodng-rdap.js — shared with index.html
+// and Domain Intelligence so the rdap.org-404 false positive cannot reappear
+// in one copy while being fixed in another.
+// -> 'taken' | 'available' | 'nocheck' | 'unknown'
+async function checkRdap(domain){
+  const v = await autodngRdap.lookup(domain);
+  return v === 'likely' ? 'available' : v;   // DNS-only evidence still reads as available here
 }
-
-// -> 'taken' | 'available' | 'nocheck' (no RDAP server for this TLD) | 'unknown'
-async function checkRdap(domain) {
-  const tld = domain.split('.').pop().toLowerCase();
-  const map = await loadRdapMap();
-  const base = map[tld];
-  if (!base) return 'nocheck';
-  const url = base.replace(/\/+$/, '') + '/domain/' + encodeURIComponent(domain);
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const res = await fetch(url, {
-        mode: 'cors', credentials: 'omit',
-        signal: AbortSignal.timeout(7000),
-        headers: { 'Accept': 'application/rdap+json, application/json' }
-      });
-      if (res.status === 200) return 'taken';
-      if (res.status === 404) return 'available';
-      if (res.status === 429 || res.status >= 500) { await new Promise(r => setTimeout(r, 600)); continue; }
-      return 'unknown';
-    } catch (err) { if (attempt === 0) await new Promise(r => setTimeout(r, 400)); }
-  }
-  return 'unknown';
-}
-
 async function checkDomains(names, tlds) {
   const checks = [];
   for (const n of names) {

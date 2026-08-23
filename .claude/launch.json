@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "autodng-static",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5501"],
-      "port": 5501
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev-server.js"],
+      "autoPort": true
     }
   ]
 }

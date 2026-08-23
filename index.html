@@ -22,13 +22,14 @@
 <meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
 <!-- autodng:meta:end -->
 
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng.css?v=6">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -40,7 +41,7 @@
   --rose:#f0506a;--rose-dim:rgba(240,80,106,0.1);
   --amber:#f0b84a;--amber-dim:rgba(240,184,74,0.1);
   --purple:#9a6af0;--purple-dim:rgba(154,106,240,0.1);
-  --font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif;
+  --font:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;--mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--serif:'Instrument Serif',Georgia,serif;
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -323,6 +324,7 @@ SEO FOOTER
   ]
 }
 </script>
+<script src="/assets/autodng-rdap.js?v=1"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17440634922"></script>
@@ -340,28 +342,30 @@ SEO FOOTER
   gtag('js', new Date());
   gtag('config', 'G-PVV83DRSFT');
 </script>
-<body><div class="app">
+<body>
+<!-- autodng:header:start -->
+<header class="adng-header">
+  <div class="adng-header__inner">
+    <a class="adng-brand" href="/index.html">auto<em>DNG</em></a>
+    <nav class="adng-nav" aria-label="Tools">
+      <a href="/index.html" aria-current="page">Generator</a>
+      <a href="/autodng-upgraded.html">Advanced</a>
+      <a href="/domains.html">Domains</a>
+      <a href="/valuation.html">Valuation</a>
+      <a href="/analyze.html">Analyzer</a>
+      <a href="/trademarks.html">Trademarks</a>
+      <a href="/vc-score.html">VC Score</a>
+      <a href="/handles.html">Handles</a>
+      <a href="/autodng-domain-intelligence.html">Intelligence</a>
+      <a href="/blog/index.html">Blog</a>
+    </nav>
+    <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
+  </div>
+</header>
+<!-- autodng:header:end --><div class="app">
 
 <!-- HEADER -->
-<div class="header"><div class="header-inner">
-  <div class="logo">auto<em>DNG</em>.com</div>
-  <div class="hright">
-    <div class="ptabs" id="ptabs">
-      <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
-      <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
-      <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
-      <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-    </div>
-    <form style="display:inline" onsubmit="return false">
-      <div class="kwrap">
-        <input type="password" id="akey" placeholder="Paste API key…" autocomplete="off" oninput="onKey()">
-        <button class="eyebtn" type="button" onclick="toggleEye()">👁</button>
-      </div>
-    </form>
-    <div class="spill"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
-    <button class="helpbtn" onclick="toggleHelp()">get key ?</button>
-  </div>
-</div></div>
+
 
 <!-- HELP BANNER -->
 <div class="helpbar" id="helpbar"><div class="helpbar-inner">
@@ -415,17 +419,48 @@ SEO FOOTER
 </section>
 
 <!-- FORM -->
+<div class="header"><div class="header-inner">
+  <div class="logo">auto<em>DNG</em>.com</div>
+  <div class="hright">
+    <div class="ptabs" id="ptabs">
+      <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
+      <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
+      <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
+      <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
+    </div>
+    <form style="display:inline" onsubmit="return false">
+      <div class="kwrap">
+        <input type="password" id="akey" placeholder="Paste your provider API key" autocomplete="off" oninput="onKey()">
+        <button class="eyebtn" type="button" onclick="toggleEye()">👁</button>
+      </div>
+    </form>
+    <div class="spill"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
+    <button class="helpbtn" onclick="toggleHelp()">Where do I get a key?</button>
+  </div>
+</div></div>
 <div class="fwrap"><div class="fcard">
   <div class="flbl">Configure your brand search</div>
   
   <!-- Model row -->
-  <div style="margin-bottom:18px">
-    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:7px">AI Model</div>
+  <div class="fsec">
+    <div class="fsec-label">AI Model</div>
     <div class="model-row" id="mrow"></div>
   </div>
   
   <!-- Row 1: Industry, Archetype, Language -->
-  <div class="fg4">
+  <div class="fsec">
+    <div class="fsec-label">Core parameters</div>
+    <div class="fg4">
+  <div class="field">
+        <label for="mode">Optimise for</label>
+        <select id="mode" onchange="onModeChange()">
+          <option value="resale">💰 Aftermarket resale value</option>
+          <option value="startup">🚀 Startup naming (invented)</option>
+        </select>
+        <div id="modeHint" style="margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">
+          Real-word compounds &amp; Latin roots — the shapes that clear on HugeDomains &amp; BrandBucket.
+        </div>
+      </div>
     <div class="field">
       <label for="industry">Industry</label>
       <select id="industry">
@@ -478,17 +513,14 @@ SEO FOOTER
   </div>
   
   <!-- Row 2: Style, TLD, Audience -->
-  <div class="fg3">
-    <div class="field">
-      <label for="mode">Optimise for</label>
-      <select id="mode" onchange="onModeChange()">
-        <option value="resale">💰 Aftermarket resale value</option>
-        <option value="startup">🚀 Startup naming (invented)</option>
-      </select>
-      <div id="modeHint" style="margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">
-        Real-word compounds &amp; Latin roots — the shapes that clear on HugeDomains &amp; BrandBucket.
-      </div>
-    </div>
+  </div>
+
+  <details class="adng-refine">
+    <summary>Refine &mdash; style, TLD, audience, keywords</summary>
+  <div class="fsec">
+    <div class="fsec-label">Naming controls</div>
+    <div class="fg3">
+    
     <div class="field">
       <label for="style">Naming style</label>
       <select id="style" onchange="onFilterChange()">
@@ -530,13 +562,21 @@ SEO FOOTER
   </div>
   
   <!-- Keywords -->
-  <div class="fg2" style="margin-bottom:18px">
+  </div>
+  <div class="fsec">
+    <div class="fsec-label">Audience &amp; keywords</div>
+    <div class="fg2" style="margin-bottom:18px">
     <div class="field" style="grid-column:1/-1">
       <label for="kw">Product idea / keywords (optional)</label>
       <input type="text" id="kw" placeholder="e.g. agentic AI for medical records, zero-trust security…" onkeydown="if(event.key==='Enter')go()">
     </div>
   </div>
   
+    </div>
+
+  
+  </details>
+
   <!-- Generate + Advanced Mode -->
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
   <button class="genbtn" id="gbtn" onclick="go()" style="flex:1;min-width:200px">
@@ -1862,6 +1902,7 @@ function queueIdToDomain(id){
 
 async function retryDom(d){
   delete domC[d];
+  autodngRdap.clearCache(d);   // the module caches too; clear both or retry is a no-op
   const el=document.getElementById('dc-'+d.replace(/[.]/g,'-'));
   if(el){el.className='dchip ck';el.innerHTML=`${d} <span>⏳</span>`;}
   await chkDom(d);
@@ -1882,84 +1923,9 @@ function filt(k,btn){
 }
 
 // ── Domain Check ───────────────────────────────────────────────────
-const DOMAIN_TIMEOUT_MS=7000;
-
-// DNS-over-HTTPS. Cloudflare first, Google as fallback — a single resolver
-// rate-limiting was a large share of the "unknown" results.
-// -> 'nxdomain' (no such name) | 'resolves' (has NS) | 'nodata' | 'unknown'
-const DNS_TIMEOUT_MS=3500;   // DNS answers fast; a slow one is a blocked one
-let dnsStrikes=0,dnsDisabled=false;
-
-async function dnsProbe(d){
-  // Corporate networks and ad blockers commonly block DoH. Once it is clearly
-  // unavailable, stop paying the timeout on every remaining domain.
-  if(dnsDisabled)return 'unknown';
-  const resolvers=[
-    `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=NS`,
-    `https://dns.google/resolve?name=${encodeURIComponent(d)}&type=NS`
-  ];
-  for(const url of resolvers){
-    try{
-      const res=await fetch(url,{headers:{'Accept':'application/dns-json'},mode:'cors',signal:AbortSignal.timeout(DNS_TIMEOUT_MS)});
-      if(!res.ok)continue;
-      const j=await res.json();
-      dnsStrikes=0;
-      if(j.Status===3)return 'nxdomain';
-      if(j.Answer?.length>0)return 'resolves';
-      if(j.Status===0)return 'nodata';
-      return 'unknown';
-    }catch(e){}
-  }
-  if(++dnsStrikes>=3){dnsDisabled=true;console.info('autoDNG: DNS-over-HTTPS unreachable — relying on RDAP alone.');}
-  return 'unknown';
-}
-
-// ccTLDs that IANA's RDAP bootstrap does not list but which do run RDAP.
-// Without these, rdap.org answers 404 for REGISTERED names (elevenlabs.io,
-// vercel.co both 404) — indistinguishable from available, i.e. a false positive.
-const RDAP_FALLBACKS={ io:'https://rdap.identitydigital.services/rdap/' };
-let rdapBootstrap=null;
-
-// The authoritative TLD -> RDAP-server map, cached for a week. Using it directly
-// avoids rdap.org's redirect hop, whose target does not always send CORS headers.
-async function loadRdapBootstrap(){
-  if(rdapBootstrap)return rdapBootstrap;
-  try{
-    const c=JSON.parse(localStorage.getItem('dng_rdap_map')||'null');
-    if(c&&c.m&&Date.now()-c.t<7*864e5){rdapBootstrap=c.m;return rdapBootstrap;}
-  }catch(e){}
-  const map={};
-  try{
-    const r=await fetch('https://data.iana.org/rdap/dns.json',{signal:AbortSignal.timeout(DOMAIN_TIMEOUT_MS)});
-    if(r.ok){const j=await r.json();for(const [tlds,urls] of (j.services||[])){for(const t of tlds)if(urls&&urls[0])map[t]=urls[0];}}
-  }catch(e){}
-  Object.assign(map,RDAP_FALLBACKS);
-  rdapBootstrap=map;
-  try{localStorage.setItem('dng_rdap_map',JSON.stringify({t:Date.now(),m:map}));}catch(e){}
-  return map;
-}
-
-// -> 'taken' | 'free' | 'unsupported' (no RDAP server for this TLD) | 'unknown'
-async function rdapProbe(d){
-  const tld=d.split('.').pop().toLowerCase();
-  const map=await loadRdapBootstrap();
-  const base=map[tld];
-  // No known server: a 404 from a generic endpoint would prove nothing, so do
-  // not guess. 'unsupported' keeps us from inventing availability.
-  if(!base)return 'unsupported';
-  const url=base.replace(/\/+$/,'')+'/domain/'+encodeURIComponent(d);
-  for(let attempt=0;attempt<2;attempt++){
-    try{
-      const res=await fetch(url,{mode:'cors',credentials:'omit',signal:AbortSignal.timeout(DOMAIN_TIMEOUT_MS)});
-      if(res.status===200)return 'taken';
-      if(res.status===404)return 'free';
-      if(res.status===429||res.status>=500){await new Promise(r=>setTimeout(r,600));continue;}
-      return 'unknown';
-    }catch(e){ if(attempt===0)await new Promise(r=>setTimeout(r,400)); }
-  }
-  return 'unknown';
-}
-
+// Domain availability now lives in assets/autodng-rdap.js — one implementation
+// shared by index, Advanced Mode and Domain Intelligence. Three private copies
+// had each drifted into the same rdap.org-404 false positive independently.
 async function chkDom(d){
   if(domC[d]){applyDom(d,domC[d]);return domC[d];}
   // Previously this bailed out on localhost, so availability never worked while
@@ -1967,20 +1933,8 @@ async function chkDom(d){
   // default everywhere; pass ?dev=1 to explicitly opt out.
   if(location.search.includes('dev=1')){applyDom(d,'unknown');return'unknown';}
 
-  // Probe both in parallel; neither should gate the other. Many networks and
-  // ad blockers block DNS-over-HTTPS entirely, so DNS must never be required.
-  const [rdap,dns]=await Promise.all([rdapProbe(d),dnsProbe(d)]);
-
-  let r='unknown';
-  if(rdap==='taken'||dns==='resolves')            r='taken';      // either proves registration
-  else if(rdap==='free')                          r='available';  // authoritative registry 404 = definitive
-  else if(rdap==='unsupported'&&dns==='nxdomain') r='likely';     // DNS-only evidence, no RDAP server
-  else if(rdap==='unsupported')                   r='nocheck';    // e.g. .co — no CORS-reachable RDAP
-  // Reporting availability off a generic endpoint's 404 is how .io/.co produced
-  // false positives, so an unsupported TLD never yields an availability claim.
-
-  // Never cache a failure: leave it retryable rather than sticky.
-  if(r!=='unknown')domC[d]=r;
+  const r=await autodngRdap.lookup(d);
+  if(r!=='unknown')domC[d]=r;   // never cache a failure — leave it retryable
   applyDom(d,r);
   return r;
 }
@@ -2065,5 +2019,6 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 document.getElementById('exportModal').addEventListener('click',(e)=>{if(e.target.id==='exportModal')closeExportModal();});
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeExportModal();if((e.ctrlKey||e.metaKey)&&e.key==='e'){e.preventDefault();if(lastGeneratedNames.length)openExportModal('csv');}});
 </script>
+</div><!-- /.app -->
 </body>
 </html>

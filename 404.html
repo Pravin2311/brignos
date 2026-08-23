@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Page not found — autoDNG</title>
 <meta name="robots" content="noindex,follow">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <link rel="shortcut icon" href="/img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng.css?v=6">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#09090b;--bg2:#111115;--bg3:#18181e;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
 --text:#ededee;--muted:#6b6b72;--muted2:#9898a2;--lime:#c8f04a;
---font:'Geist',sans-serif;--mono:'Geist Mono',monospace;--serif:'Instrument Serif',serif}
+--font:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;--mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--serif:'Instrument Serif',Georgia,serif}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px}
@@ -38,6 +39,26 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
+<!-- autodng:header:start -->
+<header class="adng-header">
+  <div class="adng-header__inner">
+    <a class="adng-brand" href="/index.html">auto<em>DNG</em></a>
+    <nav class="adng-nav" aria-label="Tools">
+      <a href="/index.html">Generator</a>
+      <a href="/autodng-upgraded.html">Advanced</a>
+      <a href="/domains.html">Domains</a>
+      <a href="/valuation.html">Valuation</a>
+      <a href="/analyze.html">Analyzer</a>
+      <a href="/trademarks.html">Trademarks</a>
+      <a href="/vc-score.html">VC Score</a>
+      <a href="/handles.html">Handles</a>
+      <a href="/autodng-domain-intelligence.html">Intelligence</a>
+      <a href="/blog/index.html">Blog</a>
+    </nav>
+    <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
+  </div>
+</header>
+<!-- autodng:header:end -->
 <main>
   <div class="code">Error 404</div>
   <h1>That page has <em>no name</em>.</h1>
