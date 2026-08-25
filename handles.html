@@ -26,7 +26,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=15">
 <link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 :root{
@@ -47,11 +47,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);lin
 .header{position:sticky;top:0;z-index:20;background:rgba(9,9,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .header-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:18px}
 .logo{font-weight:800;font-size:40px;letter-spacing:-0.04em}.logo span{color:var(--lime)}
-.hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.ptabs{display:flex;gap:8px}.ptab{border:1px solid var(--border);background:var(--bg2);color:var(--muted);padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-family:var(--mono);transition:all .15s}.ptab.on{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}.ptab:hover:not(.on){border-color:var(--border);color:var(--text)}
-.kwrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.kwrap input,.select{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:13px;font-family:var(--sans)}.kwrap input{width:220px}.kwrap input:focus,.select:focus{outline:none;border-color:var(--lime)}
-.kstatus{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.kdot{width:6px;height:6px;border-radius:50%;background:var(--muted)}.kdot.ok{background:var(--lime);box-shadow:0 0 6px rgba(200,240,74,.5)}
+.hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.select{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:13px;font-family:var(--sans)}.select:focus{outline:none;border-color:var(--lime)}
+.kstatus{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
 
 /* Buttons */
 .btn{border:none;background:var(--lime);color:#000;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}.btn:hover{opacity:.92;transform:translateY(-1px)}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-secondary{background:var(--bg2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--lime);color:var(--lime)}
@@ -202,34 +199,7 @@ textarea.input{resize:vertical;min-height:100px;font-family:var(--mono);line-hei
     width:100%;
     flex-direction:column;
     gap:12px;
-  }
-
-  .ptabs{
-    width:100%;
-    overflow-x:auto;
-    display:flex;
-    flex-wrap:nowrap;
-    gap:8px;
-    padding-bottom:2px;
-  }
-
-  .ptab{
-    flex:1;
-    min-width:90px;
-    text-align:center;
-    padding:12px 8px;
-    font-size:11px;
-  }
-
-  .kwrap{
-    width:100%;
-    flex-direction:column;
-    align-items:stretch;
-  }
-
-  .kwrap input,
-  .select,
-  .getkeybtn{
+  }.select,.getkeybtn{
     width:100%;
   }
 
