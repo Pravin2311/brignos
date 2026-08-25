@@ -27,7 +27,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
-<link rel="stylesheet" href="/assets/autodng-system.css?v=14">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=15">
 <link rel="stylesheet" href="/assets/autodng.css?v=8">
 <style>
 *,::before,::after{box-sizing:border-box;margin:0;padding:0}
@@ -61,21 +61,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .logo em{color:var(--lime);font-style:italic}
 .logo sup{color:var(--muted);font-size:11px;font-family:var(--mono);letter-spacing:0;vertical-align:super;margin-left:2px}
 .hright{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:nowrap}
-.ptabs{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:3px;flex-shrink:0}
-.ptab{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.ptab.on{background:var(--bg2);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.6)}
-.ptab:hover:not(.on){color:var(--text)}
-.kwrap{position:relative;flex:1;max-width:240px}
-.kwrap input{width:100%;font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:9px 36px 9px 12px;border-radius:8px;outline:none;transition:all .2s}
-.kwrap input:focus{border-color:var(--lime);color:var(--text);background:var(--bg4)}
-.kwrap input::placeholder{color:var(--muted)}
-.eyebtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:0;transition:color .15s}
-.eyebtn:hover{color:var(--lime)}
 .mdl-sel{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted2);padding:8px 10px;border-radius:8px;outline:none;cursor:pointer;max-width:150px;flex-shrink:0}
 .mdl-sel:focus{border-color:var(--lime)}
 .kstat{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:6px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .4s;flex-shrink:0}
-.sdot.ok{background:var(--lime);box-shadow:0 0 8px var(--lime-glow)}
 .hdbtn{font-family:var(--mono);font-size:11px;padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap}
 .hdbtn:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-dim)}
 
@@ -98,7 +86,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .icard{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px}
 .icard-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:22px;display:flex;align-items:center;gap:8px}
 .icard-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.flbl{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
 .finput,.fselect,.ftextarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:14px;padding:12px 14px;border-radius:10px;outline:none;transition:border-color .2s,background .2s}
 .finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--lime);background:var(--bg4)}
 .finput::placeholder,.ftextarea::placeholder{color:var(--muted)}
@@ -279,8 +266,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   .dims-grid{grid-template-columns:repeat(2,1fr)}
   .hd-in{height:auto;padding:12px 20px;flex-wrap:wrap}
   .hright{width:100%;flex-wrap:wrap}
-  .kwrap{flex:1;max-width:none}
-  .ptabs{flex-shrink:0}
   .pitch-grid,.comps-grid{grid-template-columns:1fr}
 }
 @media(max-width:600px){

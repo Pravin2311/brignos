@@ -622,3 +622,167 @@ header.header:has(input) .header-inner, header.hd:has(input) .header-inner, head
   header.hd:has(input) .ptab,
   header.header:has(input) .ptab { min-height: 44px; }
 }
+
+/* ============================================================
+   Form components — canonical definitions
+
+   Every tool page carried its own copy of these, so the same
+   component rendered differently depending on which page you were
+   on: the form card was 16px/26px on the generator and 18px/30px in
+   Advanced Mode, .fg4 was 3 columns on one and 4 on the other, chips
+   differed by a pixel of radius, and the band label used two
+   slightly different greys.
+
+   Defined once here; the per-page copies are removed by
+   scripts/strip-form-css.js so this layer is the only source.
+
+   Grids use auto-fit rather than a fixed column count — the pages
+   have different field counts, and a fixed count left the generator
+   wrapping 4 fields across 3 columns.
+   ============================================================ */
+
+.fcard, .fc {
+  background: var(--adng-surface-1);
+  border: 1px solid var(--adng-line);
+  border-radius: var(--adng-r-lg);
+  padding: var(--adng-s5);
+}
+
+.fg2, .fg3, .fg4 {
+  display: grid;
+  gap: var(--adng-s3);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.fg2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+.field { min-width: 0; }
+.field label, .flbl {
+  display: block;
+  font-family: var(--adng-mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--adng-ink-3);
+  margin-bottom: 7px;
+}
+.field select,
+.field input[type="text"],
+.field input[type="password"] {
+  width: 100%;
+  min-width: 0;
+  background: var(--adng-surface-2);
+  border: 1px solid var(--adng-line-2);
+  border-radius: var(--adng-r);
+  color: var(--adng-ink);
+  font-family: var(--adng-sans);
+  font-size: 14px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color .18s;
+}
+.field select:focus,
+.field input:focus { border-color: var(--adng-accent); }
+
+.mrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--adng-s2);
+}
+.mchip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  font-family: var(--adng-mono);
+  font-size: 11px;
+  padding: 7px 14px;
+  border-radius: var(--adng-r-sm);
+  border: 1px solid var(--adng-line-2);
+  background: transparent;
+  color: var(--adng-ink-2);
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background-color .15s;
+}
+.mchip.on {
+  border-color: rgba(200, 240, 74, .4);
+  color: var(--adng-accent);
+  background: var(--adng-accent-dim);
+}
+
+/* ---------- Provider controls (canonical base) ----------
+   These existed only as per-page copies, differing by a pixel or two
+   of padding and radius. Base styles live here now so the API bar
+   looks identical on every tool; the responsive and touch-target
+   rules further up still apply on top. */
+
+.ptabs {
+  display: flex;
+  gap: 3px;
+  background: var(--adng-surface-2);
+  border: 1px solid var(--adng-line-2);
+  border-radius: var(--adng-r-sm);
+  padding: 3px;
+  flex-shrink: 0;
+}
+.ptab {
+  font-family: var(--adng-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--adng-ink-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .15s, color .15s;
+}
+.ptab:hover { color: var(--adng-ink); }
+.ptab.on { background: var(--adng-surface-3); color: var(--adng-ink); }
+
+.kwrap { position: relative; min-width: 0; }
+.kwrap input {
+  width: 100%;
+  background: var(--adng-surface-2);
+  border: 1px solid var(--adng-line-2);
+  border-radius: var(--adng-r);
+  color: var(--adng-ink);
+  font-family: var(--adng-mono);
+  font-size: 12px;
+  padding: 11px 34px 11px 14px;
+  outline: none;
+  transition: border-color .18s;
+}
+.kwrap input:focus { border-color: var(--adng-accent); }
+
+.eyebtn {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--adng-ink-3);
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+}
+.eyebtn:hover { color: var(--adng-ink-2); }
+
+.spill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--adng-mono);
+  font-size: 10px;
+  color: var(--adng-ink-3);
+  white-space: nowrap;
+}
+.sdot, .kdot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--adng-ink-3);
+  flex: none;
+}
+.sdot.ok, .kdot.ok { background: var(--adng-accent); }
