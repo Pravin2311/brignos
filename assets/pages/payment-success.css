@@ -1,0 +1,9 @@
+
+        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --text-dark: #0f172a; --border: #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #334155; background: #f8fafc; margin: 0; }
+        .site-header { border-bottom: 1px solid var(--border); padding: 20px 0; background: #fff; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); text-decoration: none; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .site-footer { background: #0f172a; color: #94a3b8; padding: 40px 20px; text-align: center; font-size: 0.9rem; margin-top: 80px; }
+    
