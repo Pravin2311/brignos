@@ -545,14 +545,19 @@ header.header:has(input) .header-inner, header.hd:has(input) .header-inner, head
    ============================================================ */
 
 .header:has(input), header.hd:has(input), header.header:has(input) {
-  position: relative;
-  padding-top: var(--adng-s6);
+  padding-top: var(--adng-s3);
 }
+/* Static, not absolutely positioned: the label's own text needs ~283px at
+   10px/uppercase/tracked-out, which exceeds the bar's width below ~330px
+   viewports. Absolute positioning gave it a fixed intrinsic width that
+   couldn't shrink, so at narrow widths it ran past the bar's right edge
+   ("...for smarter names" rendering outside the card, reported as text
+   getting cut off). Flowing normally lets it wrap onto a second line
+   instead, which is a graceful degrade rather than an overflow. */
 .header:has(input)::before, header.hd:has(input)::before, header.header:has(input)::before {
   content: 'AI provider — optional, for smarter names';
-  position: absolute;
-  top: var(--adng-s3);
-  left: var(--adng-s4);
+  display: block;
+  margin: 0 var(--adng-s4) var(--adng-s3);
   font-family: var(--adng-mono);
   font-size: 10px;
   letter-spacing: .09em;
