@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/analyze.css?v=2">
-<script src="/assets/autodng-keys.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -276,16 +276,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 // AI enhancement uses the provider and key chosen on /settings.html.
-// The first model in each list is the default; the choice is remembered per provider.
-const AI_MODELS = {
-  openrouter: ['deepseek/deepseek-chat', 'meta-llama/llama-3.3-70b-instruct', 'google/gemini-2.0-flash-001', 'openai/gpt-4o-mini'],
-  openai: ['gpt-4o-mini', 'gpt-4o'],
-  gemini: ['gemini-2.5-flash', 'gemini-2.5-pro'],
-  groq: ['llama-3.3-70b-versatile', 'qwen-qwq-32b', 'llama-3.1-8b-instant']
-};
+// The model is shared too: picking one here changes it in Settings and every tool.
 let AI_PROV = autodngKeys.getProvider();
 let API_KEY = autodngKeys.get(AI_PROV) || '';
-let AI_MODEL = AI_MODELS[AI_PROV][0];
+let AI_MODEL = autodngKeys.getModel(AI_PROV);
 let analysisCache = new Map();
 let lastResult = null;
 
@@ -1268,16 +1262,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buildModelSel() {
     const sel = document.getElementById('modelSel');
-    const models = AI_MODELS[AI_PROV];
-    const saved = localStorage.getItem('an_m_' + AI_PROV);
-    AI_MODEL = models.includes(saved) ? saved : models[0];
-    sel.innerHTML = models.map(m => `<option value="${m}"${m === AI_MODEL ? ' selected' : ''}>${m.split('/').pop()}</option>`).join('');
+    AI_MODEL = autodngKeys.getModel(AI_PROV);
+    sel.innerHTML = autodngKeys.meta(AI_PROV).models.map(m => `<option value="${m.id}"${m.id === AI_MODEL ? ' selected' : ''}>${m.l}</option>`).join('');
     sel.hidden = !API_KEY;
   }
 
   document.getElementById('modelSel').addEventListener('change', e => {
     AI_MODEL = e.target.value;
-    localStorage.setItem('an_m_' + AI_PROV, AI_MODEL);
+    autodngKeys.setModel(AI_PROV, AI_MODEL);
     analysisCache.clear();
   });
 

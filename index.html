@@ -30,7 +30,7 @@
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/index.css?v=2">
 <script src="/assets/autodng-rdap.js?v=2"></script>
-<script src="/assets/autodng-keys.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -637,14 +637,10 @@ PAGE: TOOLS
 // ═══════════════════════════════════════════════════════════════════════
 // ── Providers ──────────────────────────────────────────────────────────
 const PROVS = {
-openrouter:{ ph:'sk-or-…', val:k=>k.startsWith('sk-or-'),
-models:[{id:'deepseek/deepseek-chat',l:'DeepSeek V3'},{id:'meta-llama/llama-3.3-70b-instruct',l:'Llama 3.3'},{id:'google/gemini-2.0-flash-001',l:'Gemini Flash'},{id:'anthropic/claude-3.5-sonnet',l:'Claude 3.5'}]},
-openai:{ ph:'sk-…', val:k=>k.startsWith('sk-'),
-models:[{id:'gpt-4o',l:'GPT-4o'},{id:'gpt-4o-mini',l:'GPT-4o Mini'}]},
-gemini:{ ph:'AIzaSy…', val:k=>k.trim().length>20,
-models:[{id:'gemini-2.5-flash',l:'Gemini 2.5 Flash'},{id:'gemini-2.5-pro',l:'Gemini 2.5 Pro'}]},
-groq:{ ph:'gsk…', val:k=>k.startsWith('gsk'),
-models:[{id:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{id:'qwen-qwq-32b',l:'Qwen QwQ'},{id:'llama-3.1-8b-instant',l:'Llama Instant'}]}
+openrouter:{ ph:'sk-or-…', val:k=>k.startsWith('sk-or-')},
+openai:{ ph:'sk-…', val:k=>k.startsWith('sk-')},
+gemini:{ ph:'AIzaSy…', val:k=>k.trim().length>20},
+groq:{ ph:'gsk…', val:k=>k.startsWith('gsk')}
 };
 // ── VC DNA ─────────────────────────────────────────────────────────────
 const VCDNA = {
@@ -752,7 +748,7 @@ const W_MUTSEED=['nimbus','crest','meridian','cobalt','indigo','amber','onyx','q
 // ── State ──────────────────────────────────────────────────────────────
 let prov = autodngKeys.getProvider();
 let key  = autodngKeys.get(prov) || '';
-let mdl  = localStorage.getItem('dngm'+prov) || PROVS[prov].models[0].id;
+let mdl  = autodngKeys.getModel(prov);
 let vcId = 'none', stageId = 'seed';
 let busy = false, pill = 'all';
 let lastNames = [], pendingFmt = 'csv';
@@ -2071,16 +2067,16 @@ if(id==='premium'){renderPremium();startCountdown();}
 // Provider and key are chosen once on /settings.html and shared by every tool.
 function syncProvider(){
 prov=autodngKeys.getProvider();key=autodngKeys.get(prov)||'';
-mdl=localStorage.getItem('dngm'+prov)||PROVS[prov].models[0].id;
+mdl=autodngKeys.getModel(prov);
 buildModelRow();updateKeyStatus();
 }
 autodngKeys.onChange(syncProvider);
 function buildModelRow(){
-const models=PROVS[prov].models;
+const models=autodngKeys.meta(prov).models;
 const row=document.getElementById('mrow');
 row.innerHTML=models.map(m=>`<button class="mchip${m.id===mdl?' on':''}" onclick="selectMdl('${m.id}',this)">${m.l}</button>`).join('');
 }
-function selectMdl(id,el){mdl=id;localStorage.setItem('dngm'+prov,id);document.querySelectorAll('.mchip').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function selectMdl(id,el){mdl=autodngKeys.setModel(prov,id);document.querySelectorAll('.mchip').forEach(b=>b.classList.remove('on'));el.classList.add('on');updateKeyStatus();}
 function updateKeyStatus(){
 const valid=key&&PROVS[prov].val(key);
 document.getElementById('sdot').className='sdot'+(valid?' ok':'');

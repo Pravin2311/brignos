@@ -9,17 +9,17 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="autoDNG">
 <meta property="og:title" content="AI Provider Settings — autoDNG">
-<meta property="og:description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<meta property="og:description" content="Choose your AI provider, model and API key once. Every autoDNG tool uses them. Keys stay in your browser.">
 <meta property="og:url" content="https://autodng.com/settings.html">
 <meta property="og:image" content="https://autodng.com/img/og-cover.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI Provider Settings — autoDNG">
-<meta name="twitter:description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<meta name="twitter:description" content="Choose your AI provider, model and API key once. Every autoDNG tool uses them. Keys stay in your browser.">
 <meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
 <!-- autodng:meta:end -->
-<meta name="description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<meta name="description" content="Choose your AI provider, model and API key once. Every autoDNG tool uses them. Keys stay in your browser.">
 <link rel="canonical" href="https://autodng.com/settings.html">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
@@ -28,8 +28,8 @@
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
-<link rel="stylesheet" href="/assets/pages/settings.css?v=1">
-<script src="/assets/autodng-keys.js?v=2"></script>
+<link rel="stylesheet" href="/assets/pages/settings.css?v=2">
+<script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <body>
 <!-- autodng:header:start -->
@@ -57,7 +57,7 @@
   <a class="st-back" id="back" href="/index.html" hidden>← Back</a>
 
   <h1>AI provider <em>settings</em></h1>
-  <p class="st-lede">Pick a provider and paste your API key once. The Generator, Valuation, Trademarks, VC Score, Handles and Analyzer tools all use it.</p>
+  <p class="st-lede">Pick a provider and model, and paste your API key once. The Generator, Valuation, Trademarks, VC Score, Handles and Analyzer tools all use it.</p>
 
   <div class="st-status" id="status" role="status"></div>
 
@@ -65,6 +65,15 @@
     <h2>Active provider</h2>
     <p class="st-hint">The tools send requests to this provider. Keys for the others stay saved, so you can switch back at any time.</p>
     <div class="st-provs" id="provs" role="radiogroup" aria-label="Active AI provider"></div>
+  </section>
+
+  <section class="st-sec">
+    <h2>Model</h2>
+    <p class="st-hint">Used by every tool. Changing the model inside a tool changes it here too. Each provider remembers its own choice.</p>
+    <div class="st-model">
+      <label for="model" id="modelLabel">Model</label>
+      <select class="adng-select" id="model"></select>
+    </div>
   </section>
 
   <section class="st-sec">
@@ -144,11 +153,23 @@
     const el = $('status');
     el.className = 'st-status ' + (st === 'ok' ? 'ok' : 'warn');
     el.innerHTML = st === 'ok'
-      ? `<span class="st-dot"></span>All tools are using <strong>${esc(m.label)}</strong>.`
+      ? `<span class="st-dot"></span>All tools are using <strong>${esc(m.label)}</strong> with <strong>${esc(m.models.find(x => x.id === K.getModel(p)).l)}</strong>.`
       : `<span class="st-dot"></span>Add a <strong>${esc(m.label)}</strong> key below. Until then, the AI features won't work.`;
   }
 
-  function refresh() { renderProviders(); renderStatus(); }
+  function renderModel() {
+    const p = K.getProvider(), cur = K.getModel(p);
+    $('modelLabel').textContent = K.meta(p).label + ' model';
+    $('model').innerHTML = K.meta(p).models.map(m =>
+      `<option value="${esc(m.id)}"${m.id === cur ? ' selected' : ''}>${esc(m.l)} — ${esc(m.id)}</option>`).join('');
+  }
+
+  function refresh() { renderProviders(); renderModel(); renderStatus(); }
+
+  $('model').addEventListener('change', e => {
+    K.setModel(K.getProvider(), e.target.value);
+    renderStatus();
+  });
 
   $('provs').addEventListener('click', e => {
     const b = e.target.closest('.st-prov');

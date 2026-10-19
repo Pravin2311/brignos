@@ -63,7 +63,7 @@ const PAGES = {
   'settings.html': {
     url: '/settings.html',
     title: 'AI Provider Settings — autoDNG',
-    desc: 'Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.',
+    desc: 'Choose your AI provider, model and API key once. Every autoDNG tool uses them. Keys stay in your browser.',
   },
   'pricing-checkout.html': {
     url: '/pricing-checkout.html',

@@ -30,7 +30,7 @@
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/handles.css?v=1">
-<script src="/assets/autodng-keys.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -304,10 +304,10 @@
 <script>
 // ── Provider Config ───────────────────────────────────────────────
 const PROVS = {
-  openrouter: { ph: 'sk-or-...', models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct'], val: k => k.startsWith('sk-or-') },
-  openai: { ph: 'sk-...', models: ['gpt-4o', 'gpt-4.1-mini'], val: k => k.startsWith('sk-') },
-  gemini: { ph: 'AIza...', models: ['gemini-2.5-flash', 'gemini-2.5-pro'], val: k => k.startsWith('AIza') },
-  groq: { ph: 'gsk_...', models: ['llama-3.3-70b-versatile', 'meta-llama/llama-4-scout-17b-16e-instruct'], val: k => k.startsWith('gsk_') }
+  openrouter: { ph: 'sk-or-...', val: k => k.startsWith('sk-or-') },
+  openai: { ph: 'sk-...', val: k => k.startsWith('sk-') },
+  gemini: { ph: 'AIza...', val: k => k.startsWith('AIza') },
+  groq: { ph: 'gsk_...', val: k => k.startsWith('gsk_') }
 };
 
 // ── State ─────────────────────────────────────────────────────────
@@ -403,7 +403,7 @@ function init() {
   syncProvider();
   autodngKeys.onChange(syncProvider);
   document.getElementById('model').addEventListener('change', e => {
-    localStorage.setItem('sh_m_' + prov, e.target.value);
+    autodngKeys.setModel(prov, e.target.value);
   });
   document.getElementById('handle').addEventListener('keydown', e => {
     if (e.key === 'Enter') analyzeHandle();
@@ -421,13 +421,12 @@ function updateKeyStatus(key) {
 function renderModels() {
   const sel = document.getElementById('model');
   sel.innerHTML = '';
-  PROVS[prov].models.forEach(m => {
+  autodngKeys.meta(prov).models.forEach(m => {
     const o = document.createElement('option');
-    o.value = m; o.textContent = m;
+    o.value = m.id; o.textContent = m.l;
     sel.appendChild(o);
   });
-  const stored = localStorage.getItem('sh_m_' + prov);
-  sel.value = PROVS[prov].models.includes(stored) ? stored : PROVS[prov].models[0];
+  sel.value = autodngKeys.getModel(prov);
 }
 
 // Provider and key are chosen once on /settings.html and shared by every tool.

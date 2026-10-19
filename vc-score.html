@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/vc-score.css?v=1">
-<script src="/assets/autodng-keys.js?v=2"></script>
+<script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -424,14 +424,10 @@
 
 // ── Providers ──────────────────────────────────────────────────────────
 const PROVS = {
-  openrouter:{ ph:'sk-or-…', val:k=>k.startsWith('sk-or-'),
-    models:['deepseek/deepseek-chat','meta-llama/llama-3.3-70b-instruct','google/gemini-2.0-flash-001','openai/gpt-4o-mini']},
-  openai:    { ph:'sk-…', val:k=>k.startsWith('sk-'),
-    models:['gpt-4o','gpt-4o-mini']},
-  gemini:    { ph:'AIzaSy…', val:k=>k.startsWith('AIza'),
-    models:['gemini-2.5-flash','gemini-2.5-pro']},
-  groq:      { ph:'gsk…', val:k=>k.startsWith('gsk'),
-    models:['llama-3.3-70b-versatile','qwen-qwq-32b','llama-3.1-8b-instant']}
+  openrouter:{ ph:'sk-or-…', val:k=>k.startsWith('sk-or-')},
+  openai:    { ph:'sk-…', val:k=>k.startsWith('sk-')},
+  gemini:    { ph:'AIzaSy…', val:k=>k.startsWith('AIza')},
+  groq:      { ph:'gsk…', val:k=>k.startsWith('gsk')}
 };
 
 // ── TM Brand pool ──────────────────────────────────────────────────────
@@ -465,7 +461,7 @@ const NEGROOTS = ['mord','tot','krank','gift','faul','dreck','mal','mort','laid'
 // ── State ──────────────────────────────────────────────────────────────
 let prov = autodngKeys.getProvider();
 let key  = autodngKeys.get(prov) || '';
-let mdl  = localStorage.getItem('vcs_m_'+prov) || PROVS[prov].models[0];
+let mdl  = autodngKeys.getModel(prov);
 let lastResult = null;
 let busy = false;
 
@@ -1407,15 +1403,15 @@ function stepDone(i){
 // Provider and key are chosen once on /settings.html and shared by every tool.
 function syncProvider(){
   prov=autodngKeys.getProvider();key=autodngKeys.get(prov)||'';
-  mdl=localStorage.getItem('vcs_m_'+prov)||PROVS[prov].models[0];
+  mdl=autodngKeys.getModel(prov);
   buildModelSelect();updateKeyStatus();
 }
 autodngKeys.onChange(syncProvider);
 function buildModelSelect(){
   const sel=document.getElementById('mdlSel');
-  sel.innerHTML=PROVS[prov].models.map(m=>`<option value="${m}" ${m===mdl?'selected':''}>${m.split('/').pop().slice(0,20)}</option>`).join('');
+  sel.innerHTML=autodngKeys.meta(prov).models.map(m=>`<option value="${m.id}" ${m.id===mdl?'selected':''}>${m.l}</option>`).join('');
 }
-function onMdl(){mdl=document.getElementById('mdlSel').value;localStorage.setItem('vcs_m_'+prov,mdl);}
+function onMdl(){mdl=document.getElementById('mdlSel').value;autodngKeys.setModel(prov,mdl);}
 function updateKeyStatus(){
   const valid=key&&PROVS[prov].val(key);
   document.getElementById('sdot').className='sdot'+(valid?' ok':'');

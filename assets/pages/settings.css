@@ -30,6 +30,10 @@ body{background:var(--adng-bg);color:var(--adng-ink);font-family:var(--adng-sans
 .st-badge.ok{color:var(--adng-accent);border-color:rgba(200,240,74,.35)}
 .st-badge.bad{color:var(--adng-amber);border-color:rgba(240,184,74,.35)}
 
+.st-model{display:flex;flex-direction:column;gap:var(--adng-s2);max-width:420px}
+.st-model label{font-weight:600;font-size:var(--adng-t-sm)}
+.st-model .adng-select{width:100%}
+
 .st-keys{display:flex;flex-direction:column;gap:var(--adng-s4)}
 .st-key{padding:var(--adng-s4);border-radius:var(--adng-r);border:1px solid var(--adng-line);background:var(--adng-surface-1)}
 .st-key__head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--adng-s3);margin-bottom:var(--adng-s2)}
