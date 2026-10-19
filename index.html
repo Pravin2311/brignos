@@ -27,10 +27,10 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
-<link rel="stylesheet" href="/assets/autodng.css?v=8">
+<link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/index.css?v=2">
 <script src="/assets/autodng-rdap.js?v=2"></script>
-<script src="/assets/autodng-keys.js?v=1"></script>
+<script src="/assets/autodng-keys.js?v=2"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -54,6 +54,7 @@
       <a href="/handles.html">Handles</a>
       <a href="/autodng-domain-intelligence.html">Intelligence</a>
       <a href="/blog/index.html">Blog</a>
+      <a href="/settings.html">Settings</a>
     </nav>
     <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
   </div>
@@ -72,39 +73,10 @@
 <button class="ntab" onclick="switchPage('tools',this)">🛠 Tools</button>
 <a href="/brand-naming-consulting.html" class="ntab">🎯 Naming Advisory</a>
 </div>
-<!-- Provider -->
-<div class="ptabs" id="ptabs">
-<button class="ptab" onclick="switchProv('openrouter',this)">OR</button>
-<button class="ptab" onclick="switchProv('openai',this)">OAI</button>
-<button class="ptab" onclick="switchProv('gemini',this)">Gem</button>
-<button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-</div>
-<!-- Key -->
-<div class="kwrap">
-<input type="password" id="akey" placeholder="API key…" autocomplete="off" oninput="onKey()">
-<button class="eyebtn" onclick="toggleEye()">👁</button>
-</div>
-<div class="kstat"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
-<button class="helpbtn" onclick="toggleHelp()">get key ?</button>
+<a class="kstat adng-keychip" href="/settings.html?from=index.html" title="Change AI provider and API keys"><span class="sdot" id="sdot"></span><span id="stxt">no key</span><span class="adng-keychip__gear">⚙</span></a>
 </div>
 </div>
 </header>
-<!-- ══ HELP BAR ══ -->
-<div class="helpbar" id="helpbar"><div class="helpbar-in">
-<div class="hb-txt">
-<strong>Get a free API key</strong> — pick your provider, then:
-<div class="hb-links">
-<a class="hblink" href="https://openrouter.ai/keys" target="_blank" rel="noopener">→ OpenRouter</a>
-<a class="hblink" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">→ OpenAI</a>
-<a class="hblink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">→ Google AI Studio (free)</a>
-<a class="hblink" href="https://console.groq.com/keys" target="_blank" rel="noopener">→ Groq (free, fast)</a>
-</div>
-<div style="margin-top:10px;font-size:11px;color:var(--muted)">
-OpenRouter: <span class="hbcode">sk-or-</span> &nbsp;·&nbsp; OpenAI: <span class="hbcode">sk-</span> &nbsp;·&nbsp; Gemini: <span class="hbcode">AIza</span> &nbsp;·&nbsp; Groq: <span class="hbcode">gsk</span>
-</div>
-</div>
-<button class="hbclose" onclick="toggleHelp()">×</button>
-</div></div>
 <!-- ══════════════════════════════════════════════════════════════
 PAGE: GENERATOR
 ══════════════════════════════════════════════════════════════ -->
@@ -604,7 +576,7 @@ PAGE: TOOLS
 <div class="mt">⚠️ No API Key Detected</div>
 <div class="ms">Without an API key, names use the <strong>local combinatorial engine only</strong> — 12 strategies, billions of permutations, but no AI taglines, origin stories, or pitch lines.<br><br><span style="color:var(--amber)">A free Groq or Gemini key adds AI enrichment on top.</span></div>
 <div class="mact">
-<button class="mb s" onclick="closeModal('nokeyModal')">Add Key First</button>
+<a class="mb s" href="/settings.html?from=index.html" style="text-decoration:none;text-align:center">Add Key First</a>
 <button class="mb p" onclick="closeModal('nokeyModal');go(true)">Generate Locally</button>
 </div>
 </div></div>
@@ -646,6 +618,7 @@ PAGE: TOOLS
       <ul>
         <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
         <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="settings.html">AI Provider Settings</a></li>
       </ul>
     </nav>
   </div>
@@ -777,11 +750,11 @@ const W_SUFFIX=['ly','ify','io','eo','ia','ium','ora','era','ix','ex','ax','ox',
 // ── Mutation seed pool (real-adjacent words for vowel/consonant morphs) ─
 const W_MUTSEED=['nimbus','crest','meridian','cobalt','indigo','amber','onyx','quartz','garnet','jasper','opal','topaz','zircon','beryl','coral','ivory','sienna','umber','ochre','slate','flint','basalt','granite','marble','silica','helium','neon','argon','xenon','radon','krypton','lithium','sodium','carbon','silicon','titan','vortex','cipher','vector','tensor','axiom','lemma','theorem','prism','spectra','photon','quark','boson','lepton','hadron'];
 // ── State ──────────────────────────────────────────────────────────────
-let prov = localStorage.getItem('dngp') || 'openrouter';
+let prov = autodngKeys.getProvider();
 let key  = autodngKeys.get(prov) || '';
 let mdl  = localStorage.getItem('dngm'+prov) || PROVS[prov].models[0].id;
 let vcId = 'none', stageId = 'seed';
-let busy = false, pill = 'all', helpOn = false;
+let busy = false, pill = 'all';
 let lastNames = [], pendingFmt = 'csv';
 let steerText = '';
 // Zero-repeat memory: persists last 20,000 generated names across sessions
@@ -2095,32 +2068,24 @@ document.getElementById('page-'+id).classList.add('on');
 el.classList.add('on');
 if(id==='premium'){renderPremium();startCountdown();}
 }
-function switchProv(p,el){
-prov=p;localStorage.setItem('dngp',p);
-key=autodngKeys.get(p)||'';mdl=localStorage.getItem('dngm'+p)||PROVS[p].models[0].id;
-document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-document.getElementById('akey').placeholder=PROVS[p].ph;
-document.getElementById('akey').value=key;
-updateKeyStatus();buildModelRow();
+// Provider and key are chosen once on /settings.html and shared by every tool.
+function syncProvider(){
+prov=autodngKeys.getProvider();key=autodngKeys.get(prov)||'';
+mdl=localStorage.getItem('dngm'+prov)||PROVS[prov].models[0].id;
+buildModelRow();updateKeyStatus();
 }
+autodngKeys.onChange(syncProvider);
 function buildModelRow(){
 const models=PROVS[prov].models;
 const row=document.getElementById('mrow');
 row.innerHTML=models.map(m=>`<button class="mchip${m.id===mdl?' on':''}" onclick="selectMdl('${m.id}',this)">${m.l}</button>`).join('');
 }
 function selectMdl(id,el){mdl=id;localStorage.setItem('dngm'+prov,id);document.querySelectorAll('.mchip').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
-function onKey(){
-key=document.getElementById('akey').value.trim();
-if(key)autodngKeys.set(prov, key);
-updateKeyStatus();
-}
 function updateKeyStatus(){
 const valid=key&&PROVS[prov].val(key);
 document.getElementById('sdot').className='sdot'+(valid?' ok':'');
-document.getElementById('stxt').textContent=valid?`${prov} · ${mdl.split('/').pop().slice(0,14)}`:'no key';
+document.getElementById('stxt').textContent=valid?`${autodngKeys.meta(prov).label} · ${mdl.split('/').pop().slice(0,14)}`:'add API key';
 }
-function toggleEye(){const i=document.getElementById('akey');i.type=i.type==='password'?'text':'password';}
-function toggleHelp(){helpOn=!helpOn;document.getElementById('helpbar').classList.toggle('on',helpOn);}
 function selVC(id,el){
 vcId=id;document.querySelectorAll('.vcchip').forEach(b=>b.classList.remove('on'));el.classList.add('on');
 const vc=VCDNA[id];const note=document.getElementById('vcNote');
@@ -2228,18 +2193,6 @@ document.body.appendChild(a);a.click();document.body.removeChild(a);
 document.addEventListener('DOMContentLoaded',()=>{
 // Fetch the resale model up front so appraisals are ready before the first run.
 loadAftermarketIntel();
-const savedProv=localStorage.getItem('dngp')||'openrouter';
-document.querySelectorAll('.ptab').forEach(b=>{
-if(b.textContent.toLowerCase().includes(savedProv.slice(0,2).toLowerCase())||
-(savedProv==='openrouter'&&b.textContent==='OR')||
-(savedProv==='openai'&&b.textContent==='OAI')||
-(savedProv==='gemini'&&b.textContent==='Gem')||
-(savedProv==='groq'&&b.textContent==='Groq')){
-b.classList.add('on');
-}
-});
-document.getElementById('akey').placeholder=PROVS[prov].ph;
-document.getElementById('akey').value=key;
 buildModelRow();updateKeyStatus();
 });
 </script>

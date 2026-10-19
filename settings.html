@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Provider Settings — autoDNG</title>
+<!-- autodng:meta:start -->
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="autoDNG">
+<meta property="og:title" content="AI Provider Settings — autoDNG">
+<meta property="og:description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<meta property="og:url" content="https://autodng.com/settings.html">
+<meta property="og:image" content="https://autodng.com/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Provider Settings — autoDNG">
+<meta name="twitter:description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<meta name="twitter:image" content="https://autodng.com/img/og-cover.png">
+<!-- autodng:meta:end -->
+<meta name="description" content="Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.">
+<link rel="canonical" href="https://autodng.com/settings.html">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="shortcut icon" href="img/favicon.ico">
+<link rel="stylesheet" href="/assets/autodng-system.css?v=16">
+<link rel="stylesheet" href="/assets/autodng.css?v=9">
+<link rel="stylesheet" href="/assets/pages/settings.css?v=1">
+<script src="/assets/autodng-keys.js?v=2"></script>
+</head>
+<body>
+<!-- autodng:header:start -->
+<header class="adng-header">
+  <div class="adng-header__inner">
+    <a class="adng-brand" href="/index.html">auto<em>DNG</em></a>
+    <nav class="adng-nav" aria-label="Tools">
+      <a href="/index.html">Generator</a>
+      <a href="/domains.html">Domains</a>
+      <a href="/valuation.html">Valuation</a>
+      <a href="/analyze.html">Analyzer</a>
+      <a href="/trademarks.html">Trademarks</a>
+      <a href="/vc-score.html">VC Score</a>
+      <a href="/handles.html">Handles</a>
+      <a href="/autodng-domain-intelligence.html">Intelligence</a>
+      <a href="/blog/index.html">Blog</a>
+      <a href="/settings.html" aria-current="page">Settings</a>
+    </nav>
+    <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
+  </div>
+</header>
+<!-- autodng:header:end -->
+
+<main class="st">
+  <a class="st-back" id="back" href="/index.html" hidden>← Back</a>
+
+  <h1>AI provider <em>settings</em></h1>
+  <p class="st-lede">Pick a provider and paste your API key once. The Generator, Valuation, Trademarks, VC Score, Handles and Analyzer tools all use it.</p>
+
+  <div class="st-status" id="status" role="status"></div>
+
+  <section class="st-sec">
+    <h2>Active provider</h2>
+    <p class="st-hint">The tools send requests to this provider. Keys for the others stay saved, so you can switch back at any time.</p>
+    <div class="st-provs" id="provs" role="radiogroup" aria-label="Active AI provider"></div>
+  </section>
+
+  <section class="st-sec">
+    <h2>API keys</h2>
+    <p class="st-hint">Keys save as you type. Don't have one? Each provider's "Get a key" link opens its key page.</p>
+    <div class="st-keys" id="keys"></div>
+  </section>
+
+  <div class="st-callout">
+    <p><strong>Your keys never reach us.</strong> They are stored only in this browser's local storage and sent directly to the provider you choose. Clearing your browser data removes them. See the <a href="/privacy.html">privacy policy</a>.</p>
+    <button type="button" class="adng-btn adng-btn--ghost st-clearall" id="clearAll">Clear all keys</button>
+  </div>
+</main>
+
+<script>
+(function () {
+  const K = window.autodngKeys;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // Optional ?from=valuation.html so tools can send people here and back.
+  const from = new URLSearchParams(location.search).get('from') || '';
+  if (/^[a-z0-9-]+\.html$/i.test(from)) {
+    $('back').href = '/' + from;
+    $('back').hidden = false;
+  }
+
+  function keyState(p) {
+    const k = K.get(p);
+    if (!k) return 'empty';
+    return K.meta(p).val(k) ? 'ok' : 'bad';
+  }
+
+  function renderProviders() {
+    const active = K.getProvider();
+    $('provs').innerHTML = K.PROVIDERS.map(p => {
+      const m = K.meta(p), st = keyState(p);
+      const badge = st === 'ok' ? '<span class="st-badge ok">key saved</span>'
+                  : st === 'bad' ? '<span class="st-badge bad">check key</span>'
+                  : '<span class="st-badge">no key</span>';
+      return `<button type="button" class="st-prov${p === active ? ' on' : ''}" role="radio"
+        aria-checked="${p === active}" data-p="${p}">
+        <span class="st-prov__top"><span class="st-radio"></span>${esc(m.label)}</span>
+        <span class="st-prov__note">${esc(m.note)}</span>${badge}</button>`;
+    }).join('');
+  }
+
+  function renderKeys() {
+    $('keys').innerHTML = K.PROVIDERS.map(p => {
+      const m = K.meta(p);
+      return `<div class="st-key" data-p="${p}">
+        <div class="st-key__head">
+          <label for="k-${p}">${esc(m.label)}</label>
+          <a href="${m.url}" target="_blank" rel="noopener">Get a key ↗</a>
+        </div>
+        <div class="st-key__row">
+          <input class="adng-input" id="k-${p}" type="password" autocomplete="off" spellcheck="false"
+            placeholder="${esc(m.ph)}" value="${esc(K.get(p))}">
+          <button type="button" class="adng-btn adng-btn--secondary" data-act="eye" aria-label="Show or hide key">Show</button>
+          <button type="button" class="adng-btn adng-btn--ghost" data-act="clear">Clear</button>
+        </div>
+        <div class="st-key__msg" id="msg-${p}"></div>
+      </div>`;
+    }).join('');
+    K.PROVIDERS.forEach(updateMsg);
+  }
+
+  function updateMsg(p) {
+    const st = keyState(p), el = $('msg-' + p);
+    el.className = 'st-key__msg ' + st;
+    el.textContent = st === 'ok' ? 'Saved' : st === 'bad'
+      ? `Saved, but it doesn't match the ${K.meta(p).label} key format (${K.meta(p).ph})` : '';
+  }
+
+  function renderStatus() {
+    const p = K.getProvider(), m = K.meta(p), st = keyState(p);
+    const el = $('status');
+    el.className = 'st-status ' + (st === 'ok' ? 'ok' : 'warn');
+    el.innerHTML = st === 'ok'
+      ? `<span class="st-dot"></span>All tools are using <strong>${esc(m.label)}</strong>.`
+      : `<span class="st-dot"></span>Add a <strong>${esc(m.label)}</strong> key below. Until then, the AI features won't work.`;
+  }
+
+  function refresh() { renderProviders(); renderStatus(); }
+
+  $('provs').addEventListener('click', e => {
+    const b = e.target.closest('.st-prov');
+    if (!b) return;
+    K.setProvider(b.dataset.p);
+    refresh();
+  });
+
+  $('keys').addEventListener('input', e => {
+    const row = e.target.closest('.st-key');
+    if (!row || e.target.tagName !== 'INPUT') return;
+    const p = row.dataset.p;
+    K.set(p, e.target.value.trim());
+    // Typing a key for a provider with nothing active yet makes it the active one.
+    if (keyState(K.getProvider()) !== 'ok' && keyState(p) === 'ok') K.setProvider(p);
+    updateMsg(p);
+    refresh();
+  });
+
+  $('keys').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const row = btn.closest('.st-key'), p = row.dataset.p, input = row.querySelector('input');
+    if (btn.dataset.act === 'eye') {
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? 'Show' : 'Hide';
+    } else {
+      K.clear(p);
+      input.value = '';
+      updateMsg(p);
+      refresh();
+    }
+  });
+
+  $('clearAll').addEventListener('click', () => {
+    if (!confirm('Remove every saved API key from this browser?')) return;
+    K.clear();
+    renderKeys();
+    refresh();
+  });
+
+  // Another tab changed settings — show the latest values.
+  K.onChange(() => { renderKeys(); refresh(); });
+
+  renderKeys();
+  refresh();
+})();
+</script>
+</body>
+</html>

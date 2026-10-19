@@ -31,12 +31,14 @@ const NAV = [
   ['/handles.html',                      'Handles'],
   ['/autodng-domain-intelligence.html',  'Intelligence'],
   ['/blog/index.html',                   'Blog'],
+  ['/settings.html',                     'Settings'],
 ];
 
 const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html', 'handles.html',
   'trademarks.html', 'vc-score.html',
   'autodng-domain-intelligence.html', 'privacy.html', 'terms.html', '404.html',
+  'settings.html',
 ];
 
 function headerFor(file) {

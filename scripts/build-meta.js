@@ -60,6 +60,11 @@ const PAGES = {
     title: 'Brand Naming Advisory & Consulting — autoDNG',
     desc: 'Work with autoDNG on naming strategy, shortlisting, and domain acquisition for your startup.',
   },
+  'settings.html': {
+    url: '/settings.html',
+    title: 'AI Provider Settings — autoDNG',
+    desc: 'Choose your AI provider and add your API key once. Every autoDNG tool uses it. Keys stay in your browser.',
+  },
   'pricing-checkout.html': {
     url: '/pricing-checkout.html',
     title: 'Checkout — Brand Naming Advisory — autoDNG',

@@ -40,6 +40,7 @@ const SERVICES_COL = `    <nav class="footer-col" aria-label="Services">
       <ul>
         <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
         <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="settings.html">AI Provider Settings</a></li>
       </ul>
     </nav>`;
 

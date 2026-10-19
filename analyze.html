@@ -29,8 +29,9 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
-<link rel="stylesheet" href="/assets/autodng.css?v=8">
+<link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/analyze.css?v=1">
+<script src="/assets/autodng-keys.js?v=2"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -54,6 +55,7 @@
       <a href="/handles.html">Handles</a>
       <a href="/autodng-domain-intelligence.html">Intelligence</a>
       <a href="/blog/index.html">Blog</a>
+      <a href="/settings.html">Settings</a>
     </nav>
     <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
   </div>
@@ -78,10 +80,10 @@
   <div class="search-box">
     <input id="domainInput" placeholder="Enter a domain (e.g. autodng.com)" autocomplete="off">
     <button id="analyzeBtn">Analyze Domain</button>
-    <div class="api-key-wrap" title="Optional: Enter OpenRouter API key for AI enhancement">
+    <a class="api-key-wrap adng-keychip" id="keyChip" href="/settings.html?from=analyze.html" title="Optional: add an OpenRouter key in Settings for AI enhancement">
       <span class="icon">🔑</span>
-      <input type="password" id="apiKeyInput" placeholder="API Key (optional)">
-    </div>
+      <span id="keyChipText">AI: add key</span>
+    </a>
   </div>
 
   <div class="ai-toggle" id="aiToggle">
@@ -254,6 +256,7 @@
       <ul>
         <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
         <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="settings.html">AI Provider Settings</a></li>
       </ul>
     </nav>
   </div>
@@ -271,7 +274,8 @@
 // AUTODNG DOMAIN ANALYZER — ENHANCED INTELLIGENCE ENGINE v3.0
 // ═══════════════════════════════════════════════════════════════
 
-let API_KEY = localStorage.getItem('autodng_analyze_key') || '';
+// AI enhancement calls OpenRouter only; the key comes from /settings.html.
+let API_KEY = autodngKeys.get('openrouter') || '';
 let analysisCache = new Map();
 let lastResult = null;
 
@@ -824,7 +828,7 @@ async function aiEnhance(n, scores, apiKey) {
 }
 Provide 4 domain alternatives in the alternatives array. Focus on startup naming patterns.`;
 
-    const res = await fetch('[openrouter.ai](https://openrouter.ai/api/v1/chat/completions)', {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
       body: JSON.stringify({
@@ -1213,26 +1217,20 @@ function shareAnalysis() {
 document.addEventListener('DOMContentLoaded', () => {
   const btn      = document.getElementById('analyzeBtn');
   const input    = document.getElementById('domainInput');
-  const keyInput = document.getElementById('apiKeyInput');
   const aiCheck  = document.getElementById('aiEnhance');
   const aiToggle = document.getElementById('aiToggle');
 
-  // Restore saved key
-  if(API_KEY) {
-    keyInput.value = API_KEY;
-    aiToggle.classList.add('on');
+  function syncKey() {
+    API_KEY = autodngKeys.get('openrouter') || '';
+    document.getElementById('keyChipText').textContent = API_KEY ? 'AI: OpenRouter ✓' : 'AI: add key';
+    aiToggle.classList.toggle('on', !!API_KEY);
+    analysisCache.clear();
   }
+  syncKey();
+  autodngKeys.onChange(syncKey);
 
   btn.addEventListener('click', analyzeDomain);
   input.addEventListener('keydown', e => { if(e.key === 'Enter') analyzeDomain(); });
-
-  keyInput.addEventListener('input', e => {
-    API_KEY = e.target.value.trim();
-    localStorage.setItem('autodng_analyze_key', API_KEY);
-    if(API_KEY) { aiToggle.classList.add('on'); aiCheck.checked = true; }
-    else { aiToggle.classList.remove('on'); }
-    analysisCache.clear();
-  });
 
   aiCheck.addEventListener('change', () => { analysisCache.clear(); });
 

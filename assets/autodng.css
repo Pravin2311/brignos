@@ -257,3 +257,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Provider status chip — links each tool to /settings.html, where the shared
+   AI provider and API keys are configured once for every tool. */
+a.adng-keychip{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:inherit;cursor:pointer;white-space:nowrap}
+a.adng-keychip:hover{border-color:var(--adng-accent,#c8f04a)}
+a.adng-keychip .adng-keychip__gear{opacity:.6;font-size:.95em}

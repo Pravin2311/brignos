@@ -28,9 +28,9 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
-<link rel="stylesheet" href="/assets/autodng.css?v=8">
+<link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/handles.css?v=1">
-<script src="/assets/autodng-keys.js?v=1"></script>
+<script src="/assets/autodng-keys.js?v=2"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -56,6 +56,7 @@
       <a href="/handles.html" aria-current="page">Handles</a>
       <a href="/autodng-domain-intelligence.html">Intelligence</a>
       <a href="/blog/index.html">Blog</a>
+      <a href="/settings.html">Settings</a>
     </nav>
     <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
   </div>
@@ -67,23 +68,14 @@
   <div class="header-inner">
     <div class="logo">auto<span>DNG</span></div>
     <div class="hright">
-      <div class="ptabs" role="tablist">
-        <button class="ptab on" onclick="switchProv('openrouter',this)">OpenRouter</button>
-        <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
-        <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
-        <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-      </div>
       <div class="kwrap">
-        <label for="apikey" class="visually-hidden">API Key</label>
-        <input id="apikey" type="password" placeholder="API Key" autocomplete="off">
         <label for="model" class="visually-hidden">Model</label>
         <select id="model" class="select"></select>
-        <div class="kstatus">
+        <a class="kstatus adng-keychip" href="/settings.html?from=handles.html" title="Change AI provider and API keys">
           <span class="kdot" id="kdot"></span>
           <span id="ktext">no key</span>
-        </div>
-
-      <button class="getkeybtn" onclick="showKeys()">Get Key</button>
+          <span class="adng-keychip__gear">⚙</span>
+        </a>
       </div>
     </div>
   </div>
@@ -295,6 +287,7 @@
       <ul>
         <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
         <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="settings.html">AI Provider Settings</a></li>
       </ul>
     </nav>
   </div>
@@ -309,18 +302,6 @@
 </footer>
 
 <script>
-
-  function showKeys(){
-  document
-    .getElementById('keyModal')
-    .classList.add('on');
-}
-
-function closeKeys(){
-  document
-    .getElementById('keyModal')
-    .classList.remove('on');
-}
 // ── Provider Config ───────────────────────────────────────────────
 const PROVS = {
   openrouter: { ph: 'sk-or-...', models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct'], val: k => k.startsWith('sk-or-') },
@@ -330,7 +311,7 @@ const PROVS = {
 };
 
 // ── State ─────────────────────────────────────────────────────────
-let prov = localStorage.getItem('sh_p') || 'openrouter';
+let prov = autodngKeys.getProvider();
 let lastAnalysis = null;
 const RESERVED = [
   'google','meta','apple','microsoft',
@@ -419,21 +400,8 @@ const PLATFORMS = ['x', 'instagram', 'tiktok', 'linkedin', 'youtube', 'github'];
 
 // ── Init ──────────────────────────────────────────────────────────
 function init() {
-  document.querySelectorAll('.ptab').forEach(btn => {
-    btn.classList.toggle('on', btn.textContent.toLowerCase().includes(prov));
-  });
-
-  const key = autodngKeys.get(prov) || '';
-  document.getElementById('apikey').value = key;
-  document.getElementById('apikey').placeholder = PROVS[prov].ph;
-  updateKeyStatus(key);
-  renderModels();
-
-  document.getElementById('apikey').addEventListener('input', e => {
-    const val = e.target.value.trim();
-    autodngKeys.set(prov, val);
-    updateKeyStatus(val);
-  });
+  syncProvider();
+  autodngKeys.onChange(syncProvider);
   document.getElementById('model').addEventListener('change', e => {
     localStorage.setItem('sh_m_' + prov, e.target.value);
   });
@@ -447,7 +415,7 @@ function updateKeyStatus(key) {
   const text = document.getElementById('ktext');
   const isValid = key && PROVS[prov]?.val?.(key);
   dot.className = 'kdot' + (isValid ? ' ok' : '');
-  text.textContent = isValid ? 'key ready' : (key ? 'invalid format' : 'no key');
+  text.textContent = isValid ? autodngKeys.meta(prov).label + ' ✓' : (key ? 'check API key' : 'add API key');
 }
 
 function renderModels() {
@@ -462,14 +430,10 @@ function renderModels() {
   sel.value = PROVS[prov].models.includes(stored) ? stored : PROVS[prov].models[0];
 }
 
-function switchProv(p, el) {
-  autodngKeys.set(prov, document.getElementById('apikey').value.trim());
-  prov = p; localStorage.setItem('sh_p', p);
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('apikey').placeholder = PROVS[p].ph;
-  document.getElementById('apikey').value = autodngKeys.get(p) || '';
-  updateKeyStatus(document.getElementById('apikey').value);
+// Provider and key are chosen once on /settings.html and shared by every tool.
+function syncProvider() {
+  prov = autodngKeys.getProvider();
+  updateKeyStatus(autodngKeys.get(prov) || '');
   renderModels();
 }
 
@@ -769,8 +733,8 @@ async function analyzeHandle() {
   const btnText = btn.querySelector('.btn-text');
   const spinner = btn.querySelector('.spinner');
   
-  const key = document.getElementById('apikey').value.trim();
-  if (!key || !PROVS[prov]?.val?.(key)) { showToast('Please enter a valid API key'); return; }
+  const key = autodngKeys.get(prov) || '';
+  if (!key || !PROVS[prov]?.val?.(key)) { showToast('Add your API key in Settings (⚙ top right)'); return; }
   
   const handle =
   document.getElementById('handle')
@@ -1111,30 +1075,6 @@ document.addEventListener('keydown', e => {
 // Init
 init();
 </script>
-
-<div id="keyModal" class="keymodal">
-  <div class="keycard">
-    <h3>Get API Keys</h3>
-
-    <a href="https://openrouter.ai/keys" target="_blank">
-      OpenRouter
-    </a>
-
-    <a href="https://platform.openai.com/api-keys" target="_blank">
-      OpenAI
-    </a>
-
-    <a href="https://aistudio.google.com/app/apikey" target="_blank">
-      Gemini
-    </a>
-
-    <a href="https://console.groq.com/keys" target="_blank">
-      Groq
-    </a>
-
-    <button onclick="closeKeys()">Close</button>
-  </div>
-</div>
 
 </body>
 </html>

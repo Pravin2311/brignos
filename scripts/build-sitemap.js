@@ -28,6 +28,7 @@ const PRIORITY = {
   'blog/index.html': '0.7',
   'privacy.html': '0.3',
   'terms.html': '0.3',
+  'settings.html': '0.3',
   'pricing-checkout.html': '0.4',
 };
 

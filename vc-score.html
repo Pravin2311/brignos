@@ -29,9 +29,9 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
-<link rel="stylesheet" href="/assets/autodng.css?v=8">
+<link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/vc-score.css?v=1">
-<script src="/assets/autodng-keys.js?v=1"></script>
+<script src="/assets/autodng-keys.js?v=2"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
 <script>
@@ -55,6 +55,7 @@
       <a href="/handles.html">Handles</a>
       <a href="/autodng-domain-intelligence.html">Intelligence</a>
       <a href="/blog/index.html">Blog</a>
+      <a href="/settings.html">Settings</a>
     </nav>
     <a class="adng-btn adng-btn--secondary adng-header__cta" href="/brand-naming-consulting.html">Advisory</a>
   </div>
@@ -68,19 +69,8 @@
   <div class="hd-in">
     <a href="#" class="logo">auto<em>DNG</em><sup>.com</sup></a>
     <div class="hright">
-      <div class="ptabs" id="ptabs">
-        <button class="ptab" onclick="switchProv('openrouter',this)">OpenRouter</button>
-        <button class="ptab" onclick="switchProv('openai',this)">OpenAI</button>
-        <button class="ptab" onclick="switchProv('gemini',this)">Gemini</button>
-        <button class="ptab" onclick="switchProv('groq',this)">Groq</button>
-      </div>
-      <div class="kwrap">
-        <input type="password" id="akey" placeholder="API key…" autocomplete="off" oninput="onKey()">
-        <button class="eyebtn" onclick="toggleEye()">👁</button>
-      </div>
       <select class="mdl-sel" id="mdlSel" onchange="onMdl()"></select>
-      <div class="kstat"><span class="sdot" id="sdot"></span><span id="stxt">no key</span></div>
-      <button class="hdbtn" onclick="openModal('keyModal')">get key ?</button>
+      <a class="kstat adng-keychip" href="/settings.html?from=vc-score.html" title="Change AI provider and API keys"><span class="sdot" id="sdot"></span><span id="stxt">no key</span><span class="adng-keychip__gear">⚙</span></a>
     </div>
   </div>
 </header>
@@ -375,25 +365,6 @@
 <div class="toast" id="toast"></div>
 
 <!-- Key Modal -->
-<div class="modal" id="keyModal">
-  <div class="mcard">
-    <button class="mclose" onclick="closeModal('keyModal')">×</button>
-    <h3>Get API Keys</h3>
-    <p>Connect your preferred AI provider for deep VC brand analysis. All providers have free tiers.</p>
-    <a class="mlink" href="https://openrouter.ai/keys" target="_blank" rel="noopener">
-      <div><strong>OpenRouter</strong><span>Best overall — access to 50+ models</span></div><code>sk-or-…</code>
-    </a>
-    <a class="mlink" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">
-      <div><strong>OpenAI</strong><span>GPT-4o & GPT-4o Mini</span></div><code>sk-…</code>
-    </a>
-    <a class="mlink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
-      <div><strong>Google Gemini</strong><span>Free tier — highly capable</span></div><code>AIza…</code>
-    </a>
-    <a class="mlink" href="https://console.groq.com/keys" target="_blank" rel="noopener">
-      <div><strong>Groq</strong><span>Ultra-fast free inference</span></div><code>gsk…</code>
-    </a>
-  </div>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- ══ SEO FOOTER ══ -->
@@ -432,6 +403,7 @@
       <ul>
         <li><a href="brand-naming-consulting.html">Brand Naming Advisory</a></li>
         <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="settings.html">AI Provider Settings</a></li>
       </ul>
     </nav>
   </div>
@@ -491,7 +463,7 @@ const NEGROOTS = ['mord','tot','krank','gift','faul','dreck','mal','mort','laid'
   'wank','twat','slag','knob','piss','anus','scum','nazi','rape','gore'];
 
 // ── State ──────────────────────────────────────────────────────────────
-let prov = localStorage.getItem('vcs_p') || 'openrouter';
+let prov = autodngKeys.getProvider();
 let key  = autodngKeys.get(prov) || '';
 let mdl  = localStorage.getItem('vcs_m_'+prov) || PROVS[prov].models[0];
 let lastResult = null;
@@ -1432,29 +1404,23 @@ function stepDone(i){
   const el=document.getElementById('pst-'+i);if(el){el.classList.remove('active');el.classList.add('done');}
   const next=document.getElementById('pst-'+(i+1));if(next)next.classList.add('active');
 }
-function switchProv(p,el){
-  // Save current key
-  autodngKeys.set(prov, document.getElementById('akey').value.trim());
-  prov=p;localStorage.setItem('vcs_p',p);
-  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  key=autodngKeys.get(p)||'';
-  mdl=localStorage.getItem('vcs_m_'+p)||PROVS[p].models[0];
-  document.getElementById('akey').value=key;
-  document.getElementById('akey').placeholder=PROVS[p].ph;
-  updateKeyStatus();buildModelSelect();
+// Provider and key are chosen once on /settings.html and shared by every tool.
+function syncProvider(){
+  prov=autodngKeys.getProvider();key=autodngKeys.get(prov)||'';
+  mdl=localStorage.getItem('vcs_m_'+prov)||PROVS[prov].models[0];
+  buildModelSelect();updateKeyStatus();
 }
+autodngKeys.onChange(syncProvider);
 function buildModelSelect(){
   const sel=document.getElementById('mdlSel');
   sel.innerHTML=PROVS[prov].models.map(m=>`<option value="${m}" ${m===mdl?'selected':''}>${m.split('/').pop().slice(0,20)}</option>`).join('');
 }
 function onMdl(){mdl=document.getElementById('mdlSel').value;localStorage.setItem('vcs_m_'+prov,mdl);}
-function onKey(){key=document.getElementById('akey').value.trim();autodngKeys.set(prov, key);updateKeyStatus();}
 function updateKeyStatus(){
   const valid=key&&PROVS[prov].val(key);
   document.getElementById('sdot').className='sdot'+(valid?' ok':'');
-  document.getElementById('stxt').textContent=valid?prov+' ✓':'no key';
+  document.getElementById('stxt').textContent=valid?autodngKeys.meta(prov).label+' ✓':'add API key';
 }
-function toggleEye(){const i=document.getElementById('akey');i.type=i.type==='password'?'text':'password';}
 function setIndustry(val,el){
   document.getElementById('industry').value=val;
   document.querySelectorAll('.ind-chip').forEach(b=>b.classList.remove('on'));
@@ -1491,17 +1457,6 @@ document.querySelectorAll('.modal').forEach(m=>{
 // ── URL param auto-fill ────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
   // Restore provider
-  const savedProv=localStorage.getItem('vcs_p')||'openrouter';
-  document.querySelectorAll('.ptab').forEach(b=>{
-    const txt=b.textContent.toLowerCase();
-    if((savedProv==='openrouter'&&txt.includes('openrouter'))||
-       (savedProv==='openai'&&txt.includes('openai'))||
-       (savedProv==='gemini'&&txt.includes('gemini'))||
-       (savedProv==='groq'&&txt.includes('groq')))b.classList.add('on');
-    else b.classList.remove('on');
-  });
-  document.getElementById('akey').value=key;
-  document.getElementById('akey').placeholder=PROVS[prov].ph;
   buildModelSelect();updateKeyStatus();
 
   // URL param

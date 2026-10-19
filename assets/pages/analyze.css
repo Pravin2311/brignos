@@ -21,6 +21,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:
 .api-key-wrap input{background:transparent;border:none;color:var(--text);font-size:14px;width:160px;outline:none}
 .api-key-wrap input::placeholder{color:var(--muted)}
 .api-key-wrap .icon{color:var(--muted);font-size:16px}
+a.api-key-wrap{color:var(--muted);font-family:inherit;font-size:13px;text-decoration:none;white-space:nowrap}
+a.api-key-wrap:hover{border-color:var(--lime);color:var(--text)}
 .results{display:none}.results.on{display:block}
 .score-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:32px;margin-top:30px}
 .score-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:16px}
