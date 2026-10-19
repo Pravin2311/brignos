@@ -24,7 +24,7 @@ const DRY = process.argv.includes('--dry');
 
 const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html', 'handles.html',
-  'trademarks.html', 'vc-score.html', 'autodng-upgraded.html',
+  'trademarks.html', 'vc-score.html',
   'autodng-domain-intelligence.html',
 ];
 

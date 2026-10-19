@@ -18,12 +18,11 @@ const TAG = '<script src="/assets/autodng-keys.js?v=1"></script>';
 
 // page -> the localStorage prefix it used for the provider key
 const PAGES = {
-  'index.html': 'bl_k_',
+  'index.html': 'dngk',
   'valuation.html': 'dv2_k_',
   'handles.html': 'sh_k_',
   'trademarks.html': 'tm2_k_',
   'vc-score.html': 'vcs_k_',
-  'autodng-upgraded.html': 'dngk',
 };
 
 let changed = 0;

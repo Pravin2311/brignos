@@ -2,7 +2,7 @@
    autoDNG — shared domain availability lookup
 
    Single source of truth. This logic previously existed as three
-   diverging copies (index.html, autodng-upgraded.html,
+   diverging copies (index.html,
    autodng-domain-intelligence.html) and each carried the same
    false-positive bug independently:
 

@@ -17,8 +17,8 @@ const END = '<!-- autodng:meta:end -->';
 const PAGES = {
   'index.html': {
     url: '/',
-    title: 'autoDNG — AI Brand Name Generator with Live Domain Checks',
-    desc: 'Generate brandable startup names with 7 AI naming agents, then check .com/.ai/.io availability live. Free, runs in your browser, bring your own API key.',
+    title: 'autoDNG — Advanced Brand Name Generator with Live Domain Checks',
+    desc: 'Generate brandable startup names with a 12-strategy combinatorial engine and 19-signal quality gates, then check domain availability live. Free, runs in your browser.',
   },
   'domains.html': {
     url: '/domains.html',
@@ -59,11 +59,6 @@ const PAGES = {
     url: '/brand-naming-consulting.html',
     title: 'Brand Naming Advisory & Consulting — autoDNG',
     desc: 'Work with autoDNG on naming strategy, shortlisting, and domain acquisition for your startup.',
-  },
-  'autodng-upgraded.html': {
-    url: '/autodng-upgraded.html',
-    title: 'Advanced Brand Name Generator — 12-Strategy Engine — autoDNG',
-    desc: 'The advanced autoDNG generator: 12 combinatorial naming strategies, 19-signal quality gates, bulk analysis and live RDAP domain checks.',
   },
   'pricing-checkout.html': {
     url: '/pricing-checkout.html',

@@ -27,7 +27,7 @@ const SERIF = "'Instrument Serif',Georgia,serif";
 
 const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html', 'handles.html',
-  'trademarks.html', 'vc-score.html', 'autodng-upgraded.html',
+  'trademarks.html', 'vc-score.html',
   'autodng-domain-intelligence.html', 'privacy.html', 'terms.html', '404.html',
 ];
 

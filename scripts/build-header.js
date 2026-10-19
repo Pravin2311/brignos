@@ -23,7 +23,6 @@ const END = '<!-- autodng:header:end -->';
 // tools, then commercial. Blog last.
 const NAV = [
   ['/index.html',                        'Generator'],
-  ['/autodng-upgraded.html',             'Advanced'],
   ['/domains.html',                      'Domains'],
   ['/valuation.html',                    'Valuation'],
   ['/analyze.html',                      'Analyzer'],
@@ -36,7 +35,7 @@ const NAV = [
 
 const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html', 'handles.html',
-  'trademarks.html', 'vc-score.html', 'autodng-upgraded.html',
+  'trademarks.html', 'vc-score.html',
   'autodng-domain-intelligence.html', 'privacy.html', 'terms.html', '404.html',
 ];
 

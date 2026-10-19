@@ -12,7 +12,7 @@ const ROOT = path.join(__dirname, '..');
 
 const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html',
-  'handles.html', 'trademarks.html', 'vc-score.html', 'autodng-upgraded.html',
+  'handles.html', 'trademarks.html', 'vc-score.html',
 ];
 
 const TOOLS_COL = `    <nav class="footer-col" aria-label="Core Tools">

@@ -11,7 +11,7 @@ const ORIGIN = 'https://autodng.com';
 
 // Superseded drafts / duplicate builds / thin pages — kept in the repo, excluded from search.
 const EXCLUDE = new Set([
-  '404.html', 'payment-success.html',
+  '404.html', 'payment-success.html', 'autodng-upgraded.html',
 ]);
 
 // Crawl priority by role. Anything unlisted falls back to 0.6.
@@ -25,7 +25,6 @@ const PRIORITY = {
   'handles.html': '0.8',
   'autodng-domain-intelligence.html': '0.7',
   'brand-naming-consulting.html': '0.7',
-  'autodng-upgraded.html': '0.8',
   'blog/index.html': '0.7',
   'privacy.html': '0.3',
   'terms.html': '0.3',

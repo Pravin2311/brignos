@@ -18,7 +18,6 @@ const PAGES = [
   'index.html', 'domains.html', 'valuation.html', 'analyze.html',
   'handles.html', 'trademarks.html', 'vc-score.html',
   'autodng-domain-intelligence.html', 'privacy.html', 'terms.html', '404.html',
-  'autodng-upgraded.html',
 ];
 
 let changed = 0;
