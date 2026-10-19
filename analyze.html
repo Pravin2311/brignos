@@ -30,7 +30,7 @@
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
-<link rel="stylesheet" href="/assets/pages/analyze.css?v=1">
+<link rel="stylesheet" href="/assets/pages/analyze.css?v=2">
 <script src="/assets/autodng-keys.js?v=2"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -84,6 +84,7 @@
       <span class="icon">🔑</span>
       <span id="keyChipText">AI: add key</span>
     </a>
+    <select id="modelSel" class="model-sel" aria-label="AI model" hidden></select>
   </div>
 
   <div class="ai-toggle" id="aiToggle">
@@ -275,15 +276,16 @@
 // ═══════════════════════════════════════════════════════════════
 
 // AI enhancement uses the provider and key chosen on /settings.html.
-// One quick JSON call per analysis, so each provider gets a fast default model.
+// The first model in each list is the default; the choice is remembered per provider.
 const AI_MODELS = {
-  openrouter: 'deepseek/deepseek-chat',
-  openai: 'gpt-4o-mini',
-  gemini: 'gemini-2.5-flash',
-  groq: 'llama-3.3-70b-versatile'
+  openrouter: ['deepseek/deepseek-chat', 'meta-llama/llama-3.3-70b-instruct', 'google/gemini-2.0-flash-001', 'openai/gpt-4o-mini'],
+  openai: ['gpt-4o-mini', 'gpt-4o'],
+  gemini: ['gemini-2.5-flash', 'gemini-2.5-pro'],
+  groq: ['llama-3.3-70b-versatile', 'qwen-qwq-32b', 'llama-3.1-8b-instant']
 };
 let AI_PROV = autodngKeys.getProvider();
 let API_KEY = autodngKeys.get(AI_PROV) || '';
+let AI_MODEL = AI_MODELS[AI_PROV][0];
 let analysisCache = new Map();
 let lastResult = null;
 
@@ -827,7 +829,7 @@ function generateAlternatives(n) {
 
 // ─── AI ENHANCEMENT ──────────────────────────────────────────────
 async function callAI(sys, usr, apiKey) {
-  const model = AI_MODELS[AI_PROV];
+  const model = AI_MODEL;
   if(AI_PROV === 'gemini') {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: 'POST',
@@ -1175,7 +1177,7 @@ document.getElementById('registerLink').href =
     <strong>TLD assessment:</strong> .${tld} — ${tldObj.tldData.note}<br>
     <strong>Phonetics:</strong> ${pronunciation.score}/100 pronounceability, ${syllables} syllable${syllables!==1?'s':''}, ${memorability.score}/100 memorability<br>
     <strong>Trademark posture:</strong> ${trademark.risk} risk<br>
-    ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via ${autodngKeys.meta(AI_PROV).label}</small>` : ''}
+    ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via ${autodngKeys.meta(AI_PROV).label} · ${AI_MODEL.split('/').pop()}</small>` : ''}
   `;
 
   document.getElementById('registerLink').href =
@@ -1260,8 +1262,25 @@ document.addEventListener('DOMContentLoaded', () => {
     API_KEY = autodngKeys.meta(AI_PROV).val(k) ? k : '';
     document.getElementById('keyChipText').textContent = API_KEY ? `AI: ${autodngKeys.meta(AI_PROV).label} ✓` : 'AI: add key';
     aiToggle.classList.toggle('on', !!API_KEY);
+    buildModelSel();
     analysisCache.clear();
   }
+
+  function buildModelSel() {
+    const sel = document.getElementById('modelSel');
+    const models = AI_MODELS[AI_PROV];
+    const saved = localStorage.getItem('an_m_' + AI_PROV);
+    AI_MODEL = models.includes(saved) ? saved : models[0];
+    sel.innerHTML = models.map(m => `<option value="${m}"${m === AI_MODEL ? ' selected' : ''}>${m.split('/').pop()}</option>`).join('');
+    sel.hidden = !API_KEY;
+  }
+
+  document.getElementById('modelSel').addEventListener('change', e => {
+    AI_MODEL = e.target.value;
+    localStorage.setItem('an_m_' + AI_PROV, AI_MODEL);
+    analysisCache.clear();
+  });
+
   syncKey();
   autodngKeys.onChange(syncKey);
 
