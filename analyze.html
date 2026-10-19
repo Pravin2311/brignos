@@ -80,7 +80,7 @@
   <div class="search-box">
     <input id="domainInput" placeholder="Enter a domain (e.g. autodng.com)" autocomplete="off">
     <button id="analyzeBtn">Analyze Domain</button>
-    <a class="api-key-wrap adng-keychip" id="keyChip" href="/settings.html?from=analyze.html" title="Optional: add an OpenRouter key in Settings for AI enhancement">
+    <a class="api-key-wrap adng-keychip" id="keyChip" href="/settings.html?from=analyze.html" title="Optional: add an API key in Settings for AI enhancement">
       <span class="icon">🔑</span>
       <span id="keyChipText">AI: add key</span>
     </a>
@@ -274,8 +274,16 @@
 // AUTODNG DOMAIN ANALYZER — ENHANCED INTELLIGENCE ENGINE v3.0
 // ═══════════════════════════════════════════════════════════════
 
-// AI enhancement calls OpenRouter only; the key comes from /settings.html.
-let API_KEY = autodngKeys.get('openrouter') || '';
+// AI enhancement uses the provider and key chosen on /settings.html.
+// One quick JSON call per analysis, so each provider gets a fast default model.
+const AI_MODELS = {
+  openrouter: 'deepseek/deepseek-chat',
+  openai: 'gpt-4o-mini',
+  gemini: 'gemini-2.5-flash',
+  groq: 'llama-3.3-70b-versatile'
+};
+let AI_PROV = autodngKeys.getProvider();
+let API_KEY = autodngKeys.get(AI_PROV) || '';
 let analysisCache = new Map();
 let lastResult = null;
 
@@ -818,6 +826,43 @@ function generateAlternatives(n) {
 }
 
 // ─── AI ENHANCEMENT ──────────────────────────────────────────────
+async function callAI(sys, usr, apiKey) {
+  const model = AI_MODELS[AI_PROV];
+  if(AI_PROV === 'gemini') {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction: {parts:[{text:sys}]},
+        contents: [{role:'user',parts:[{text:usr}]}],
+        generationConfig: {temperature:0.6, maxOutputTokens:600, responseMimeType:'application/json'}
+      })
+    });
+    if(!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    return (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+  }
+  const urls = {
+    openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+    openai: 'https://api.openai.com/v1/chat/completions',
+    groq: 'https://api.groq.com/openai/v1/chat/completions'
+  };
+  const headers = {'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`};
+  if(AI_PROV === 'openrouter') { headers['HTTP-Referer'] = window.location.origin; headers['X-Title'] = 'autoDNG Analyzer'; }
+  const res = await fetch(urls[AI_PROV], {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      model,
+      messages: [{role:'system',content:sys},{role:'user',content:usr}],
+      max_tokens: 600, temperature: 0.6
+    })
+  });
+  if(!res.ok) throw new Error('API error ' + res.status);
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
 async function aiEnhance(n, scores, apiKey) {
   try {
     const prompt = `You are a domain name expert. Analyze the domain name "${n}" and return ONLY valid JSON (no markdown, no explanation) with this structure:
@@ -828,18 +873,7 @@ async function aiEnhance(n, scores, apiKey) {
 }
 Provide 4 domain alternatives in the alternatives array. Focus on startup naming patterns.`;
 
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat',
-        messages: [{role:'system',content:'Return ONLY JSON. No markdown code fences.'},{role:'user',content:prompt}],
-        max_tokens: 600, temperature: 0.6
-      })
-    });
-    if(!res.ok) throw new Error('API error');
-    const data = await res.json();
-    const raw = data.choices?.[0]?.message?.content || '{}';
+    const raw = await callAI('Return ONLY JSON. No markdown code fences.', prompt, apiKey) || '{}';
     const cleaned = raw.replace(/```json|```/g,'').trim();
     return JSON.parse(cleaned);
   } catch(e) {
@@ -1141,7 +1175,7 @@ document.getElementById('registerLink').href =
     <strong>TLD assessment:</strong> .${tld} — ${tldObj.tldData.note}<br>
     <strong>Phonetics:</strong> ${pronunciation.score}/100 pronounceability, ${syllables} syllable${syllables!==1?'s':''}, ${memorability.score}/100 memorability<br>
     <strong>Trademark posture:</strong> ${trademark.risk} risk<br>
-    ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via OpenRouter</small>` : ''}
+    ${useAI ? `<br><small style="color:var(--teal)">✨ AI-enhanced analysis via ${autodngKeys.meta(AI_PROV).label}</small>` : ''}
   `;
 
   document.getElementById('registerLink').href =
@@ -1221,8 +1255,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const aiToggle = document.getElementById('aiToggle');
 
   function syncKey() {
-    API_KEY = autodngKeys.get('openrouter') || '';
-    document.getElementById('keyChipText').textContent = API_KEY ? 'AI: OpenRouter ✓' : 'AI: add key';
+    AI_PROV = autodngKeys.getProvider();
+    const k = autodngKeys.get(AI_PROV) || '';
+    API_KEY = autodngKeys.meta(AI_PROV).val(k) ? k : '';
+    document.getElementById('keyChipText').textContent = API_KEY ? `AI: ${autodngKeys.meta(AI_PROV).label} ✓` : 'AI: add key';
     aiToggle.classList.toggle('on', !!API_KEY);
     analysisCache.clear();
   }
