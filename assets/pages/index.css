@@ -306,7 +306,7 @@ TOOLS PANEL
 .dc-check-btn:hover{opacity:.85}
 .dc-results{display:none}
 .dc-results.on{display:block}
-.dc-tlds{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.dc-tlds{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
 .dc-tld-card{background:var(--bg3);border-radius:var(--r);padding:16px;text-align:center;border:1px solid var(--border);transition:border-color .3s}
 .dc-tld-card.av{border-color:rgba(200,240,74,.4);background:var(--lime-dim)}
 .dc-tld-card.tk{border-color:rgba(240,80,106,.3);background:var(--rose-dim);opacity:.7}

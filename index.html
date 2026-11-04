@@ -28,7 +28,7 @@
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
-<link rel="stylesheet" href="/assets/pages/index.css?v=2">
+<link rel="stylesheet" href="/assets/pages/index.css?v=3">
 <script src="/assets/autodng-rdap.js?v=2"></script>
 <script src="/assets/autodng-keys.js?v=3"></script>
 </head>
@@ -120,7 +120,7 @@ PAGE: GENERATOR
 <div class="chips">
 <div class="chip"><span class="cdot" style="background:var(--lime)"></span>12-strategy combinatorial engine<span class="cval">~10¹⁴ combos</span></div>
 <div class="chip"><span class="cdot" style="background:var(--teal)"></span>Aftermarket acquisition scoring<span class="cval">NameBio DNA</span></div>
-<div class="chip"><span class="cdot" style="background:var(--amber)"></span>.com .co .ai .io .xyz — RDAP live<span class="cval">5 TLDs</span></div>
+<div class="chip"><span class="cdot" style="background:var(--amber)"></span>.com .co .ai .io .xyz .si — RDAP live<span class="cval">6 TLDs</span></div>
 <div class="chip"><span class="cdot" style="background:var(--purple)"></span>19-signal adaptive quality gate<span class="cval">No good name lost</span></div>
 <div class="chip"><span class="cdot" style="background:var(--rose)"></span>Zero-repeat cross-session cache<span class="cval">20k memory</span></div>
 <div class="chip"><span class="cdot" style="background:var(--teal)"></span>Chain-of-thought 2-turn pipeline<span class="cval">CoT</span></div>
@@ -179,6 +179,7 @@ PAGE: GENERATOR
 <option value="io">.io (SaaS / dev)</option>
 <option value="co">.co (modern)</option>
 <option value="xyz">.xyz (Web3)</option>
+<option value="si">.si (Slovenia)</option>
 </select>
 <label class="chkrow"><input type="checkbox" id="strictTld"><span>Prioritize .com available names</span></label>
 </div>
@@ -434,7 +435,7 @@ PAGE: TOOLS
 <div class="tc" id="tc-checker" onclick="openTool('checker')">
 <span class="tc-icon">🌐</span>
 <div class="tc-title">Domain Availability Checker</div>
-<div class="tc-desc">Check any domain name across .com, .co, .ai, .io, and .xyz simultaneously with live RDAP lookup. Instant registration status.</div>
+<div class="tc-desc">Check any domain name across .com, .co, .ai, .io, .xyz, and .si simultaneously with live RDAP lookup. Instant registration status.</div>
 <button class="tc-cta">Open tool →</button>
 </div>
 <div class="tc" id="tc-score" onclick="openTool('score')">
@@ -472,7 +473,7 @@ PAGE: TOOLS
 <!-- Tool: Domain Checker -->
 <div class="tool-panel" id="tool-checker">
 <div class="tp-title">🌐 RDAP Availability Checker</div>
-<div class="tp-sub">Enter a domain name (without TLD) to check availability across .com, .co, .ai, .io, and .xyz simultaneously via RDAP.</div>
+<div class="tp-sub">Enter a domain name (without TLD) to check availability across .com, .co, .ai, .io, .xyz, and .si simultaneously via RDAP.</div>
 <div class="dc-input-row">
 <input type="text" id="dcInput" placeholder="e.g. synara, vaultx, fluxio…" onkeydown="if(event.key==='Enter')runDomainCheck()">
 <button class="dc-check-btn" onclick="runDomainCheck()">Check →</button>
@@ -718,7 +719,7 @@ consumer:'Soft consonants, memorable rhythm, emotionally warm. Ref: Canva, Loom,
 mythic:'Powerful tone, legendary cadence, deep-tech gravitas. Ref: Anduril, Palantir, Oracle, Titan',
 scientific:'Classical Latin/Greek roots, scientific credibility. Ref: Illumina, Recursion, Schrödinger'
 };
-const TLDMAP = {mix:['.com','.co','.ai','.io','.xyz'],com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz']};
+const TLDMAP = {mix:['.com','.co','.ai','.io','.xyz'],com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],si:['.si']};
 // ═══════════════════════════════════════════════════════════════════════
 // MEGA COMBINATORIAL LIBRARIES — word banks powering 12 strategies.
 // Phonotactic space alone: ~56 onsets × ~31 nuclei × ~40 codas per
@@ -1532,7 +1533,7 @@ Rules:
 - No two names from same phonetic family (same first 2 letters in normalized form)
 - Each name must feel like it could raise $10M from a top VC OR sell for 5 figures on the aftermarket
 - TLD must be one of: ${tlds.join(', ')}
-${strictTld?'- PRIORITIZE names likely to have .com available (invented words, unusual combinations)':`- Mix TLDs appropriately for industry`}
+${strictTld&&tlds.includes('.com')?'- PRIORITIZE names likely to have .com available (invented words, unusual combinations)':tlds.length===1?`- Every name is for ${tlds[0]}: favor invented words and unusual combinations likely to be unregistered there`:`- Mix TLDs appropriately for industry`}
 ${steerText?`- CRITICAL STEERING: ${steerText}`:''}`;
 const t2raw=await callAI(t2sys,t2usr);
 stepDone(1);setProgress(55,'Parsing AI candidates…');
@@ -1607,6 +1608,8 @@ stepDone(2);setProgress(80,'Checking domain availability (RDAP)…');
 lastNames=final;
 for(const name of final){
 name.domains={};
+// The AI can return a TLD outside the selection, and other candidates have none.
+if(!tlds.includes(name.tld))name.tld=tlds[0];
 for(const tld of tlds)name.domains[tld]='checking';
 }
 renderResults(final,industry);
@@ -1893,7 +1896,7 @@ document.getElementById('tool-'+id).scrollIntoView({behavior:'smooth',block:'sta
 async function runDomainCheck(){
 const raw=document.getElementById('dcInput').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'');
 if(!raw){showToast('Enter a domain name first');return;}
-const tlds=['.com','.co','.ai','.io','.xyz'];
+const tlds=['.com','.co','.ai','.io','.xyz','.si'];
 document.getElementById('dcResults').classList.add('on');
 document.getElementById('dcTlds').innerHTML=tlds.map(t=>`
 <div class="dc-tld-card ck" id="dcc-${t.replace('.','')}">
