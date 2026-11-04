@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
 <link rel="stylesheet" href="/assets/pages/index.css?v=3">
-<script src="/assets/autodng-rdap.js?v=2"></script>
+<script src="/assets/autodng-rdap.js?v=3"></script>
 <script src="/assets/autodng-keys.js?v=3"></script>
 </head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVV83DRSFT"></script>
@@ -215,7 +215,7 @@ PAGE: GENERATOR
 <option value="aftermarket">💼 Aftermarket Hunter — acquisition-grade</option>
 <option value="brandable">✨ Brandables — invented phonetics</option>
 <option value="realword">📖 Real-word & compounds</option>
-<option value="dictionary">🔤 Dictionary words — single English words only</option>
+<option value="dictionary">🔤 Dictionary words — single English words, available only</option>
 <option value="atomic">◉ Atomic shorts (4–6 chars)</option>
 </select>
 </div>
@@ -949,7 +949,7 @@ let englishWords=null,englishWordList=null;
 async function loadEnglishWords(){
 if(englishWords)return englishWords;
 try{
-const r=await fetch('./data/english-words.json?v=1');
+const r=await fetch('./data/english-words.json?v=2');
 if(r.ok){englishWordList=(await r.json()).words;englishWords=new Set(englishWordList);}
 }catch(e){console.warn('english word list unavailable',e);}
 return englishWords;
@@ -1152,8 +1152,8 @@ sound:snd.score,tm,snd,prn,mem,spl,am};
 // and Domain Intelligence so the rdap.org-404 false positive cannot reappear
 // in one copy while being fixed in another.
 // -> 'taken' | 'available' | 'nocheck' | 'unknown'
-async function checkRdap(domain){
-  const v = await autodngRdap.lookup(domain);
+async function checkRdap(domain,opts){
+  const v = await autodngRdap.lookup(domain,opts);
   return v === 'likely' ? 'available' : v;   // DNS-only evidence still reads as available here
 }
 async function checkDomains(names, tlds) {
@@ -1171,6 +1171,12 @@ async function checkDomains(names, tlds) {
       // "no A record" as available — registered domains without an apex A record
       // were reported free. Single source of truth now.
       n.domains[tld] = await checkRdap(domain);
+      paintDomainChip(n, tld, domain);
+    }));
+    await sleep(300);
+  }
+}
+function paintDomainChip(n, tld, domain) {
       const el = document.getElementById(`dc-${n.name}-${tld.replace('.', '')}`);
       if (el) {
         const status = n.domains[tld];
@@ -1201,9 +1207,76 @@ async function checkDomains(names, tlds) {
           el.onclick = () => { window.open(link, '_blank', 'noopener'); };
         }
       }
-    }));
-    await sleep(300);
-  }
+}
+// ═══════════════════════════════════════════════════════════════════════
+// DICTIONARY MODE: SEARCH FOR AVAILABLE WORDS
+// ═══════════════════════════════════════════════════════════════════════
+// Roughly 9 in 10 common words are registered on any given TLD, so a batch
+// picked blind can contain nothing to buy. Keep checking until the batch is
+// full of words that are free, within a limit that keeps a run under a minute
+// or so and polite to registries.
+const HUNT_WORDS_AT_ONCE=4;
+const HUNT_LOOKUPS_ONE_TLD=150;
+const HUNT_LOOKUPS_MIXED=300;
+const HUNT_FAILS_BEFORE_STOP=12;   // consecutive failed lookups: we are likely being rate limited
+// Words already found taken this session, per TLD selection, so that pressing
+// Generate again spends its lookups on new words.
+const huntTaken=new Map();
+function gateDictionaryWord(c,industry,gateMode){
+const gate=qualityGate(c.name,industry);
+if(!gate.neg.safe||gate.tm.risk==='HIGH')return null;
+if(gateMode==='strict'&&gate.gateScore<50)return null;
+return{...c,gate,scores:scoreAll(c.name,industry),_resale:scoreResaleValue(c.name)};
+}
+async function huntAvailableWords(pool,tlds,batch,industry,gateMode){
+const limit=tlds.length>1?HUNT_LOOKUPS_MIXED:HUNT_LOOKUPS_ONE_TLD;
+const key=tlds.join();
+if(!huntTaken.has(key))huntTaken.set(key,new Set());
+const taken=huntTaken.get(key);
+const isNew=c=>!taken.has(c.name.toLowerCase());
+const queued=new Set(pool.map(c=>c.name.toLowerCase()));
+const queue=pool.filter(isNew);
+const found=[];
+let lookups=0,words=0,failStreak=0,throttled=false;
+while(found.length<batch&&lookups<limit&&!throttled){
+if(queue.length<HUNT_WORDS_AT_ONCE){
+const more=localGenerate(60,industry,'dictionary','')
+.filter(c=>isNew(c)&&!queued.has(c.name.toLowerCase()))
+.map(c=>gateDictionaryWord(c,industry,gateMode)).filter(Boolean);
+more.forEach(c=>queued.add(c.name.toLowerCase()));
+queue.push(...more);
+if(!queue.length)break;
+}
+const group=queue.splice(0,HUNT_WORDS_AT_ONCE);
+await Promise.all(group.map(async c=>{
+const lo=c.name.toLowerCase();
+c.domains={};
+await Promise.all(tlds.map(async t=>{
+c.domains[t]=await checkRdap(lo+t,{dnsFirst:true});
+lookups++;
+if(c.domains[t]==='unknown'){if(++failStreak>=HUNT_FAILS_BEFORE_STOP)throttled=true;}
+else failStreak=0;
+}));
+words++;
+const free=tlds.find(t=>c.domains[t]==='available');
+if(free){c.tld=free;found.push(c);}
+else if(!Object.values(c.domains).includes('unknown'))taken.add(lo);
+}));
+const pct=Math.max(found.length/batch,lookups/limit);
+setProgress(Math.min(99,80+Math.round(pct*19)),`Searching for available words: ${words} checked, ${found.length} free…`);
+}
+return{found:found.sort((a,b)=>(a.source==='ai')!==(b.source==='ai')?(a.source==='ai'?-1:1):b.scores.overall-a.scores.overall).slice(0,batch),words,throttled};
+}
+function huntSummary(res,tlds,batch){
+const list=tlds.join(', ');
+const n=res.found.length;
+let msg=`Checked <strong>${res.words}</strong> dictionary words on ${list} and found <strong>${n}</strong> available.`;
+if(res.throttled)msg+=' The search stopped early because domain registries stopped answering, so wait a minute before trying again.';
+else if(n<batch)msg+=' The search limit was reached. Press Generate to check more words.';
+if(n<batch&&tlds.length===1&&tlds[0]==='.com')msg+=' Free .com dictionary words are very rare, so .si, .xyz, .io or Mixed TLDs will find far more.';
+if(n)msg+=' <strong>Confirm at a registrar before relying on a name:</strong> registries can reserve words or charge premium prices without showing it in this check.';
+if(n&&tlds.includes('.co'))msg+=' .co has no public registry lookup, so .co results come from DNS only and are less reliable.';
+return msg;
 }
 // ═══════════════════════════════════════════════════════════════════════
 // MEGA COMBINATORIAL GENERATOR — 12 STRATEGIES · ~10^14 PERMUTATION SPACE
@@ -1623,8 +1696,26 @@ if(amMode&&a._resale&&b._resale){
 return (b._resale.flipScore-a._resale.flipScore)||(b.scores.overall-a.scores.overall);
 }
 return (b.scores.overall-a.scores.overall)||(b.gate.gateScore-a.gate.gateScore);
-}).slice(0,batch);
+}).slice(0,dictOnly?undefined:batch);
 if(!final.length){throw new Error('No names passed the gate. Try "loose" gate mode or different parameters.');}
+if(dictOnly){
+stepDone(2);setProgress(80,'Searching for available words…');
+const hunt=await huntAvailableWords(final,tlds,batch,industry,gateMode);
+for(const f of hunt.found)recentCache.add(f.name.toLowerCase());
+saveRecentCache();
+lastNames=hunt.found;
+if(hunt.found.length){
+renderResults(hunt.found,industry);
+document.getElementById('steerWrap').classList.add('on');
+document.getElementById('expRow').style.display='flex';
+for(const n of hunt.found)for(const t of tlds)paintDomainChip(n,t,n.name.toLowerCase()+t);
+}else document.getElementById('results').innerHTML='';
+document.getElementById('results').insertAdjacentHTML(hunt.found.length?'afterbegin':'beforeend',`<div class="rnote">${huntSummary(hunt,tlds,batch)}</div>`);
+stepDone(3);
+setProgress(100,'Done!');
+setTimeout(()=>{document.getElementById('pw').classList.remove('on');},400);
+return;
+}
 // Mark as recently generated — zero-repeat across sessions (20k cache)
 for(const f of final)recentCache.add(f.name.toLowerCase());
 saveRecentCache();

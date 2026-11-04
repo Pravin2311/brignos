@@ -48,6 +48,7 @@ nausea negro overdose pandemic paedophil pedophil pimp plague poison poverty rac
 scam slaughter slave smallpox stab stalk starv stupid suicid syphilis terror thief thieves torture tragedy
 tragic traitor tumor tumour ulcer vermin victim violen vomit weapon whip widow wound
 sexu sexis sexy faggot fagot chink gayer gayest gunfire gunman gunmen gunner gunpowder gunshot homosexual homophob
+cocaine marijuana opium narcotic amphetamine excre urinat defecat coagulat tonsil
 titillat lascivious entrails screw abnormal bisexual heterosexual transsexual asexual unisex`);
 const ALLOW = new Set(list(`analog analogy analysis analyst analytic analyze analogue cockpit cocktail cockatoo dickens
 title titan titanic titanium tithe titular prickle gangly hurtle cumin cumulus cumulative robot robe robin robust

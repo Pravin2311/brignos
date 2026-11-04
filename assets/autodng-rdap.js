@@ -154,8 +154,17 @@
     opts = opts || {};
     if (!opts.force && Object.prototype.hasOwnProperty.call(cache, domain)) return cache[domain];
 
-    var results = await Promise.all([rdapProbe(domain), dnsProbe(domain)]);
-    var rdap = results[0], dns = results[1];
+    var rdap, dns;
+    if (opts.dnsFirst) {
+      // For bulk searches: most registered names answer in DNS, so the registry
+      // is only asked about the few that don't. This is what keeps a search of
+      // 150 names from running into registry rate limits.
+      dns = await dnsProbe(domain);
+      rdap = dns === 'resolves' ? 'skipped' : await rdapProbe(domain);
+    } else {
+      var results = await Promise.all([rdapProbe(domain), dnsProbe(domain)]);
+      rdap = results[0]; dns = results[1];
+    }
 
     var verdict = 'unknown';
     if (rdap === 'taken' || dns === 'resolves')            verdict = 'taken';
