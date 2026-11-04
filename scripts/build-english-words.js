@@ -6,15 +6,21 @@
  * Source: SCOWL 2020.12.07 (permissive, commercial use allowed). Do not swap in
  * the Google Trillion Word lists: their terms exclude commercial use.
  *
- * Usage: node scripts/build-english-words.js <path-to-extracted-scowl>
- * Download: deb.debian.org/debian/pool/main/s/scowl/scowl_2020.12.07.orig.tar.gz
+ * Quality: common words (SCOWL levels 10-20) are kept unless negative, badly
+ * shaped or bare verb forms. The rarer level 35 mixes "lantern" with "wart" and
+ * no signal separates them, so its words need approval: scripts/brandable-words.txt
+ * or one of the generator's own word banks. Negative words are rated by VADER (MIT).
+ *
+ * Usage: node scripts/build-english-words.js <scowl-dir> <vader_lexicon.txt> <vader-LICENSE>
+ * SCOWL: deb.debian.org/debian/pool/main/s/scowl/scowl_2020.12.07.orig.tar.gz
+ * VADER: github.com/cjhutto/vaderSentiment (vaderSentiment/vader_lexicon.txt)
  */
 'use strict';
 const fs = require('fs');
 const path = require('path');
 
-const src = process.argv[2];
-if (!src) { console.error('Usage: node scripts/build-english-words.js <scowl-dir>'); process.exit(1); }
+const [src, vaderFile, vaderLicense] = process.argv.slice(2);
+if (!vaderLicense) { console.error('Usage: node scripts/build-english-words.js <scowl-dir> <vader_lexicon.txt> <vader-LICENSE>'); process.exit(1); }
 
 // Levels 10-35 are SCOWL's common vocabulary. Proper names live in other files.
 const FILES = ['english-words', 'american-words'].flatMap(f => [10, 20, 35].map(n => `${f}.${n}`));
@@ -31,7 +37,7 @@ from into onto upon with within without about above after again against among ar
 beside besides between beyond during except inside outside over under until unto toward towards through throughout
 because although though while whereas whether unless since very too also just only even still shall should would
 could might must may can will cannot ought myself yourself himself herself itself ourselves themselves everybody
-everyone everything nobody nothing somebody someone something anybody anyone anything etc per via versus amen`));
+everyone everything nobody nothing somebody someone something anybody anyone anything etc per via versus amen however therefore moreover latter null therein thereof yourselves withdrew`));
 
 // Removed if the word starts with one of these (or, for stems under 4 letters,
 // is the stem plus a simple ending). ALLOW rescues innocent words they catch.
@@ -66,11 +72,53 @@ function blocked(w) {
 }
 
 const words = new Set();
+const level = {};
 for (const f of FILES) {
+  const n = Number(f.split('.')[1]);
   for (const line of fs.readFileSync(path.join(src, 'final', f), 'latin1').split(/\r?\n/)) {
-    if (/^[a-z]+$/.test(line)) words.add(line); // skips capitalised names and contractions
+    if (/^[a-z]+$/.test(line)) { // skips capitalised names and contractions
+      words.add(line);
+      level[line] = Math.min(level[line] || 99, n);
+    }
   }
 }
+
+// ── Quality ───────────────────────────────────────────────────────────────
+const root = path.join(__dirname, '..');
+const approved = new Set(fs.readFileSync(path.join(__dirname, 'brandable-words.txt'), 'utf8')
+  .split(/\r?\n/).filter(l => !l.startsWith('#')).join(' ').trim().split(/\s+/));
+const generator = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+for (const bank of ['W_TECH', 'W_ACTION', 'W_NATURE', 'W_QUALITY', 'W_OBJECT', 'W_ANIMAL']) {
+  const m = generator.match(new RegExp(`const ${bank}=\\[([^\\]]*)\\]`));
+  if (!m) throw new Error(`word bank ${bank} not found in index.html`);
+  m[1].match(/[a-z]+/g).forEach(w => approved.add(w));
+}
+const intel = JSON.parse(fs.readFileSync(path.join(root, 'data', 'aftermarket-intelligence.json'), 'utf8'));
+[...intel.nouns, ...intel.modifiers, ...intel.dictionary_words].forEach(w => approved.add(w));
+approved.forEach(w => words.add(w));
+
+const sentiment = {};
+for (const line of fs.readFileSync(vaderFile, 'utf8').split(/\r?\n/)) {
+  const [w, v] = line.split('\t');
+  if (/^[a-z]+$/.test(w || '')) sentiment[w] = Number(v);
+}
+const NEGATIVE = -0.8;
+// Forms of a negative word: "dreary" from "drear", "hostility" from "hostile".
+const NEG_FORMS = [['ly', ''], ['ness', ''], ['ful', ''], ['ity', ''], ['ity', 'e'], ['ion', 'e'], ['ion', ''], ['ment', ''],
+  ['ive', 'e'], ['or', 'e'], ['er', 'e'], ['er', ''], ['ous', ''], ['y', '']];
+const isNegative = w => sentiment[w] <= NEGATIVE ||
+  NEG_FORMS.some(([suffix, add]) => w.endsWith(suffix) && sentiment[w.slice(0, -suffix.length) + add] <= NEGATIVE);
+const badShape = w => /(ness|ism|ology|itis|osis|ectomy|ical|ically)$/.test(w) ||
+  ['un', 'dis', 'mis', 'non', 'anti', 'im', 'in', 'ir', 'il', 'mal'].some(p =>
+    w.startsWith(p) && w.length - p.length >= 4 && words.has(w.slice(p.length)));
+// Irregular verb forms the plural and -ed rules can't catch.
+const VERB_FORMS = new Set(list(`ate awoke became began bent bit bled blew bought brought built burnt caught chose came crept dealt
+did drank drew driven drove dug eaten fed felt flew forgave forgot fought found froze gave given goes going gone got gotten grew
+grown had heard held hid hung kept knew known laid led left lent lit lost made meant met paid ran rang rode rose said sang sank
+sat saw seen sent shook shot shown shut slept slid sold sought spent spoke spoken stole stood struck sung sunk swept swam swore
+swum taken taught thought threw thrown told took tore torn understood went woke won wore worn wove written wrote
+get gets say says make makes`));
+const goodQuality = w => approved.has(w) || (level[w] <= 20 && !isNegative(w) && !badShape(w) && !VERB_FORMS.has(w));
 
 // A plural or verb form makes a weak name next to its base word.
 function inflected(w) {
@@ -94,13 +142,17 @@ function inflected(w) {
 
 const out = [...words].filter(w =>
   w.length >= MIN_LEN && w.length <= MAX_LEN && /[aeiouy]/.test(w) &&
-  !FUNCTION_WORDS.has(w) && !inflected(w) && !blocked(w)
+  !FUNCTION_WORDS.has(w) && !blocked(w) && (approved.has(w) || !inflected(w))
 ).sort();
+const high = out.filter(goodQuality);
+const broadOnly = out.filter(w => !goodQuality(w));
 
-const data = path.join(__dirname, '..', 'data');
+const data = path.join(root, 'data');
 fs.writeFileSync(path.join(data, 'english-words.json'), JSON.stringify({
-  _source: 'SCOWL 2020.12.07, filtered by scripts/build-english-words.js. Licence: data/english-words-LICENSE.txt',
-  words: out
+  _source: 'SCOWL 2020.12.07 and VADER, filtered by scripts/build-english-words.js. Licences: data/english-words-LICENSE.txt',
+  words: high,      // Word quality: High
+  broad: broadOnly  // added to the above for Word quality: Broad
 }) + '\n');
-fs.copyFileSync(path.join(src, 'Copyright'), path.join(data, 'english-words-LICENSE.txt'));
-console.log(`${words.size} source words -> ${out.length} kept`);
+fs.writeFileSync(path.join(data, 'english-words-LICENSE.txt'),
+  `Word list: SCOWL\n\n${fs.readFileSync(path.join(src, 'Copyright'), 'latin1')}\n\nSentiment ratings used to filter the list: VADER\n\n${fs.readFileSync(vaderLicense, 'utf8')}`);
+console.log(`${words.size} source words -> ${high.length} high quality, ${out.length} broad`);

@@ -28,7 +28,7 @@
 <link rel="shortcut icon" href="img/favicon.ico">
 <link rel="stylesheet" href="/assets/autodng-system.css?v=16">
 <link rel="stylesheet" href="/assets/autodng.css?v=9">
-<link rel="stylesheet" href="/assets/pages/index.css?v=3">
+<link rel="stylesheet" href="/assets/pages/index.css?v=4">
 <script src="/assets/autodng-rdap.js?v=3"></script>
 <script src="/assets/autodng-keys.js?v=3"></script>
 </head>
@@ -210,14 +210,21 @@ PAGE: GENERATOR
 <div class="fg3">
 <div class="field">
 <label>Generation Mode</label>
-<select id="genMode">
+<select id="genMode" onchange="syncWordQuality()">
 <option value="everything">🌌 Everything — all 12 strategies</option>
 <option value="aftermarket">💼 Aftermarket Hunter — acquisition-grade</option>
 <option value="brandable">✨ Brandables — invented phonetics</option>
 <option value="realword">📖 Real-word & compounds</option>
-<option value="dictionary">🔤 Dictionary words — single English words, available only</option>
+<option value="dictionary">🔤 Dictionary words — available only</option>
 <option value="atomic">◉ Atomic shorts (4–6 chars)</option>
 </select>
+<div id="wordQualityWrap" style="margin-top:10px" hidden>
+<label for="wordQuality">Word quality</label>
+<select id="wordQuality">
+<option value="high">High — better words, fewer results</option>
+<option value="broad">Broad — more results, odder words</option>
+</select>
+</div>
 </div>
 <div class="field">
 <label>Names per batch</label>
@@ -310,6 +317,7 @@ PAGE: GENERATOR
 <div class="psteps" id="psteps"></div>
 </div></div>
 <!-- Results -->
+<div class="rw" id="savedWrap"></div>
 <div class="rw" id="results">
 <div class="empty">
 <div class="eicon">◈</div>
@@ -945,14 +953,24 @@ return{score:Math.max(15,Math.min(100,Math.round(s))),factors,twoWord};
 let aftermarketIntel=null;
 // English word list for Dictionary mode. Fetched on demand: it is ~50KB gzipped
 // and no other mode needs it.
-let englishWords=null,englishWordList=null;
+let englishData=null,englishWords=null,englishWordList=null;
 async function loadEnglishWords(){
-if(englishWords)return englishWords;
+if(!englishData){
 try{
-const r=await fetch('./data/english-words.json?v=2');
-if(r.ok){englishWordList=(await r.json()).words;englishWords=new Set(englishWordList);}
+const r=await fetch('./data/english-words.json?v=4');
+if(r.ok)englishData=await r.json();
 }catch(e){console.warn('english word list unavailable',e);}
+if(!englishData)return null;
+}
+// Good words are far more likely to be taken, so Broad exists for people who
+// want more results and will accept odder words. Neither has offensive words.
+const broad=document.getElementById('wordQuality').value==='broad';
+englishWordList=broad?[...englishData.words,...englishData.broad]:englishData.words;
+englishWords=new Set(englishWordList);
 return englishWords;
+}
+function syncWordQuality(){
+document.getElementById('wordQualityWrap').hidden=currentGenMode()!=='dictionary';
 }
 async function loadAftermarketIntel(){
 if(aftermarketIntel)return aftermarketIntel;
@@ -1877,6 +1895,7 @@ ${cautions.map(c=>`<div class="caution">${c}</div>`).join('')}
 style="flex:1;padding:9px;background:var(--lime);color:#09090b;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;font-family:var(--mono)">
 Check Domain →
 </button>
+<button class="save-btn${isSaved(domainStr)?' on':''}" data-save="${domainStr}" onclick="toggleSaved('${domainStr}')" title="Keep ${domainStr} to register later">${isSaved(domainStr)?'✓ Saved':'Save'}</button>
 <button onclick="copyCard('${n.name}','${domainStr}')"
 style="padding:9px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:12px;cursor:pointer;color:var(--text);font-family:var(--mono)">
 Copy
@@ -2253,6 +2272,83 @@ clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),3000
 }
 function copyText(t){navigator.clipboard.writeText(t).then(()=>showToast(`Copied: ${t}`)).catch(()=>{});}
 function copyCard(name,domain){copyText(`${name} — ${domain}`);}
+// ═══════════════════════════════════════════════════════════════════════
+// SAVED DOMAINS: kept in this browser so they can be registered later
+// ═══════════════════════════════════════════════════════════════════════
+const SAVED_KEY='dng_saved_domains';
+const SAVED_LABEL={available:['av','Available'],taken:['tk','Taken'],checking:['wd','Checking…']};
+function getSaved(){
+try{
+const a=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');
+return Array.isArray(a)?a.filter(s=>s&&/^[a-z0-9-]+\.[a-z]+$/.test(s.domain)):[];
+}catch(e){return[];}
+}
+function isSaved(domain){return getSaved().some(s=>s.domain===domain);}
+function setSaved(list){
+try{localStorage.setItem(SAVED_KEY,JSON.stringify(list));}
+catch(e){showToast('Could not save: browser storage is full or blocked');return false;}
+renderSaved();
+return true;
+}
+function toggleSaved(domain){
+const list=getSaved();
+const on=list.some(s=>s.domain===domain);
+const tld=domain.slice(domain.indexOf('.'));
+const n=lastNames.find(x=>x.name.toLowerCase()+tld===domain);
+const next=on?list.filter(s=>s.domain!==domain):[{domain,status:n?.domains?.[tld]||'unknown',savedAt:Date.now()},...list];
+if(!setSaved(next))return;
+document.querySelectorAll('.save-btn').forEach(b=>{
+if(b.dataset.save!==domain)return;
+b.classList.toggle('on',!on);b.textContent=on?'Save':'✓ Saved';
+});
+showToast(on?`Removed ${domain}`:`Saved ${domain}`);
+}
+function renderSaved(){
+const wrap=document.getElementById('savedWrap');
+const list=getSaved();
+if(!list.length){wrap.innerHTML='';return;}
+wrap.innerHTML=`<div class="saved-panel">
+<div class="saved-head">
+<div><div class="saved-title">Saved domains (${list.length})</div>
+<div class="saved-sub">Kept in this browser only. Availability changes, so recheck before you register.</div></div>
+<div class="saved-actions">
+<button class="wl-act" id="savedRecheck" onclick="recheckSaved()">Recheck all</button>
+<button class="wl-act" onclick="exportSaved()">Export CSV</button>
+</div>
+</div>
+${list.map(s=>{
+const[cls,label]=SAVED_LABEL[s.status]||['wd','Not verified'];
+return `<div class="saved-row">
+<span class="saved-domain">${s.domain}</span>
+<span class="wl-status ${cls}">${label}</span>
+<span class="saved-date">${new Date(s.savedAt).toLocaleDateString()}</span>
+<a class="wl-act" href="https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(s.domain)}" target="_blank" rel="noopener">Register →</a>
+<button class="wl-act" onclick="toggleSaved('${s.domain}')" aria-label="Remove ${s.domain}">Remove</button>
+</div>`;}).join('')}
+</div>`;
+}
+let recheckingSaved=false;
+async function recheckSaved(){
+if(recheckingSaved)return;
+recheckingSaved=true;
+try{
+const domains=getSaved().map(s=>s.domain);
+const update=(domain,status)=>{
+const list=getSaved();const s=list.find(x=>x.domain===domain);
+if(s){s.status=status;setSaved(list);}   // skipped if removed during the recheck
+};
+for(const d of domains)update(d,'checking');
+for(const d of domains){
+update(d,await checkRdap(d,{force:true}));
+await sleep(300);
+}
+showToast('Saved domains rechecked');
+}finally{recheckingSaved=false;}
+}
+function exportSaved(){
+const rows=getSaved().map(s=>[s.domain,s.status,new Date(s.savedAt).toISOString().slice(0,10)].join(','));
+download(['domain,last_status,saved_on',...rows].join('\n'),'autodng-saved-domains.csv','text/csv');
+}
 function copyAll(){
 if(!lastNames.length){showToast('Generate names first');return;}
 const text=lastNames.map(n=>`${n.name} — ${n.name.toLowerCase()}${n.tld||'.com'} — Score: ${n.scores?.overall||0}`).join('\n');
@@ -2305,6 +2401,8 @@ document.body.appendChild(a);a.click();document.body.removeChild(a);
 // INIT
 // ═══════════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+renderSaved();
+syncWordQuality();
 // Fetch the resale model up front so appraisals are ready before the first run.
 loadAftermarketIntel();
 buildModelRow();updateKeyStatus();
