@@ -215,6 +215,7 @@ PAGE: GENERATOR
 <option value="aftermarket">💼 Aftermarket Hunter — acquisition-grade</option>
 <option value="brandable">✨ Brandables — invented phonetics</option>
 <option value="realword">📖 Real-word & compounds</option>
+<option value="dictionary">🔤 Dictionary words — single English words only</option>
 <option value="atomic">◉ Atomic shorts (4–6 chars)</option>
 </select>
 </div>
@@ -719,7 +720,7 @@ consumer:'Soft consonants, memorable rhythm, emotionally warm. Ref: Canva, Loom,
 mythic:'Powerful tone, legendary cadence, deep-tech gravitas. Ref: Anduril, Palantir, Oracle, Titan',
 scientific:'Classical Latin/Greek roots, scientific credibility. Ref: Illumina, Recursion, Schrödinger'
 };
-const TLDMAP = {mix:['.com','.co','.ai','.io','.xyz'],com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],si:['.si']};
+const TLDMAP = {mix:['.com','.co','.ai','.io','.xyz','.si'],com:['.com'],ai:['.ai'],io:['.io'],co:['.co'],xyz:['.xyz'],si:['.si']};
 // ═══════════════════════════════════════════════════════════════════════
 // MEGA COMBINATORIAL LIBRARIES — word banks powering 12 strategies.
 // Phonotactic space alone: ~56 onsets × ~31 nuclei × ~40 codas per
@@ -942,6 +943,17 @@ return{score:Math.max(15,Math.min(100,Math.round(s))),factors,twoWord};
 // flip score that discounts value by whether the .com is actually obtainable.
 // ═══════════════════════════════════════════════════════════════════════
 let aftermarketIntel=null;
+// English word list for Dictionary mode. Fetched on demand: it is ~50KB gzipped
+// and no other mode needs it.
+let englishWords=null,englishWordList=null;
+async function loadEnglishWords(){
+if(englishWords)return englishWords;
+try{
+const r=await fetch('./data/english-words.json?v=1');
+if(r.ok){englishWordList=(await r.json()).words;englishWords=new Set(englishWordList);}
+}catch(e){console.warn('english word list unavailable',e);}
+return englishWords;
+}
 async function loadAftermarketIntel(){
 if(aftermarketIntel)return aftermarketIntel;
 try{
@@ -1320,8 +1332,11 @@ if(n.length<=MAX)return n;
 return cap(pick(A.dictionary_words));           // always within the cap
 }
 
+function gDictionary(){return cap(pick(englishWordList));}
 // Mode → strategy weighting (strategy fn, weight)
 function buildStrategyDeck(mode,style,kws){
+// Every other strategy can emit non-words, so style boosts must not apply here.
+if(mode==='dictionary')return[{fn:gDictionary,strategy:'dictionary'}];
 const S={syllabic:gSyllabic,cvcv:gCVCV,atomic:gAtomic,rootblend:gRootBlend,prefixed:gPrefixed,
 compound:gCompound,animal:gAnimal,portmanteau:gPortmanteau,mutation:gMutation,
 keyword:()=>gKeyword(kws),mythic:gMythic,geonature:gGeoNature,resale:gResale};
@@ -1352,10 +1367,10 @@ for(const[k,n]of Object.entries(w)){const fn=S[k];for(let i=0;i<n;i++)deck.push(
 return deck;
 }
 const STRAT_LABEL={syllabic:'Phonotactic',cvcv:'CVCV',atomic:'Atomic',rootblend:'Latin/Greek',prefixed:'Prefixed',
-compound:'Compound',animal:'Animal+Word',portmanteau:'Portmanteau',mutation:'Mutation',keyword:'Keyword',mythic:'Mythic',geonature:'Geo/Nature',resale:'Resale-grade'};
+compound:'Compound',animal:'Animal+Word',portmanteau:'Portmanteau',mutation:'Mutation',keyword:'Keyword',mythic:'Mythic',geonature:'Geo/Nature',resale:'Resale-grade',dictionary:'Dictionary word'};
 // resale joins the real-word set: it builds from dictionary morphemes, so the
 // looser consonant-run rule and the phonetic-dedupe skip both apply.
-const REAL_STRATS=new Set(['compound','animal','portmanteau','geonature','mythic','resale']);
+const REAL_STRATS=new Set(['compound','animal','portmanteau','geonature','mythic','resale','dictionary']);
 // Maximum generated name length, applied across every strategy and mode.
 const MAX_NAME_LEN=11;
 function localGenerate(count,industry,mode,kwRaw){
@@ -1468,6 +1483,9 @@ const pw=document.getElementById('pw');pw.classList.add('on');
 document.getElementById('results').innerHTML='';
 setProgress(0,'Building intelligence context…',['Competitor exclusion','Sound symbolism','VC DNA','Stage weights','12-strategy engine','Adaptive gate','RDAP Checks']);
 try{
+const dictOnly=genMode==='dictionary';
+if(dictOnly&&!await loadEnglishWords())throw new Error('Could not load the dictionary word list. Check your connection and try again.');
+const dictRule='Every name MUST be one real English dictionary word, spelled exactly as in a dictionary: no invented words, compounds, altered spellings, proper nouns, plurals or verb forms.';
 let candidates=[];
 setProgress(10,'Spinning up 12-strategy combinatorial engine…');
 if(key&&!forceLocal){
@@ -1482,6 +1500,7 @@ everything:'EVERY viable name type — invented brandables, real-word compounds,
 aftermarket:'names with high aftermarket/acquisition resale value — short, real-word roots, premium keywords, clean compounds that domain investors would pay for',
 brandable:'invented brandable names with strong phonetics',
 realword:'real-word and compound names that are instantly understood',
+dictionary:'single real English dictionary words only',
 atomic:'ultra-short 4-6 character punchy names'
 }[genMode]||'';
 const t1sys=`You are the world's leading brand naming strategist. You think in phonetics, market patterns, investor psychology, aftermarket domain value, and global linguistics. Return ONLY valid JSON arrays — no markdown, no preamble.`;
@@ -1505,7 +1524,7 @@ Constraints each name MUST satisfy:
 6. 1-4 syllables, letters only
 Return a JSON array of EXACTLY ${steerText?40:24} candidate names with reasoning:
 [{"name":"Synara","reasoning":"Invented CVCV pattern, 3 syllables, warm phonetics for healthcare","industry_fit":"high","pattern":"invented-CVCV"}]
-Be extremely diverse — vary starting letters, syllable counts, patterns, and phoneme families. Mix invented, compound, atomic, mythic, and real-word names. Never cluster more than 2 names from the same phonetic family.`;
+Be extremely diverse — vary starting letters, syllable counts, patterns, and phoneme families. ${dictOnly?dictRule:'Mix invented, compound, atomic, mythic, and real-word names.'} Never cluster more than 2 names from the same phonetic family.`;
 const t1raw=await callAI(t1sys,t1usr);
 stepDone(0);setProgress(40,'AI name generation (turn 2)…');
 // TURN 2: Full structured generation with enrichment
@@ -1533,6 +1552,7 @@ Rules:
 - No two names from same phonetic family (same first 2 letters in normalized form)
 - Each name must feel like it could raise $10M from a top VC OR sell for 5 figures on the aftermarket
 - TLD must be one of: ${tlds.join(', ')}
+${dictOnly?`- CRITICAL: ${dictRule}`:''}
 ${strictTld&&tlds.includes('.com')?'- PRIORITIZE names likely to have .com available (invented words, unusual combinations)':tlds.length===1?`- Every name is for ${tlds[0]}: favor invented words and unusual combinations likely to be unregistered there`:`- Mix TLDs appropriately for industry`}
 ${steerText?`- CRITICAL STEERING: ${steerText}`:''}`;
 const t2raw=await callAI(t2sys,t2usr);
@@ -1551,12 +1571,14 @@ industries:p.industries||[industry||'Tech'],
 vcFit:p.vcFit||'Medium',
 trend:p.trend||'Stable',
 source:'ai'
-})).filter(c=>c.name.length>=3&&c.name.length<=12);
+})).filter(c=>c.name.length>=3&&c.name.length<=12&&(!dictOnly||englishWords.has(c.name.toLowerCase())));
 }
 }
 // Supplement with MEGA local combinatorial pool
 setProgress(62,'12-strategy combinatorial generation…');
-const poolTarget=Math.max(batch*6,120);
+// Dictionary mode: random words only fill gaps, so a small margin is enough to
+// cover names the gate rejects. The final sort ranks the AI's words above them.
+const poolTarget=dictOnly&&candidates.length?batch*2:Math.max(batch*6,120);
 let topup=0;
 while(candidates.length<poolTarget&&topup<3){
 const local=localGenerate(poolTarget-candidates.length,industry,genMode,kw);
@@ -1595,6 +1617,8 @@ const diverse=diversityFilter(scored.sort((a,b)=>b.scores.overall-a.scores.overa
 // spread a reseller actually earns on.
 const amMode=currentGenMode()==='aftermarket';
 const final=diverse.sort((a,b)=>{
+// Random words have no industry fit, so they never outrank the AI's picks.
+if(dictOnly&&(a.source==='ai')!==(b.source==='ai'))return a.source==='ai'?-1:1;
 if(amMode&&a._resale&&b._resale){
 return (b._resale.flipScore-a._resale.flipScore)||(b.scores.overall-a.scores.overall);
 }
