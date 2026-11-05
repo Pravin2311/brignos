@@ -59,7 +59,7 @@ titillat lascivious entrails screw abnormal bisexual heterosexual transsexual as
 const ALLOW = new Set(list(`analog analogy analysis analyst analytic analyze analogue cockpit cocktail cockatoo dickens
 title titan titanic titanium tithe titular prickle gangly hurtle cumin cumulus cumulative robot robe robin robust
 rotary rotate rotor rotunda stalk whippet sextant sexton culture cultural cultivate dreadnought`));
-const OTHER_BAD = new Set(list(`ass asses bum butt fat ugly idiot dumb loser pest pus sewer sewage tampon toilet
+const OTHER_BAD = new Set(list(`cumming ass asses bum butt fat ugly idiot dumb loser pest pus sewer sewage tampon toilet
 gay jew jews lesbian arab islam muslim christ jesus nun pope god gods satan devil hell damn evil mad sick
 die dies war wars tax pain jail prison lie liar sin sad poor stink stench slum`));
 

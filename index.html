@@ -957,7 +957,7 @@ let englishData=null,englishWords=null,englishWordList=null;
 async function loadEnglishWords(){
 if(!englishData){
 try{
-const r=await fetch('./data/english-words.json?v=4');
+const r=await fetch('./data/english-words.json?v=5');
 if(r.ok)englishData=await r.json();
 }catch(e){console.warn('english word list unavailable',e);}
 if(!englishData)return null;
